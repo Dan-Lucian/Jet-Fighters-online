@@ -1,2 +1,3 @@
-# Jet Fighters online
- Recreation of the jet fighters game but online and multiplayer
+# Jet Fighters Online
+
+A recreation of the cult clasic Jet Fighters with online multiplayer

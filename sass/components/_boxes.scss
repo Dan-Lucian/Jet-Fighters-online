@@ -1,0 +1,13 @@
+.box {
+  margin: 20px;
+  height: 200px;
+  width: 200px;
+  border: 1px solid black;
+  @include flexCenter(column);
+}
+
+.box__box {
+  height: 100px;
+  width: 100px;
+  background-color: hotpink;
+}

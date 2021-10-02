@@ -1,0 +1,8 @@
+/**
+ * The CSS properties that allow you to define:
+ * the color, size, spacing, and shape of text.
+ */
+body {
+  color: $text-color;
+  font: normal 125% / 1.4 $text-font-stack;
+}
