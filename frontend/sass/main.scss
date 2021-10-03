@@ -18,24 +18,12 @@
   'base/typography', 
   'base/helpers';
 
-// 4. Layout-related sections
-@import
-  'layout/header', 
-  'layout/footer', 
-  'layout/forms', 
-  'layout/grid',
-  'layout/navigation', 
-  'layout/sidebar';
-
 // 5. Components
 @import
   'components/buttons',
-  'components/boxes',
-  'components/pop-up-message';
-
-// 6. Page-specific styles
-@import
-  'pages/home';
+  'components/pop-up-message', 
+  'components/game-container',
+  'components/game';
 
 // 7. Themes
 @import

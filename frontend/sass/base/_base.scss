@@ -21,6 +21,11 @@ html {
   box-sizing: inherit;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 /**
  * Basic styles for links
  */
