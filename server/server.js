@@ -4,13 +4,12 @@ const server = new WebSocket.Server({ port: '3000' });
 const clients = new Map();
 
 server.on('connection', (ws) => {
-  console.log('client connected');
+  console.log('connection established');
+  ws.send('Server speaking: Connection successful');
 
   ws.on('message', (messageString) => {
-    const message = JSON.parse(messageString);
-    console.log('Received message: ', message);
-
-    ws.send();
+    // const message = JSON.parse(messageString);
+    console.log('Received message: ', messageString);
   });
 
   ws.on('close', () => {

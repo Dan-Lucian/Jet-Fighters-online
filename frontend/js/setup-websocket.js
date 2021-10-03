@@ -5,10 +5,11 @@ export async function setupWebsocket() {
 
   ws.onopen = () => {
     console.log('Connection established');
+    sendCanvasClicks(ws);
   };
 
-  ws.onmessage = () => {
-    console.log('Message received');
+  ws.onmessage = (message) => {
+    console.log('Message received: ', message.data);
   };
 
   ws.onerror = () => {
@@ -18,4 +19,13 @@ export async function setupWebsocket() {
   ws.onclose = () => {
     console.log('Connection close');
   };
+}
+
+function sendCanvasClicks(ws) {
+  const canvas = document.getElementById('canvas');
+
+  canvas.addEventListener('click', onClick);
+  function onClick() {
+    ws.send('canvas clicked');
+  }
 }
