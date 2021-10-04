@@ -1,0 +1,22 @@
+.game-menu {
+  text-align: center;
+}
+
+.game-menu__buttons {
+  margin-top: 50px;
+  display: flex;
+  align-items: center;
+  width: 500px;
+  justify-content: space-between;
+}
+
+.game-menu__input {
+  display: block;
+  margin-bottom: 10px;
+  border-radius: 0;
+  border: none;
+
+  &:focus {
+    outline: 2px solid #000;
+  }
+}

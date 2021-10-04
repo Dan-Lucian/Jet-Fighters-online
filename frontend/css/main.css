@@ -449,6 +449,14 @@ body {
   width: 1px;
 }
 
+.btn {
+  background: #28b485;
+  border: none;
+  border-radius: 5px;
+  padding: 1rem;
+  color: #fff;
+}
+
 .pop-up-message {
   --color-pop-up-message-bg: #000;
   --color-pop-up-message-text: #fff;
@@ -488,11 +496,34 @@ body {
   height: 500px;
   width: 500px;
   background: white;
+  display: none;
 }
 
 canvas {
   width: 100%;
   height: 100%;
+}
+
+.game-menu {
+  text-align: center;
+}
+
+.game-menu__buttons {
+  margin-top: 50px;
+  display: flex;
+  align-items: center;
+  width: 500px;
+  justify-content: space-between;
+}
+
+.game-menu__input {
+  display: block;
+  margin-bottom: 10px;
+  border-radius: 0;
+  border: none;
+}
+.game-menu__input:focus {
+  outline: 2px solid #000;
 }
 
 /*# sourceMappingURL=main.css.map */

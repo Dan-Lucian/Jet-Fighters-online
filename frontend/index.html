@@ -23,6 +23,25 @@
 
   <body>
     <div class="game-container">
+      <div class="game-menu" id="game-menu">
+        <h1>Jet Fighters Online</h1>
+        <div class="game-menu__buttons">
+          <button type="submit" class="btn" id="btn-new-game">
+            Create a new game
+          </button>
+          <form class="form" id="form">
+            <input
+              type="text"
+              class="game-menu__input"
+              placeholder="Enter Room Code"
+              id="input-room-code"
+            />
+            <button class="btn" type="submit" id="btn-join-game">
+              Join Game
+            </button>
+          </form>
+        </div>
+      </div>
       <div class="game" id="game">
         <canvas id="canvas"></canvas>
       </div>

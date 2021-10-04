@@ -1,3 +1,7 @@
-// -----------------------------------------------------------------------------
-// This file contains all styles related to the button component.
-// -----------------------------------------------------------------------------
+.btn {
+  background: $color-green-dark;
+  border: none;
+  border-radius: 5px;
+  padding: 1rem;
+  color: #fff;
+}
