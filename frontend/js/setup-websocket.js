@@ -1,31 +1,38 @@
 import { info } from './config.js';
 
-export async function setupWebsocket() {
-  const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
+export class Ws {
+  constructor(url) {
+    this.ws = new WebSocket(url);
+  }
 
-  ws.onopen = () => {
-    console.log('Connection established');
-    sendCanvasClicks(ws);
-  };
+  setupWsEvents() {
+    this.ws.onopen = () => {
+      console.log('Connection established');
+    };
 
-  ws.onmessage = (message) => {
-    console.log('Message received: ', message.data);
-  };
+    this.ws.onmessage = (message) => {
+      const jsonMessage = JSON.parse(message.data);
+      console.log('Message from server received: ');
 
-  ws.onerror = () => {
-    console.log('Connection error');
-  };
+      if (jsonMessage.newRoomId) {
+        console.log('new room created');
+        console.log(jsonMessage.newRoomId);
+      }
+    };
 
-  ws.onclose = () => {
-    console.log('Connection close');
-  };
-}
+    this.ws.onerror = () => {
+      console.log('Connection error');
+    };
 
-function sendCanvasClicks(ws) {
-  const canvas = document.getElementById('canvas');
+    this.ws.onclose = () => {
+      console.log('Connection close');
+    };
+  }
 
-  canvas.addEventListener('click', onClick);
-  function onClick() {
-    ws.send('canvas clicked');
+  requestNewRoom() {
+    console.log(JSON.stringify({ event: 'newRoom' }));
+    this.ws.send(JSON.stringify({ event: 'newRoom' }));
   }
 }
+
+export const ws = new Ws(`ws://${info.hostname}${info.port}/`);

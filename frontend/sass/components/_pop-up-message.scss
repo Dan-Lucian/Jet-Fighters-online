@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// This file contains all styles related to the button component.
+// This file contains all styles related to the popup message
 // -----------------------------------------------------------------------------
 
 // these variables can be used for dark/light theme implemenetation
@@ -12,6 +12,8 @@
   position: fixed;
   z-index: 1000;
   top: 10px;
+  left: 30%;
+  right: 30%;
   padding: 2rem;
   border-radius: 10px;
   text-align: center;
@@ -21,8 +23,8 @@
   font-weight: 700;
   opacity: 0;
   transition: opacity 400ms ease-in-out;
-}
 
-.pop-up-message--fade-in {
-  opacity: 1;
+  &--fade-in {
+    opacity: 1;
+  }
 }
