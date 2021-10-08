@@ -12,11 +12,26 @@ export class Ws {
 
     this.ws.onmessage = (message) => {
       const jsonMessage = JSON.parse(message.data);
-      console.log('Message from server received: ');
+      const {
+        eventFromServer,
+        roomId,
+        connection1Id,
+        connection2Id,
+        textMessage,
+      } = jsonMessage;
 
-      if (jsonMessage.newRoomId) {
-        console.log('new room created');
-        console.log(jsonMessage.newRoomId);
+      if (eventFromServer === 'newRoomResponse') {
+        console.log(`   New room created: ${roomId}`);
+        console.log(`   Connection Id: ${connection1Id}`);
+      }
+
+      if (eventFromServer === 'joinRoomResponse') {
+        if (!connection2Id) {
+          console.log(`Join denial because: ${textMessage}`);
+          return;
+        }
+        console.log(`   Joining: ${roomId}`);
+        console.log(`   Connection Id2: ${connection2Id}`);
       }
     };
 
@@ -30,8 +45,13 @@ export class Ws {
   }
 
   requestNewRoom() {
-    console.log(JSON.stringify({ event: 'newRoom' }));
-    this.ws.send(JSON.stringify({ event: 'newRoom' }));
+    this.ws.send(JSON.stringify({ eventFromClient: 'newRoomRequest' }));
+  }
+
+  requestJoin(joinId) {
+    this.ws.send(
+      JSON.stringify({ eventFromClient: 'joinRoomRequest', joinId })
+    );
   }
 }
 

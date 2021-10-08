@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 export function setupCanvasEvents() {
   const canvas = document.getElementById('canvas');
 

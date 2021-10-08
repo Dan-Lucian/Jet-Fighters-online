@@ -7,5 +7,3 @@ ws.setupWsEvents();
 init();
 
 setupCanvasEvents();
-
-let x;

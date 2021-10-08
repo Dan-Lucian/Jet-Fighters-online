@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import { ws } from './setup-websocket.js';
 import { showMessage, isInputValid } from './helpers.js';
 
@@ -16,13 +17,14 @@ let newRoomId;
 
 function onSubmit(e) {
   e.preventDefault();
+  const { value: inputValue } = input;
 
-  if (!isInputValid(input.value, '^[A-Za-z0-9]{10}$')) {
+  if (!isInputValid(inputValue, '^r[A-Za-z0-9]{5}$')) {
     showMessage('Invalid room ID');
     return;
   }
 
-  
+  ws.requestJoin(inputValue);
 }
 
 async function onClick() {
