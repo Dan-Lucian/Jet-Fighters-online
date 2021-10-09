@@ -1,5 +1,7 @@
 /* eslint-disable no-use-before-define */
 const WebSocket = require('ws');
+const { createGameState } = require('./game.js');
+const { FPS } = require('./constants.js');
 const { createId } = require('./helpers');
 
 const server = new WebSocket.Server({ port: '3000' });
@@ -10,17 +12,23 @@ server.on('connection', (ws) => {
   ws.on('message', (messageString) => {
     const { eventFromClient, joinId } = JSON.parse(messageString);
 
+    // const state = createGameState();
+
+    // startGameInterval();
+
     // received newRoom event
     if (eventFromClient === 'newRoomRequest') {
       console.log('newRoomRequest');
+
       const roomId = `r${createId(5)}`;
-      const connection1Id = `c1${createId(10)}`;
-      createRoom(roomId, connection1Id);
+      const connectionId = `c1${createId(10)}`;
+      createRoom(roomId, connectionId);
+
       ws.send(
         JSON.stringify({
           eventFromServer: 'newRoomResponse',
           roomId,
-          connection1Id,
+          connectionId,
         })
       );
     }
@@ -28,7 +36,8 @@ server.on('connection', (ws) => {
     // received joinRoom
     if (eventFromClient === 'joinRoomRequest') {
       console.log('joinRoomRequest');
-      const { status, connection2Id } = getRoomStatus(joinId);
+
+      const { status, connectionId } = getRoomStatus(joinId);
 
       if (status === 'notFound') {
         console.log('notFound');
@@ -57,10 +66,11 @@ server.on('connection', (ws) => {
         ws.send(
           JSON.stringify({
             eventFromServer: 'joinRoomResponse',
-            connection2Id,
+            connectionId,
             roomId: joinId,
           })
         );
+        // initialize the game here
       }
     }
   });
@@ -70,9 +80,9 @@ server.on('connection', (ws) => {
   });
 });
 
-function createRoom(roomId, connection1Id) {
+function createRoom(roomId, connectionId) {
   allRooms.set(roomId, {
-    connection1Id,
+    connection1Id: connectionId,
     connection2Id: null,
   });
   console.log('room created');
@@ -88,5 +98,5 @@ function getRoomStatus(id) {
 
   room.connection2Id = `c2${createId(10)}`;
   allRooms.set(id, room);
-  return { status: 'joinable', connection2Id: room.connection2Id };
+  return { status: 'joinable', connectionId: room.connection2Id };
 }

@@ -5,11 +5,11 @@ export function showMessage(text) {
   message.className = 'pop-up-message';
   document.body.append(message);
 
-  setTimeout(() => message.classList.add('pop-up-message--fade-in'));
+  requestAnimationFrame(() => message.classList.add('pop-up-message--fade-in'));
   setTimeout(() => {
     message.ontransitionend = () => message.remove();
     message.classList.remove('pop-up-message--fade-in');
-  }, 1500);
+  }, 2000);
 }
 
 export function isInputValid(inputValue, regexString) {
