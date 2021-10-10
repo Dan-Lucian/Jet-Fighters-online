@@ -18,17 +18,15 @@ server.on('connection', (ws) => {
 
     // received newRoom event
     if (eventFromClient === 'newRoomRequest') {
-      console.log('newRoomRequest');
+      console.log(`newRoomRequest`);
 
       const roomId = `r${createId(5)}`;
-      const connectionId = `c1${createId(10)}`;
-      createRoom(roomId, connectionId);
+      createRoom(roomId, ws);
 
       ws.send(
         JSON.stringify({
           eventFromServer: 'newRoomResponse',
           roomId,
-          connectionId,
         })
       );
     }
@@ -37,7 +35,7 @@ server.on('connection', (ws) => {
     if (eventFromClient === 'joinRoomRequest') {
       console.log('joinRoomRequest');
 
-      const { status, connectionId } = getRoomStatus(joinId);
+      const { status } = getRoomStatus(joinId, ws);
 
       if (status === 'notFound') {
         console.log('notFound');
@@ -63,11 +61,12 @@ server.on('connection', (ws) => {
 
       if (status === 'joinable') {
         console.log('joinable');
+        allRooms.get(joinId).ws2 = ws;
         ws.send(
           JSON.stringify({
             eventFromServer: 'joinRoomResponse',
-            connectionId,
             roomId: joinId,
+            joinable: true,
           })
         );
         // initialize the game here
@@ -80,23 +79,22 @@ server.on('connection', (ws) => {
   });
 });
 
-function createRoom(roomId, connectionId) {
+function createRoom(roomId, ws) {
   allRooms.set(roomId, {
-    connection1Id: connectionId,
-    connection2Id: null,
+    ws1: ws,
+    ws2: null,
   });
   console.log('room created');
 }
 
-function getRoomStatus(id) {
+function getRoomStatus(id, ws) {
   if (!id) console.log('id empty');
 
   const room = { ...allRooms.get(id) };
 
-  if (!room.connection1Id) return { status: 'notFound' };
-  if (room.connection2Id) return { status: 'full' };
+  if (!room.ws1) return { status: 'notFound' };
+  if (room.ws2) return { status: 'full' };
 
-  room.connection2Id = `c2${createId(10)}`;
-  allRooms.set(id, room);
-  return { status: 'joinable', connectionId: room.connection2Id };
+  // allRooms.set(id, room);
+  return { status: 'joinable' };
 }

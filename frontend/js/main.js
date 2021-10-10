@@ -5,7 +5,6 @@ import { setupCanvasEvents } from './setup-canvas-events.js';
 
 setupCanvasEvents();
 
-
 const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
 ws.onopen = onOpen;
 ws.onmessage = onMessage;
@@ -28,21 +27,25 @@ function onOpen() {
 
 function onMessage(message) {
   const jsonMessage = JSON.parse(message.data);
-  const { eventFromServer, roomId, connectionId, textMessage } = jsonMessage;
+  const { eventFromServer, roomId, joinable, textMessage, set } = jsonMessage;
+
+  if (eventFromServer === 'clients') {
+    console.log(`   Clients:`);
+    console.log(JSON.parse(set));
+    showRoomId(roomId);
+  }
 
   if (eventFromServer === 'newRoomResponse') {
     console.log(`   New room created: ${roomId}`);
-    console.log(`   Connection Id: ${connectionId}`);
     showRoomId(roomId);
   }
 
   if (eventFromServer === 'joinRoomResponse') {
-    if (!connectionId) {
+    if (!joinable) {
       console.log(`Join denial because: ${textMessage}`);
       return;
     }
     console.log(`   Joining: ${roomId}`);
-    console.log(`   Connection Id: ${connectionId}`);
   }
 
   // if (eventFromServer === 'gameState') {
