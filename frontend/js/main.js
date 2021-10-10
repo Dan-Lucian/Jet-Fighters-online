@@ -27,13 +27,8 @@ function onOpen() {
 
 function onMessage(message) {
   const jsonMessage = JSON.parse(message.data);
-  const { eventFromServer, roomId, joinable, textMessage, set } = jsonMessage;
-
-  if (eventFromServer === 'clients') {
-    console.log(`   Clients:`);
-    console.log(JSON.parse(set));
-    showRoomId(roomId);
-  }
+  const { eventFromServer, roomId, joinable, textMessage, connection } =
+    jsonMessage;
 
   if (eventFromServer === 'newRoomResponse') {
     console.log(`   New room created: ${roomId}`);
@@ -46,6 +41,11 @@ function onMessage(message) {
       return;
     }
     console.log(`   Joining: ${roomId}`);
+  }
+
+  if (eventFromServer === 'otherPlayerDisconnected') {
+    console.log('Other player disconnected');
+    console.log(JSON.parse(connection));
   }
 
   // if (eventFromServer === 'gameState') {

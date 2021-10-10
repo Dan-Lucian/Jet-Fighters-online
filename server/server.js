@@ -22,6 +22,7 @@ server.on('connection', (ws) => {
 
       const roomId = `r${createId(5)}`;
       createRoom(roomId, ws);
+      ws.connectionId = roomId;
 
       ws.send(
         JSON.stringify({
@@ -62,6 +63,7 @@ server.on('connection', (ws) => {
       if (status === 'joinable') {
         console.log('joinable');
         allRooms.get(joinId).ws2 = ws;
+        ws.connectionId = joinId;
         ws.send(
           JSON.stringify({
             eventFromServer: 'joinRoomResponse',
@@ -76,6 +78,15 @@ server.on('connection', (ws) => {
 
   ws.on('close', () => {
     console.log('connection closed');
+    if (!ws.connectionId) return;
+
+    const stillConnectedWs = closeRoom(ws.connectionId);
+    stillConnectedWs.send(
+      JSON.stringify({
+        eventFromServer: 'otherPlayerDisconnected',
+        connection: JSON.stringify(stillConnectedWs),
+      })
+    );
   });
 });
 
@@ -97,4 +108,14 @@ function getRoomStatus(id, ws) {
 
   // allRooms.set(id, room);
   return { status: 'joinable' };
+}
+
+function closeRoom(roomId) {
+  if (!roomId) return;
+
+  const room = allRooms.get(roomId);
+  allRooms.delete(roomId);
+  console.log(room);
+
+  return room.ws1 || room.ws2;
 }
