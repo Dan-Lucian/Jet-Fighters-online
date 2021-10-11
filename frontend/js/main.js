@@ -27,7 +27,7 @@ function onOpen() {
 
 function onMessage(message) {
   const jsonMessage = JSON.parse(message.data);
-  const { eventFromServer, roomId, joinable, textMessage, connection } =
+  const { eventFromServer, roomId, joinable, textMessage, gameState } =
     jsonMessage;
 
   if (eventFromServer === 'newRoomResponse') {
@@ -45,11 +45,12 @@ function onMessage(message) {
 
   if (eventFromServer === 'otherPlayerDisconnected') {
     console.log('Other player disconnected');
-    console.log(JSON.parse(connection));
+    renderGameScreen();
   }
 
-  // if (eventFromServer === 'gameState') {
-  // }
+  if (eventFromServer === 'gameState') {
+    renderGame(JSON.parse(gameState));
+  }
 
   // next: every time a gamestate is received, update the game
   // paint the game on next requestAnimationFrame
@@ -79,7 +80,7 @@ function onSubmit(e) {
 }
 
 async function onClick() {
-  requestNewRoom(showRoomId);
+  requestNewRoom();
 }
 
 function requestNewRoom() {
@@ -98,7 +99,22 @@ function showRoomId(id) {
 }
 
 function renderGame(gameState) {
-  gameMenu.style.display = 'none';
-  game.style.display = 'block';
-  console.log('game is running');
+  requestAnimationFrame(() => {
+    gameMenu.style.display = 'none';
+    game.style.display = 'block';
+    console.log(
+      `game is running with state x=${gameState.x} & y=${gameState.y}`
+    );
+  });
+}
+
+function renderGameScreen() {
+  console.log('rendering game screen');
+  console.log(roomIdElement);
+
+  gameMenu.style.display = 'block';
+  game.style.display = 'none';
+  newGame.disabled = 'false';
+  roomIdElement.display = 'none';
+  debugger;
 }
