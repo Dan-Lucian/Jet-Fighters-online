@@ -109,11 +109,9 @@ function renderGame(gameState) {
 }
 
 function renderGameScreen() {
-  console.log('rendering game screen');
-  console.log(roomIdElement);
-
   gameMenu.style.display = 'block';
   game.style.display = 'none';
-  newGame.disabled = 'false';
-  roomIdElement.display = 'none';
+  newGame.disabled = '';
+  roomIdElement.style.display = 'none';
+  requestAnimationFrame(() => showMessage('Other player disconnected'));
 }
