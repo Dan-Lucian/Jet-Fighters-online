@@ -116,5 +116,4 @@ function renderGameScreen() {
   game.style.display = 'none';
   newGame.disabled = 'false';
   roomIdElement.display = 'none';
-  debugger;
 }

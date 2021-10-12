@@ -91,15 +91,10 @@ server.on('connection', (ws) => {
   ws.on('close', () => {
     console.log('connection closed');
     if (!ws.connectionId) return;
-    console.log(`test = ${ws.connectionId}`);
 
-    const stillConnectedWs = closeRoom(ws.connectionId);
-    stillConnectedWs.connectionId = null;
-    stillConnectedWs.send(
-      JSON.stringify({
-        eventFromServer: 'otherPlayerDisconnected',
-      })
-    );
+    const { connectionId } = ws;
+    sendDisconnectAndRemoveIds(connectionId);
+    allRooms.delete(connectionId);
   });
 }); // error when the person who started the game disconnects
 
@@ -123,11 +118,13 @@ function getRoomStatus(id) {
   return { status: 'joinable' };
 }
 
-function closeRoom(roomId) {
-  if (!roomId) return;
-
-  const room = allRooms.get(roomId);
-  allRooms.delete(roomId);
-
-  return room.ws1 || room.ws2;
+function sendDisconnectAndRemoveIds(roomId) {
+  for (const ws of Object.values(allRooms.get(roomId))) {
+    ws.send(
+      JSON.stringify({
+        eventFromServer: 'otherPlayerDisconnected',
+      })
+    );
+    ws.connectionId = null;
+  }
 }
