@@ -1,9 +1,8 @@
 /* eslint-disable no-use-before-define */
+import { url } from 'inspector';
 import { info } from './config.js';
-import { showMessage, isInputValid } from './helpers.js';
-import { setupCanvasEvents } from './setup-canvas-events.js';
-
-setupCanvasEvents();
+import { showMessage, isInputValid, loadImage } from './helpers.js';
+import { Jet, Bullet } from './canvas-painting.js';
 
 const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
 ws.onopen = onOpen;
@@ -17,6 +16,12 @@ const newGame = document.getElementById('btn-new-game');
 const form = document.getElementById('form');
 const input = document.getElementById('input-room-code');
 const roomIdElement = document.getElementById('room-id');
+
+const gameStarted = false;
+let whiteJet;
+let whiteBullet;
+let blackJet;
+let blackBullet;
 
 form.onsubmit = onSubmit;
 newGame.onclick = onClick;
@@ -45,7 +50,7 @@ function onMessage(message) {
 
   if (eventFromServer === 'otherPlayerDisconnected') {
     console.log('Other player disconnected');
-    renderGameScreen();
+    renderGameMenu();
   }
 
   if (eventFromServer === 'gameState') {
@@ -99,16 +104,24 @@ function showRoomId(id) {
 }
 
 function renderGame(gameState) {
-  requestAnimationFrame(() => {
-    gameMenu.style.display = 'none';
-    game.style.display = 'block';
-    console.log(
-      `game is running with state x=${gameState.x} & y=${gameState.y}`
-    );
-  });
+  if (!gameStarted) {
+    requestAnimationFrame(() => {
+      gameMenu.style.display = 'none';
+      game.style.display = 'block';
+      console.log(
+        `game is running with initial state x=${gameState.x} & y=${gameState.y}`
+      );
+
+      blackJet = new Jet(gameState, loadImage('img/black.jet.webp'));
+      whiteJet = new Jet(gameState, loadImage('img/black.jet.webp'));
+    });
+    return;
+  }
+  blackJet.draw(gameState);
+  whiteJet.draw(gameState);
 }
 
-function renderGameScreen() {
+function renderGameMenu() {
   gameMenu.style.display = 'block';
   game.style.display = 'none';
   newGame.disabled = '';

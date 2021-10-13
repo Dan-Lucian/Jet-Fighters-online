@@ -19,3 +19,9 @@ export function isInputValid(inputValue, regexString) {
   }
   return false;
 }
+
+export function loadImage(imageUrl) {
+  const img = new Image();
+  img.src = imageUrl;
+  return img;
+}

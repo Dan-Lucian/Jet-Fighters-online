@@ -1,10 +1,8 @@
 /* eslint-disable no-use-before-define */
 const WebSocket = require('ws');
-const { createGameState } = require('./game.js');
+const { createGameState, startGameLoop } = require('./game.js');
 const { FPS } = require('./constants.js');
 const { createId } = require('./helpers');
-
-const gameState = { x: 20, y: 10 };
 
 const server = new WebSocket.Server({ port: '3000' });
 
@@ -68,22 +66,10 @@ server.on('connection', (ws) => {
         const ws2 = ws;
 
         ws2.connectionId = joinId; // unique socket id
-        ws2.send(
-          JSON.stringify({
-            eventFromServer: 'gameState',
-            gameState: JSON.stringify(gameState),
-            joinable: true, // needed for the joinable check
-          })
-        );
-
-        ws1.send(
-          JSON.stringify({
-            eventFromServer: 'gameState',
-            gameState: JSON.stringify(gameState),
-          })
-        );
-
         createRoom(joinId, ws1, ws2);
+
+        ws1.intervalId = startGameLoop(ws1, ws2);
+        ws2.intervalId = ws1.intervalId;
       }
     }
   });
@@ -96,7 +82,7 @@ server.on('connection', (ws) => {
     sendDisconnectAndRemoveIds(connectionId);
     allRooms.delete(connectionId);
   });
-}); // error when the person who started the game disconnects
+});
 
 function createRoom(roomId, ws1, ws2 = null) {
   allRooms.set(roomId, {
