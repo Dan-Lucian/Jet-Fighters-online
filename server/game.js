@@ -6,6 +6,7 @@
 /* eslint-disable no-use-before-define */
 
 const { FPS } = require('./constants.js');
+const { getRandomInt } = require('./helpers.js');
 
 module.exports = {
   createGameState,
@@ -248,12 +249,6 @@ function startGameLoop(ws1, ws2) {
     const rad = (state.angle * PI) / 180;
     state.x += state.speed * Math.sin(rad);
     state.y += state.speed * Math.cos(rad);
-  }
-
-  function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   function resetJetPosition(state) {
