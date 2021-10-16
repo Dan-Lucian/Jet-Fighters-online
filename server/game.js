@@ -56,8 +56,8 @@ function startGameLoop(ws1, ws2) {
   }
 
   const { PI } = Math;
-  let imgW;
-  let imgH;
+  const imgW = 22;
+  const imgH = 16;
 
   const gameState = {
     p1: {
@@ -103,6 +103,7 @@ function startGameLoop(ws1, ws2) {
     if (e.key === ' ') {
       const { x, y, angle, speed } = gameState.p1;
       gameState.p1.bullets.push({
+        // x, y => precision relative to jet model
         x: x - 1,
         y: y - 1,
         angle,
@@ -153,8 +154,7 @@ function startGameLoop(ws1, ws2) {
 
   // imgH and imgW declared here
   function drawBullet(bulletState) {
-    imgW = wJet.img.width;
-    imgH = wJet.img.height;
+    console.log(imgW);
     ctx.fillStyle = bulletState.color;
     ctx.fillRect(bulletState.x, bulletState.y, 3, 3);
   }
@@ -183,15 +183,6 @@ function startGameLoop(ws1, ws2) {
     const top = yJet - (imgH * scale) / 2 - 4;
     const bottom = yJet + (imgH * scale) / 2 + 4;
 
-    // ctx.fillStyle = 'rgb(200, 0 ,0)';
-    // ctx.beginPath();
-    // ctx.moveTo(left, top);
-    // ctx.lineTo(left, bottom);
-    // ctx.lineTo(right, bottom);
-    // ctx.lineTo(right, top);
-    // ctx.lineTo(left, top);
-    // ctx.fill();
-
     if (
       xBullet > left &&
       xBullet < right &&
@@ -199,6 +190,47 @@ function startGameLoop(ws1, ws2) {
       yBullet < bottom
     ) {
       if (pixelColorUnder(xBullet, yBullet, '#000000')) return true;
+    }
+  }
+
+  function didJetsCollide(stateJet1, stateJet2) {
+    const { x: x1, y: y1, scale: scale1 } = stateJet1;
+    const { x: x2, y: y2, scale: scale2 } = stateJet2;
+
+    const left1 = x1 - (imgW * scale1) / 2;
+    const right1 = x1 + (imgW * scale1) / 2;
+    const top1 = y1 - (imgH * scale1) / 2 - 4;
+    const bottom1 = y1 + (imgH * scale1) / 2 + 4;
+
+    const left2 = x2 - (imgW * scale2) / 2;
+    const right2 = x2 + (imgW * scale2) / 2;
+    const top2 = y2 - (imgH * scale2) / 2 - 4;
+    const bottom2 = y2 + (imgH * scale2) / 2 + 4;
+
+    // drawRegion(left1, top1, right1, bottom1);
+    // drawRegion(left2, top2, right2, bottom2);
+
+    if (
+      (left1 > left2 && left1 < right2 && top1 > top2 && top1 < bottom2) ||
+      (right1 > left2 && right1 < right2 && top1 > top2 && top1 < bottom2) ||
+      (right1 > left2 &&
+        right1 < right2 &&
+        bottom1 > top2 &&
+        bottom1 < bottom2) ||
+      (left1 > left2 && left1 < right2 && bottom1 > top2 && bottom1 < bottom2)
+    ) {
+      return true;
+    }
+
+    function drawRegion(left, top, right, bottom) {
+      ctx.fillStyle = 'rgb(200, 0 ,0)';
+      ctx.beginPath();
+      ctx.moveTo(left, top);
+      ctx.lineTo(left, bottom);
+      ctx.lineTo(right, bottom);
+      ctx.lineTo(right, top);
+      ctx.lineTo(left, top);
+      ctx.fill();
     }
   }
 
@@ -211,27 +243,36 @@ function startGameLoop(ws1, ws2) {
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    goTheWayIsFacing(gameState.p1);
-    goTheWayIsFacing(gameState.p2);
-    wJet.draw(gameState.p1);
-    bJet.draw(gameState.p2);
+    const { p1, p2 } = gameState;
+
+    goTheWayIsFacing(p1);
+    goTheWayIsFacing(p2);
+    wJet.draw(p1);
+    bJet.draw(p2);
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-    for (let i = 0; i < gameState.p1.bullets.length; i += 1) {
-      goTheWayIsFacing(gameState.p1.bullets[i]);
-      if (didBulletLand(gameState.p2, gameState.p1.bullets[i])) {
-        gameState.p1.bullets.splice(i, 1);
+    if (didJetsCollide(p1, p2)) {
+      incrementScoreW();
+      incrementScoreB();
+      // resetPositionW();
+      // resetPositionB();
+    }
+
+    for (let i = 0; i < p1.bullets.length; i += 1) {
+      goTheWayIsFacing(p1.bullets[i]);
+      if (didBulletLand(p2, p1.bullets[i])) {
+        p1.bullets.splice(i, 1);
         incrementScoreW();
-        console.log('bullet landed');
+        // resetPositionB();
       } else {
-        drawBullet(gameState.p1.bullets[i]);
+        drawBullet(p1.bullets[i]);
       }
     }
 
-    for (let i = 0; i < gameState.p2.bullets.length; i += 1) {
-      goTheWayIsFacing(gameState.p2.bullets[i]);
-      drawBullet(gameState.p2.bullets[i]);
+    for (let i = 0; i < p2.bullets.length; i += 1) {
+      goTheWayIsFacing(p2.bullets[i]);
+      drawBullet(p2.bullets[i]);
     }
 
     requestAnimationFrame(animate);
