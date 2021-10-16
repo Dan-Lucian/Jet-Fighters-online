@@ -58,13 +58,17 @@ function startGameLoop(ws1, ws2) {
   const { PI } = Math;
   const imgW = 22;
   const imgH = 16;
+  const canvasW = 700;
+  const canvasH = 300;
+  // const bulletSpeed = 4.5;
 
   const gameState = {
     p1: {
-      x: 10,
-      y: 10,
+      x: 20,
+      y: 20,
       angle: 90,
-      speed: 0.5,
+      rotation: 2,
+      speed: 2,
       scale: 1.5,
       leftArrowPressed: false,
       rightArrowPressed: false,
@@ -72,8 +76,9 @@ function startGameLoop(ws1, ws2) {
     },
     p2: {
       x: 100,
-      y: 100,
+      y: 10,
       angle: 0,
+      rotation: 5,
       speed: 0,
       scale: 1.5,
       leftArrowPressed: false,
@@ -107,7 +112,7 @@ function startGameLoop(ws1, ws2) {
         x: x - 1,
         y: y - 1,
         angle,
-        speed: speed * 3,
+        speed: speed * 2,
         color: '#fff',
       });
     }
@@ -138,11 +143,11 @@ function startGameLoop(ws1, ws2) {
     }
 
     draw(state) {
-      const { scale, x, y, rightArrowPressed, leftArrowPressed, bullets } =
+      const { scale, x, y, rightArrowPressed, leftArrowPressed, rotation } =
         state;
 
-      if (rightArrowPressed) state.angle -= 3;
-      if (leftArrowPressed) state.angle += 3;
+      if (rightArrowPressed) state.angle -= rotation;
+      if (leftArrowPressed) state.angle += rotation;
 
       ctx.setTransform(scale, 0, 0, scale, x, y); // sets scale and origin
 
@@ -164,8 +169,6 @@ function startGameLoop(ws1, ws2) {
     const hex = `#${`000000${rgbToHex(c[0], c[1], c[2])}`.slice(-6)}`;
 
     if (hex === backgroundColor) return;
-
-    console.log(hex);
     return hex;
 
     function rgbToHex(r, g, b) {
@@ -191,6 +194,13 @@ function startGameLoop(ws1, ws2) {
     ) {
       if (pixelColorUnder(xBullet, yBullet, '#000000')) return true;
     }
+  }
+
+  function isOutOfBounds(state) {
+    if (!state) return;
+
+    const { x, y } = state;
+    if (x < 0 || x > canvasW || y < 0 || y > canvasH) return true;
   }
 
   function didJetsCollide(stateJet1, stateJet2) {
@@ -240,6 +250,17 @@ function startGameLoop(ws1, ws2) {
     state.y += state.speed * Math.cos(rad);
   }
 
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function resetJetPosition(state) {
+    state.x = getRandomInt(50, 650);
+    state.y = getRandomInt(50, 250);
+  }
+
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -253,6 +274,8 @@ function startGameLoop(ws1, ws2) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
 
     if (didJetsCollide(p1, p2)) {
+      resetJetPosition(p2);
+      resetJetPosition(p1);
       incrementScoreW();
       incrementScoreB();
       // resetPositionW();
@@ -264,10 +287,12 @@ function startGameLoop(ws1, ws2) {
       if (didBulletLand(p2, p1.bullets[i])) {
         p1.bullets.splice(i, 1);
         incrementScoreW();
-        // resetPositionB();
+        resetJetPosition(p2);
       } else {
         drawBullet(p1.bullets[i]);
       }
+
+      if (isOutOfBounds(p1.bullets[i])) p1.bullets.splice(i, 1);
     }
 
     for (let i = 0; i < p2.bullets.length; i += 1) {
