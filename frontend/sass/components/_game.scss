@@ -1,11 +1,9 @@
 .game {
   height: 500px;
-  width: 500px;
-  background: white;
+  width: 800px;
   display: none;
 }
 
-canvas {
-  width: 100%;
-  height: 100%;
+.canvas {
+  background: #ccc;
 }

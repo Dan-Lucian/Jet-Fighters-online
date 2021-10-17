@@ -1,8 +1,8 @@
 /* eslint-disable no-use-before-define */
-import { url } from 'inspector';
+// import { url } from 'inspector';
 import { info } from './config.js';
 import { showMessage, isInputValid, loadImage } from './helpers.js';
-import { Jet, Bullet } from './canvas-painting.js';
+import { Jet, clearCanvas } from './canvas-painting.js';
 
 const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
 ws.onopen = onOpen;
@@ -17,10 +17,10 @@ const form = document.getElementById('form');
 const input = document.getElementById('input-room-code');
 const roomIdElement = document.getElementById('room-id');
 
-const gameStarted = false;
-let whiteJet;
+let gameStarted = false;
+let wJet;
 let whiteBullet;
-let blackJet;
+let bJet;
 let blackBullet;
 
 form.onsubmit = onSubmit;
@@ -109,16 +109,20 @@ function renderGame(gameState) {
       gameMenu.style.display = 'none';
       game.style.display = 'block';
       console.log(
-        `game is running with initial state x=${gameState.x} & y=${gameState.y}`
+        `game is running with initial state x=${gameState.p1.x} & y=${gameState.p1.y}`
       );
 
-      blackJet = new Jet(gameState, loadImage('img/black.jet.webp'));
-      whiteJet = new Jet(gameState, loadImage('img/black.jet.webp'));
+      gameStarted = true;
+
+      wJet = new Jet('img/white-jet.webp', gameState.p1);
+      bJet = new Jet('img/black-jet.webp', gameState.p2);
     });
     return;
   }
-  blackJet.draw(gameState);
-  whiteJet.draw(gameState);
+
+  clearCanvas();
+  wJet.draw(gameState.p1);
+  bJet.draw(gameState.p2);
 }
 
 function renderGameMenu() {

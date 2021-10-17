@@ -68,7 +68,8 @@ server.on('connection', (ws) => {
         ws2.connectionId = joinId; // unique socket id
         createRoom(joinId, ws1, ws2);
 
-        ws1.intervalId = startGameLoop(ws1, ws2);
+        const gameState = createGameState();
+        ws1.intervalId = startGameLoop(ws1, ws2, gameState);
         ws2.intervalId = ws1.intervalId;
       }
     }
@@ -80,6 +81,7 @@ server.on('connection', (ws) => {
 
     const { connectionId } = ws;
     sendDisconnectAndRemoveIds(connectionId);
+    clearInterval(ws.intervalId);
     allRooms.delete(connectionId);
   });
 });
