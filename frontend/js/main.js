@@ -18,6 +18,7 @@ const input = document.getElementById('input-room-code');
 const roomIdElement = document.getElementById('room-id');
 const keysStatus = { leftArrowPressed: false, rightArrowPressed: false };
 
+let player;
 let gameStarted = false;
 let wJet;
 let whiteBullet;
@@ -33,8 +34,14 @@ function onOpen() {
 
 function onMessage(message) {
   const jsonMessage = JSON.parse(message.data);
-  const { eventFromServer, roomId, joinable, textMessage, gameState } =
-    jsonMessage;
+  const {
+    eventFromServer,
+    roomId,
+    joinable,
+    textMessage,
+    gameState,
+    playerNumber,
+  } = jsonMessage;
 
   if (eventFromServer === 'newRoomResponse') {
     console.log(`   New room created: ${roomId}`);
@@ -53,10 +60,11 @@ function onMessage(message) {
     console.log('Other player disconnected');
     removeKeyDownEvent();
     renderGameMenu();
+    player = null;
   }
 
   if (eventFromServer === 'gameState') {
-    renderGame(JSON.parse(gameState));
+    renderGame(JSON.parse(gameState), playerNumber);
   }
 
   // next: every time a gamestate is received, update the game
@@ -105,16 +113,17 @@ function showRoomId(id) {
   showMessage('The game will start when the 2nd player will join this room');
 }
 
-function renderGame(gameState) {
+function renderGame(gameState, playerNumber) {
   if (!gameStarted) {
     requestAnimationFrame(() => {
       gameMenu.style.display = 'none';
       game.style.display = 'block';
       console.log(
-        `game is running with initial state x=${gameState.p1.x} & y=${gameState.p1.y}`
+        `initial state x=${gameState[playerNumber].x} & y=${gameState[playerNumber].y}`
       );
 
       gameStarted = true;
+      player = playerNumber;
 
       wJet = new Jet('img/white-jet.webp', gameState.p1);
       bJet = new Jet('img/black-jet.webp', gameState.p2);
@@ -162,6 +171,7 @@ function onKeyDown(e) {
       JSON.stringify({
         eventFromClient: 'keyPressed',
         keysStatus: JSON.stringify(keysStatus),
+        playerNumber: player,
       })
     );
   }
@@ -172,6 +182,7 @@ function onKeyDown(e) {
       JSON.stringify({
         eventFromClient: 'keyPressed',
         keysStatus: JSON.stringify(keysStatus),
+        playerNumber: player,
       })
     );
   }
@@ -199,6 +210,7 @@ function onKeyUp(e) {
       JSON.stringify({
         eventFromClient: 'keyPressed',
         keysStatus: JSON.stringify(keysStatus),
+        playerNumber: player,
       })
     );
   }
@@ -209,6 +221,7 @@ function onKeyUp(e) {
       JSON.stringify({
         eventFromClient: 'keyPressed',
         keysStatus: JSON.stringify(keysStatus),
+        playerNumber: player,
       })
     );
   }

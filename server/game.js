@@ -29,7 +29,7 @@ function createGameState() {
       y: 20,
       angle: 70,
       rotation: 2,
-      speed: 2,
+      speed: 1,
       scale: 1.5,
       leftArrowPressed: false,
       rightArrowPressed: false,
@@ -40,7 +40,7 @@ function createGameState() {
       y: 20,
       angle: 0,
       rotation: 5,
-      speed: 0,
+      speed: 1,
       scale: 1.5,
       leftArrowPressed: false,
       rightArrowPressed: false,
@@ -50,8 +50,8 @@ function createGameState() {
 }
 
 // updates undefined to undefined??
-function updateServerGameState(property, value) {
-  serverGameState.p1[property] = value;
+function updateServerGameState(property, value, playerNumber) {
+  serverGameState[playerNumber][property] = value;
 }
 
 function sendGameState(ws1, ws2, gameState) {
@@ -60,6 +60,7 @@ function sendGameState(ws1, ws2, gameState) {
     JSON.stringify({
       eventFromServer: 'gameState',
       gameState: stringGameState,
+      playerNumber: 'p1',
     })
   );
   ws2.send(
@@ -67,6 +68,7 @@ function sendGameState(ws1, ws2, gameState) {
       eventFromServer: 'gameState',
       gameState: stringGameState,
       joinable: true, // needed for the joinable check
+      playerNumber: 'p2',
     })
   );
 }

@@ -14,7 +14,8 @@ const allRooms = new Map();
 
 server.on('connection', (ws) => {
   ws.on('message', (messageString) => {
-    const { eventFromClient, joinId, keysStatus } = JSON.parse(messageString);
+    const { eventFromClient, joinId, keysStatus, playerNumber } =
+      JSON.parse(messageString);
 
     // const state = createGameState();
 
@@ -81,7 +82,7 @@ server.on('connection', (ws) => {
     if (eventFromClient === 'keyPressed') {
       const jsonKeysStatus = JSON.parse(keysStatus);
       Object.keys(jsonKeysStatus).forEach((prop) => {
-        updateServerGameState(prop, jsonKeysStatus[prop]);
+        updateServerGameState(prop, jsonKeysStatus[prop], playerNumber);
       });
     }
   });
