@@ -1,6 +1,10 @@
 /* eslint-disable no-use-before-define */
 const WebSocket = require('ws');
-const { createGameState, startGameLoop } = require('./game.js');
+const {
+  createGameState,
+  startGameLoop,
+  updateServerGameState,
+} = require('./game.js');
 const { FPS } = require('./constants.js');
 const { createId } = require('./helpers');
 
@@ -10,7 +14,7 @@ const allRooms = new Map();
 
 server.on('connection', (ws) => {
   ws.on('message', (messageString) => {
-    const { eventFromClient, joinId } = JSON.parse(messageString);
+    const { eventFromClient, joinId, keysStatus } = JSON.parse(messageString);
 
     // const state = createGameState();
 
@@ -72,6 +76,13 @@ server.on('connection', (ws) => {
         ws1.intervalId = startGameLoop(ws1, ws2, gameState);
         ws2.intervalId = ws1.intervalId;
       }
+    }
+
+    if (eventFromClient === 'keyPressed') {
+      const jsonKeysStatus = JSON.parse(keysStatus);
+      Object.keys(jsonKeysStatus).forEach((prop) => {
+        updateServerGameState(prop, jsonKeysStatus[prop]);
+      });
     }
   });
 

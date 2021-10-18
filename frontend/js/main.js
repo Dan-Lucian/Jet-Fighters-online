@@ -16,6 +16,7 @@ const newGame = document.getElementById('btn-new-game');
 const form = document.getElementById('form');
 const input = document.getElementById('input-room-code');
 const roomIdElement = document.getElementById('room-id');
+const keysStatus = { leftArrowPressed: false, rightArrowPressed: false };
 
 let gameStarted = false;
 let wJet;
@@ -116,6 +117,8 @@ function renderGame(gameState) {
 
       wJet = new Jet('img/white-jet.webp', gameState.p1);
       bJet = new Jet('img/black-jet.webp', gameState.p2);
+
+      setupKeyDownEvent();
     });
     return;
   }
@@ -126,9 +129,86 @@ function renderGame(gameState) {
 }
 
 function renderGameMenu() {
+  gameStarted = false;
   gameMenu.style.display = 'block';
   game.style.display = 'none';
   newGame.disabled = '';
   roomIdElement.style.display = 'none';
   requestAnimationFrame(() => showMessage('Other player disconnected'));
+}
+
+function setupKeyDownEvent() {
+  document.addEventListener('keydown', onKeyDown);
+  document.addEventListener('keyup', onKeyUp);
+}
+
+function removeKeyDownEvent() {
+  document.removeEventListener('keydown', onKeyDown);
+  document.removeEventListener('keyup', onKeyUp);
+}
+
+function onKeyDown(e) {
+  e.preventDefault();
+  if (
+    (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== ' ') ||
+    e.repeat
+  )
+    return;
+
+  if (e.key === 'ArrowRight') {
+    keysStatus.rightArrowPressed = true;
+    ws.send(
+      JSON.stringify({
+        eventFromClient: 'keyPressed',
+        keysStatus: JSON.stringify(keysStatus),
+      })
+    );
+  }
+
+  if (e.key === 'ArrowLeft') {
+    keysStatus.leftArrowPressed = true;
+    ws.send(
+      JSON.stringify({
+        eventFromClient: 'keyPressed',
+        keysStatus: JSON.stringify(keysStatus),
+      })
+    );
+  }
+
+  // shooting on space
+  // if (e.key === ' ') {
+  //   const { x, y, angle, speed } = gameState.p1;
+  //   gameState.p1.bullets.push({
+  //     // x, y => precision relative to jet model
+  //     x: x - 1,
+  //     y: y - 1,
+  //     angle,
+  //     speed: speed * 2,
+  //     color: '#fff',
+  //   });
+  // }
+}
+
+function onKeyUp(e) {
+  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+
+  if (e.key === 'ArrowRight') {
+    keysStatus.rightArrowPressed = false;
+    ws.send(
+      JSON.stringify({
+        eventFromClient: 'keyPressed',
+        keysStatus: JSON.stringify(keysStatus),
+      })
+    );
+  }
+
+  if (e.key === 'ArrowLeft') {
+    keysStatus.leftArrowPressed = false;
+    ws.send(
+      JSON.stringify({
+        eventFromClient: 'keyPressed',
+        keysStatus: JSON.stringify(keysStatus),
+      })
+    );
+  }
 }

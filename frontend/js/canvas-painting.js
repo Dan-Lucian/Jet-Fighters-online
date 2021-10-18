@@ -29,7 +29,6 @@ export class Jet {
   }
 
   draw(state) {
-    console.log('drawing');
     const { scale, x, y, rightArrowPressed, leftArrowPressed, rotation } =
       state;
 

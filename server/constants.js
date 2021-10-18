@@ -1,4 +1,4 @@
-const FPS = 30;
+const FPS = 60;
 
 module.exports = {
   FPS,

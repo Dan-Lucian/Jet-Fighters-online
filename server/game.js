@@ -7,6 +7,7 @@
 module.exports = {
   startGameLoop,
   createGameState,
+  updateServerGameState,
 };
 
 const { FPS } = require('./constants.js');
@@ -15,9 +16,10 @@ const { getRandomInt } = require('./helpers.js');
 const { PI } = Math;
 const imgW = 22;
 const imgH = 16;
-const canvasW = 700;
+const canvasW = 600;
 const canvasH = 300;
 const intervalDelay = 1000 / FPS;
+let serverGameState;
 // const bulletSpeed = 4.5;
 
 function createGameState() {
@@ -25,7 +27,7 @@ function createGameState() {
     p1: {
       x: 20,
       y: 20,
-      angle: 90,
+      angle: 70,
       rotation: 2,
       speed: 2,
       scale: 1.5,
@@ -47,6 +49,11 @@ function createGameState() {
   };
 }
 
+// updates undefined to undefined??
+function updateServerGameState(property, value) {
+  serverGameState.p1[property] = value;
+}
+
 function sendGameState(ws1, ws2, gameState) {
   const stringGameState = JSON.stringify(gameState);
   ws1.send(
@@ -65,6 +72,7 @@ function sendGameState(ws1, ws2, gameState) {
 }
 
 function startGameLoop(ws1, ws2, gameState) {
+  serverGameState = gameState;
   return setInterval(() => {
     sendGameState(ws1, ws2, gameState);
 
@@ -75,8 +83,20 @@ function startGameLoop(ws1, ws2, gameState) {
   }, intervalDelay);
 }
 
+function goTheWayIsFacing(state) {
+  const { rightArrowPressed, leftArrowPressed, rotation } = state;
+
+  if (rightArrowPressed) {
+    state.angle -= rotation;
+  }
+  if (leftArrowPressed) state.angle += rotation;
+
+  const rad = (state.angle * PI) / 180;
+  state.x += state.speed * Math.sin(rad);
+  state.y += state.speed * Math.cos(rad);
+}
+
 // function animate() {
-//   ctx.clearRect(0, 0, canvas.width, canvas.height); // front
 
 //   const { p1, p2 } = gameState;
 
@@ -133,53 +153,6 @@ function startGameLoop(ws1, ws2, gameState) {
 // function incrementScoreW() {
 //   scoreW.innerHTML = `${parseInt(scoreW.innerHTML) + 1} White`;
 // }
-
-// front
-// document.addEventListener('keydown', onKeyDown);
-// document.addEventListener('keyup', onKeyUp);
-// function onKeyDown(e) {
-//   e.preventDefault();
-//   if (
-//     (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== ' ') ||
-//     e.repeat
-//   )
-//     return;
-
-//   if (e.key === 'ArrowRight') {
-//     gameState.p1.rightArrowPressed = true;
-//   }
-
-//   if (e.key === 'ArrowLeft') {
-//     gameState.p1.leftArrowPressed = true;
-//   }
-
-//   if (e.key === ' ') {
-//     const { x, y, angle, speed } = gameState.p1;
-//     gameState.p1.bullets.push({
-//       // x, y => precision relative to jet model
-//       x: x - 1,
-//       y: y - 1,
-//       angle,
-//       speed: speed * 2,
-//       color: '#fff',
-//     });
-//   }
-// }
-
-// function onKeyUp(e) {
-//   if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-
-//   if (e.key === 'ArrowRight') {
-//     gameState.p1.rightArrowPressed = false;
-//   }
-
-//   if (e.key === 'ArrowLeft') {
-//     gameState.p1.leftArrowPressed = false;
-//   }
-// }
-
-// const canvas = document.getElementById('canvas');
-// const ctx = canvas.getContext('2d');
 
 // class Jet {
 //   constructor(url) {
@@ -287,19 +260,9 @@ function startGameLoop(ws1, ws2, gameState) {
 //   }
 // }
 
-// back end
-function goTheWayIsFacing(state) {
-  const rad = (state.angle * PI) / 180;
-  state.x += state.speed * Math.sin(rad);
-  state.y += state.speed * Math.cos(rad);
-}
-
 function resetJetPosition(state) {
   state.x = getRandomInt(50, 650);
   state.y = getRandomInt(50, 250);
 }
-
-// const wJet = new Jet('img/white-jet.webp', gameState.p1);
-// const bJet = new Jet('img/black-jet.webp', gameState.p2);
 
 // animate();
