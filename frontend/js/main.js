@@ -51,6 +51,7 @@ function onMessage(message) {
 
   if (eventFromServer === 'otherPlayerDisconnected') {
     console.log('Other player disconnected');
+    removeKeyDownEvent();
     renderGameMenu();
   }
 
