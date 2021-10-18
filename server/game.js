@@ -33,6 +33,7 @@ function createGameState() {
       scale: 1.5,
       leftArrowPressed: false,
       rightArrowPressed: false,
+      spacePressed: false,
       bullets: [],
     },
     p2: {
@@ -44,6 +45,7 @@ function createGameState() {
       scale: 1.5,
       leftArrowPressed: false,
       rightArrowPressed: false,
+      spacePressed: false,
       bullets: [],
     },
   };
@@ -52,6 +54,7 @@ function createGameState() {
 // updates undefined to undefined??
 function updateServerGameState(property, value, playerNumber) {
   serverGameState[playerNumber][property] = value;
+  // shoot on spacePressed
 }
 
 function sendGameState(ws1, ws2, gameState) {
@@ -82,20 +85,96 @@ function startGameLoop(ws1, ws2, gameState) {
 
     goTheWayIsFacing(p1);
     goTheWayIsFacing(p2);
+    updateBullets(gameState);
   }, intervalDelay);
 }
 
 function goTheWayIsFacing(state) {
   const { rightArrowPressed, leftArrowPressed, rotation } = state;
 
-  if (rightArrowPressed) {
-    state.angle -= rotation;
-  }
+  if (rightArrowPressed) state.angle -= rotation;
   if (leftArrowPressed) state.angle += rotation;
 
   const rad = (state.angle * PI) / 180;
   state.x += state.speed * Math.sin(rad);
   state.y += state.speed * Math.cos(rad);
+}
+
+function updateBullets(gameState) {
+  const { p1, p2 } = gameState;
+
+  if (p1.spacePressed) {
+    p1.spacePressed = false;
+    p1.bullets.push({
+      // x, y => precision relative to jet model
+      x: p1.x - 1,
+      y: p1.y - 1,
+      angle: p1.angle,
+      speed: p1.speed * 2,
+      color: '#fff',
+    });
+  }
+  if (p2.spacePressed) {
+    p2.spacePressed = false;
+    p2.bullets.push({
+      // x, y => precision relative to jet model
+      x: p2.x - 1,
+      y: p2.y - 1,
+      angle: p2.angle,
+      speed: p2.speed * 2,
+      color: '#000',
+    });
+  }
+  for (let i = 0; i < p1.bullets.length; i += 1) {
+    goTheWayIsFacing(p1.bullets[i]);
+
+    if (didBulletLand(p2, p1.bullets[i])) {
+      p1.bullets.splice(i, 1);
+      // incrementScoreW();
+      resetJetPosition(p2);
+    }
+
+    if (isOutOfBounds(p1.bullets[i])) p1.bullets.splice(i, 1);
+  }
+
+  for (let i = 0; i < p2.bullets.length; i += 1) {
+    goTheWayIsFacing(p2.bullets[i]);
+
+    if (didBulletLand(p1, p2.bullets[i])) {
+      p2.bullets.splice(i, 1);
+      // incrementScoreW();
+      resetJetPosition(p1);
+    }
+
+    if (isOutOfBounds(p2.bullets[i])) p2.bullets.splice(i, 1);
+  }
+}
+
+function didBulletLand(stateJet, stateEnemyBullet) {
+  const { x: xJet, y: yJet, scale } = stateJet;
+  const { x: xBullet, y: yBullet } = stateEnemyBullet;
+
+  const left = xJet - (imgW * scale) / 2;
+  const right = xJet + (imgW * scale) / 2;
+  const top = yJet - (imgH * scale) / 2 - 4;
+  const bottom = yJet + (imgH * scale) / 2 + 4;
+
+  if (xBullet > left && xBullet < right && yBullet > top && yBullet < bottom) {
+    // if (pixelColorUnder(xBullet, yBullet, '#000000')) return true;
+    return true;
+  }
+}
+
+function resetJetPosition(jetState) {
+  jetState.x = getRandomInt(50, 550);
+  jetState.y = getRandomInt(50, 250);
+}
+
+function isOutOfBounds(state) {
+  if (!state) return;
+
+  const { x, y } = state;
+  if (x < 0 || x > canvasW || y < 0 || y > canvasH) return true;
 }
 
 // function animate() {
@@ -143,43 +222,6 @@ function goTheWayIsFacing(state) {
 // ----------game logic demo----------------------
 // -----------------------------------------------
 
-// const scoreW = document.getElementById('score-white'); // front
-// const scoreB = document.getElementById('score-black'); // front
-
-// front
-// function incrementScoreB() {
-//   scoreB.innerHTML = `${parseInt(scoreB.innerHTML) + 1} Black`;
-// }
-
-// // front
-// function incrementScoreW() {
-//   scoreW.innerHTML = `${parseInt(scoreW.innerHTML) + 1} White`;
-// }
-
-// class Jet {
-//   constructor(url) {
-//     this.img = new Image();
-//     this.img.addEventListener('load', () => {
-//       this.loaded = true;
-//     });
-//     this.img.src = url;
-//   }
-
-//   draw(state) {
-//     const { scale, x, y, rightArrowPressed, leftArrowPressed, rotation } =
-//       state;
-
-//     if (rightArrowPressed) state.angle -= rotation;
-//     if (leftArrowPressed) state.angle += rotation;
-
-//     ctx.setTransform(scale, 0, 0, scale, x, y); // sets scale and origin
-
-//     const rad = (state.angle * PI) / 180 + PI;
-//     ctx.rotate(-rad); // "-"just works
-//     ctx.drawImage(this.img, -this.img.width / 2, -this.img.height / 2);
-//   }
-// }
-
 // imgH and imgW declared here
 // function drawBullet(bulletState) {
 //   console.log(imgW);
@@ -212,13 +254,6 @@ function goTheWayIsFacing(state) {
 //   if (xBullet > left && xBullet < right && yBullet > top && yBullet < bottom) {
 //     if (pixelColorUnder(xBullet, yBullet, '#000000')) return true;
 //   }
-// }
-
-// function isOutOfBounds(state) {
-//   if (!state) return;
-
-//   const { x, y } = state;
-//   if (x < 0 || x > canvasW || y < 0 || y > canvasH) return true;
 // }
 
 // function didJetsCollide(stateJet1, stateJet2) {
@@ -261,10 +296,5 @@ function goTheWayIsFacing(state) {
 //     ctx.fill();
 //   }
 // }
-
-function resetJetPosition(state) {
-  state.x = getRandomInt(50, 650);
-  state.y = getRandomInt(50, 250);
-}
 
 // animate();

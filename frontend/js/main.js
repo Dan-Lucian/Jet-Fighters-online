@@ -2,7 +2,7 @@
 // import { url } from 'inspector';
 import { info } from './config.js';
 import { showMessage, isInputValid, loadImage } from './helpers.js';
-import { Jet, clearCanvas } from './canvas-painting.js';
+import { Jet, clearCanvas, drawBullets } from './canvas-painting.js';
 
 const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
 ws.onopen = onOpen;
@@ -16,14 +16,16 @@ const newGame = document.getElementById('btn-new-game');
 const form = document.getElementById('form');
 const input = document.getElementById('input-room-code');
 const roomIdElement = document.getElementById('room-id');
-const keysStatus = { leftArrowPressed: false, rightArrowPressed: false };
+const keysStatus = {
+  leftArrowPressed: false,
+  rightArrowPressed: false,
+  spacePressed: false,
+};
 
 let player;
 let gameStarted = false;
 let wJet;
-let whiteBullet;
 let bJet;
-let blackBullet;
 
 form.onsubmit = onSubmit;
 newGame.onclick = onClick;
@@ -134,6 +136,7 @@ function renderGame(gameState, playerNumber) {
   }
 
   clearCanvas();
+  drawBullets(gameState);
   wJet.draw(gameState.p1);
   bJet.draw(gameState.p2);
 }
@@ -187,18 +190,16 @@ function onKeyDown(e) {
     );
   }
 
-  // shooting on space
-  // if (e.key === ' ') {
-  //   const { x, y, angle, speed } = gameState.p1;
-  //   gameState.p1.bullets.push({
-  //     // x, y => precision relative to jet model
-  //     x: x - 1,
-  //     y: y - 1,
-  //     angle,
-  //     speed: speed * 2,
-  //     color: '#fff',
-  //   });
-  // }
+  if (e.key === ' ') {
+    const copyKeysStatus = { ...keysStatus, spacePressed: true };
+    ws.send(
+      JSON.stringify({
+        eventFromClient: 'keyPressed',
+        keysStatus: JSON.stringify(copyKeysStatus),
+        playerNumber: player,
+      })
+    );
+  }
 }
 
 function onKeyUp(e) {
