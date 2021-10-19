@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable no-inner-declarations */
 /* eslint-disable no-use-before-define */
 module.exports = {
@@ -15,7 +16,9 @@ const imgH = 16;
 const canvasW = 600;
 const canvasH = 300;
 const intervalDelay = 1000 / FPS;
+const maxScore = 10;
 let serverGameState;
+let winPlayer;
 // const bulletSpeed = 4.5;
 
 function createGameState() {
@@ -31,6 +34,7 @@ function createGameState() {
       rightArrowPressed: false,
       spacePressed: false,
       bullets: [],
+      score: 0,
     },
     p2: {
       x: 200,
@@ -43,16 +47,16 @@ function createGameState() {
       rightArrowPressed: false,
       spacePressed: false,
       bullets: [],
+      score: 0,
     },
   };
 }
 
-// updates undefined to undefined??
 function updateServerGameState(property, value, playerNumber) {
   serverGameState[playerNumber][property] = value;
-  // shoot on spacePressed
 }
 
+// change ws1, ws2 to allWs array
 function sendGameState(ws1, ws2, gameState) {
   const stringGameState = JSON.stringify(gameState);
   ws1.send(
@@ -72,9 +76,29 @@ function sendGameState(ws1, ws2, gameState) {
   );
 }
 
+// also change to array
+function sendGameOver(ws1, ws2, winPlayer) {
+  const stringGameState = JSON.stringify({ winPlayer });
+  ws1.send(
+    JSON.stringify({
+      eventFromServer: 'gameOver',
+      gameState: stringGameState,
+      playerNumber: 'p1',
+    })
+  );
+  ws2.send(
+    JSON.stringify({
+      eventFromServer: 'gameOver',
+      gameState: stringGameState,
+      joinable: true, // needed for the joinable check
+      playerNumber: 'p2',
+    })
+  );
+}
+
 function startGameLoop(ws1, ws2, gameState) {
   serverGameState = gameState;
-  return setInterval(() => {
+  const intervalId = setInterval(() => {
     sendGameState(ws1, ws2, gameState);
 
     const { p1, p2 } = gameState;
@@ -82,8 +106,19 @@ function startGameLoop(ws1, ws2, gameState) {
     goTheWayIsFacing(p1);
     goTheWayIsFacing(p2);
     updateBulletsPositionAndCollision(gameState);
-    if (didJetsCollide(p1, p2)) resetJetPosition(p1, p2);
+
+    if (didJetsCollide(p1, p2)) {
+      resetJetPosition(p1, p2);
+      winPlayer = incrementScore([p1, p2], 1);
+    }
+
+    if (winPlayer) {
+      clearInterval(intervalId);
+      sendGameOver(ws1, ws2, winPlayer);
+    }
   }, intervalDelay);
+
+  return intervalId;
 }
 
 function goTheWayIsFacing(state) {
@@ -130,7 +165,7 @@ function updateBulletsPositionAndCollision(gameState) {
 
     if (didBulletLand(p2, p1.bullets[i])) {
       p1.bullets.splice(i, 1);
-      // incrementScoreW();
+      winPlayer = incrementScore(p1, 1);
       resetJetPosition(p2);
     }
 
@@ -142,7 +177,7 @@ function updateBulletsPositionAndCollision(gameState) {
 
     if (didBulletLand(p1, p2.bullets[i])) {
       p2.bullets.splice(i, 1);
-      // incrementScoreW();
+      winPlayer = incrementScore(p2, 1);
       resetJetPosition(p1);
     }
 
@@ -211,6 +246,14 @@ function didJetsCollide(stateJet1, stateJet2) {
   }
 }
 
+function incrementScore(players, amount) {
+  if (!players) throw new Error('No players provided to increment score');
+
+  for (let i = 0; i < players.length; i += 1) {
+    players[i].score += amount;
+    if (players[i].score === maxScore) return players[i].playerNumber;
+  }
+}
 // function animate() {
 
 //   const { p1, p2 } = gameState;
