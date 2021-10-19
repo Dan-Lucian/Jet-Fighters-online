@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 // import { url } from 'inspector';
 import { info } from './config.js';
-import { showMessage, isInputValid, loadImage } from './helpers.js';
+import { showMessage, isInputValid } from './helpers.js';
 import { Jet, clearCanvas, drawBullets } from './canvas-painting.js';
 
 const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);

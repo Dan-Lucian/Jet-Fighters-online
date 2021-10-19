@@ -5,7 +5,6 @@ const {
   startGameLoop,
   updateServerGameState,
 } = require('./game.js');
-const { FPS } = require('./constants.js');
 const { createId } = require('./helpers');
 
 const server = new WebSocket.Server({ port: '3000' });
