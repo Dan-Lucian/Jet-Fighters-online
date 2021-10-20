@@ -4,4 +4,7 @@
 *.scss.map
 node_modules
 .eslintrc
+.eslintignore
 design.md
+server/node_modules
+.vscode
