@@ -83,6 +83,7 @@ function onMessage(message) {
       setupKeysControls();
       player = playerNumber;
       isGameRunning = true;
+      return;
     }
     renderGame(gameState, playerNumber);
   }
