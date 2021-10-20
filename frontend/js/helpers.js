@@ -1,4 +1,4 @@
-export function showMessage(text) {
+export function renderMessage(text) {
   const message = document.createElement('div');
 
   message.innerHTML = text;

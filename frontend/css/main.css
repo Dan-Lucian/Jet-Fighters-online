@@ -531,4 +531,12 @@ body {
   margin-bottom: 10px;
 }
 
+.game-over-menu {
+  width: 600px;
+  height: 300px;
+  margin: auto;
+  text-align: center;
+  display: none;
+}
+
 /*# sourceMappingURL=main.css.map */

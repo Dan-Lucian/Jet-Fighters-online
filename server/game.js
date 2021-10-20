@@ -16,9 +16,9 @@ const imgH = 16;
 const canvasW = 600;
 const canvasH = 300;
 const intervalDelay = 1000 / FPS;
-const maxScore = 10;
+const maxScore = 1;
 let serverGameState;
-let winPlayer;
+let winPlayer = null;
 // const bulletSpeed = 4.5;
 
 function createGameState() {
@@ -28,13 +28,14 @@ function createGameState() {
       y: 21,
       angle: 90,
       rotation: 2,
-      speed: 1,
+      speed: 0,
       scale: 1.5,
       leftArrowPressed: false,
       rightArrowPressed: false,
       spacePressed: false,
       bullets: [],
       score: 0,
+      playerNumber: 'p1',
     },
     p2: {
       x: 200,
@@ -48,6 +49,7 @@ function createGameState() {
       spacePressed: false,
       bullets: [],
       score: 0,
+      playerNumber: 'p2',
     },
   };
 }
@@ -165,7 +167,7 @@ function updateBulletsPositionAndCollision(gameState) {
 
     if (didBulletLand(p2, p1.bullets[i])) {
       p1.bullets.splice(i, 1);
-      winPlayer = incrementScore(p1, 1);
+      winPlayer = incrementScore([p1], 1);
       resetJetPosition(p2);
     }
 
@@ -177,7 +179,7 @@ function updateBulletsPositionAndCollision(gameState) {
 
     if (didBulletLand(p1, p2.bullets[i])) {
       p2.bullets.splice(i, 1);
-      winPlayer = incrementScore(p2, 1);
+      winPlayer = incrementScore([p2], 1);
       resetJetPosition(p1);
     }
 
@@ -252,6 +254,7 @@ function incrementScore(players, amount) {
   for (let i = 0; i < players.length; i += 1) {
     players[i].score += amount;
     if (players[i].score === maxScore) return players[i].playerNumber;
+    console.log(`${players[i].playerNumber} score is ${players[i].score}`);
   }
 }
 // function animate() {

@@ -1,7 +1,6 @@
 /* eslint-disable no-use-before-define */
-// import { url } from 'inspector';
 import { info } from './config.js';
-import { showMessage, isInputValid } from './helpers.js';
+import { renderMessage, isInputValid } from './helpers.js';
 import { Jet, clearCanvas, drawBullets } from './canvas-painting.js';
 
 const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
@@ -10,12 +9,15 @@ ws.onmessage = onMessage;
 ws.onerror = onError;
 ws.onclose = onClose;
 
-const gameMenu = document.getElementById('game-menu');
 const game = document.getElementById('game');
+const gameMenu = document.getElementById('game-menu');
+const gameOverMenu = document.getElementById('game-over-menu');
+const gameOverMenuMessage = document.getElementById('game-over-menu__message');
 const newGame = document.getElementById('btn-new-game');
 const form = document.getElementById('form');
 const input = document.getElementById('input-room-code');
 const roomIdElement = document.getElementById('room-id');
+
 const keysStatus = {
   leftArrowPressed: false,
   rightArrowPressed: false,
@@ -23,7 +25,7 @@ const keysStatus = {
 };
 
 let player;
-let gameStarted = false;
+let isGameRunning = false;
 let wJet;
 let bJet;
 
@@ -41,13 +43,16 @@ function onMessage(message) {
     roomId,
     joinable,
     textMessage,
-    gameState,
+    gameState: stringGameState,
     playerNumber,
   } = jsonMessage;
 
+  let gameState;
+  if (stringGameState) gameState = JSON.parse(stringGameState);
+
   if (eventFromServer === 'newRoomResponse') {
-    console.log(`   New room created: ${roomId}`);
-    showRoomId(roomId);
+    console.log(`Server new room created: ${roomId}`);
+    renderRoomId(roomId);
   }
 
   if (eventFromServer === 'joinRoomResponse') {
@@ -55,22 +60,39 @@ function onMessage(message) {
       console.log(`Join denial because: ${textMessage}`);
       return;
     }
-    console.log(`   Joining: ${roomId}`);
+    console.log(`Joining: ${roomId}`);
   }
 
   if (eventFromServer === 'otherPlayerDisconnected') {
     console.log('Other player disconnected');
-    removeKeyDownEvent();
+    removeKeysControls();
     renderGameMenu();
+    hideGameOverMenu();
+    hideGame();
+    requestAnimationFrame(() => renderMessage('Other player disconnected'));
+    isGameRunning = false;
     player = null;
   }
 
   if (eventFromServer === 'gameState') {
-    renderGame(JSON.parse(gameState), playerNumber);
+    if (!isGameRunning) {
+      // need for button disactivating
+      hideGameMenu();
+      hideGameOverMenu();
+      renderGameScreen(gameState);
+      setupKeysControls();
+      player = playerNumber;
+      isGameRunning = true;
+    }
+    renderGame(gameState, playerNumber);
   }
 
-  // next: every time a gamestate is received, update the game
-  // paint the game on next requestAnimationFrame
+  // remove playerNumber on gameOver ??
+  if (eventFromServer === 'gameOver') {
+    renderGameOverMenu(gameState, playerNumber);
+    hideGame();
+    isGameRunning = false;
+  }
 }
 
 function onError() {
@@ -84,12 +106,13 @@ function onClose() {
 function onSubmit(e) {
   e.preventDefault();
 
+  // if room id code already displayed then ignore submit
   if (roomIdElement.offsetHeight !== 0) return;
 
   const { value: inputValue } = input;
 
   if (!isInputValid(inputValue, '^r[A-Za-z0-9]{5}$')) {
-    showMessage('Invalid room ID');
+    requestAnimationFrame(() => renderMessage('Invalid room ID'));
     return;
   }
 
@@ -108,60 +131,82 @@ function requestJoin(joinId) {
   ws.send(JSON.stringify({ eventFromClient: 'joinRoomRequest', joinId }));
 }
 
-function showRoomId(id) {
-  roomIdElement.innerHTML = `Room Id: ${id}`;
+function renderRoomId(id) {
+  roomIdElement.textContent = `Room Id: ${id}`;
   roomIdElement.style.display = 'block';
-  newGame.disabled = 'true';
-  showMessage('The game will start when the 2nd player will join this room');
+  requestAnimationFrame(() =>
+    renderMessage('The game will start when the 2nd player will join this room')
+  );
 }
 
-function renderGame(gameState, playerNumber) {
-  if (!gameStarted) {
-    requestAnimationFrame(() => {
-      gameMenu.style.display = 'none';
-      game.style.display = 'block';
-      console.log(
-        `initial state x=${gameState[playerNumber].x} & y=${gameState[playerNumber].y}`
-      );
+// --------------------------------------
+// -----------Game render/hide-----------
+// --------------------------------------
 
-      gameStarted = true;
-      player = playerNumber;
+function renderGameScreen(gameState) {
+  requestAnimationFrame(() => {
+    game.style.display = 'block';
 
-      wJet = new Jet('img/white-jet.webp', gameState.p1);
-      bJet = new Jet('img/black-jet.webp', gameState.p2);
+    wJet = new Jet('img/white-jet.webp', gameState.p1);
+    bJet = new Jet('img/black-jet.webp', gameState.p2);
+  });
+}
 
-      setupKeyDownEvent();
-    });
-    return;
-  }
-
+function renderGame(gameState) {
   clearCanvas();
   drawBullets(gameState);
   wJet.draw(gameState.p1);
   bJet.draw(gameState.p2);
 }
 
-function renderGameMenu() {
-  gameStarted = false;
-  gameMenu.style.display = 'block';
+function hideGame() {
   game.style.display = 'none';
-  newGame.disabled = '';
-  roomIdElement.style.display = 'none';
-  requestAnimationFrame(() => showMessage('Other player disconnected'));
 }
 
-function setupKeyDownEvent() {
-  document.addEventListener('keydown', onKeyDown);
+// --------------------------------------
+// -----Game Over Menu render/hide-------
+// --------------------------------------
+function renderGameOverMenu({ winPlayer }, playerNumber) {
+  gameOverMenu.style.display = 'block';
+
+  if (winPlayer === playerNumber) {
+    gameOverMenuMessage.textContent = 'You Won';
+  } else {
+    gameOverMenuMessage.textContent = 'You Lost';
+  }
+}
+
+function hideGameOverMenu() {
+  gameOverMenu.style.display = 'none';
+}
+
+// --------------------------------------
+// --------Game Menu render/hide---------
+// --------------------------------------
+
+function renderGameMenu() {
+  gameMenu.style.display = 'block';
+  newGame.disabled = '';
+  roomIdElement.style.display = 'none';
+}
+
+function hideGameMenu() {
+  gameMenu.style.display = 'none';
+}
+
+function setupKeysControls() {
+  document.addEventListener('keydown', onkeydown);
   document.addEventListener('keyup', onKeyUp);
 }
 
-function removeKeyDownEvent() {
-  document.removeEventListener('keydown', onKeyDown);
+function removeKeysControls() {
+  document.removeEventListener('keydown', onkeydown);
   document.removeEventListener('keyup', onKeyUp);
 }
 
-function onKeyDown(e) {
+function onkeydown(e) {
   e.preventDefault();
+
   if (
     (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== ' ') ||
     e.repeat
@@ -191,6 +236,7 @@ function onKeyDown(e) {
   }
 
   if (e.key === ' ') {
+    // sending a copt bc no need for how much the key is pressed
     const copyKeysStatus = { ...keysStatus, spacePressed: true };
     ws.send(
       JSON.stringify({
