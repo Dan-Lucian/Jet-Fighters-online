@@ -17,11 +17,12 @@ const canvasW = 600;
 const canvasH = 300;
 const intervalDelay = 1000 / FPS;
 const maxScore = 1;
-let serverGameState;
-let winPlayer = null;
 // const bulletSpeed = 4.5;
 
-function createGameState() {
+const allGameStates = new Map();
+
+// can use this functio to create a user defined game config
+function createGameState({ roomId }) {
   return {
     p1: {
       x: 20,
@@ -51,11 +52,14 @@ function createGameState() {
       score: 0,
       playerNumber: 'p2',
     },
+    roomId,
+    winPlayer: null,
   };
 }
 
-function updateServerGameState(property, value, playerNumber) {
-  serverGameState[playerNumber][property] = value;
+// backdoor to the gamestate
+function updateServerGameState(roomId, playerNumber, property, value) {
+  allGameStates.get(roomId)[playerNumber][property] = value;
 }
 
 // change ws1, ws2 to allWs array
@@ -99,15 +103,18 @@ function sendGameOver(ws1, ws2, winPlayer) {
 }
 
 function startGameLoop(ws1, ws2, gameState) {
-  serverGameState = gameState;
+  allGameStates.set(ws1.connectionId, gameState);
+
   const intervalId = setInterval(() => {
     sendGameState(ws1, ws2, gameState);
 
     const { p1, p2 } = gameState;
+    let winPlayer = null;
 
     goTheWayIsFacing(p1);
     goTheWayIsFacing(p2);
-    updateBulletsPositionAndCollision(gameState);
+
+    winPlayer = updateBulletsPositionAndCollision(gameState);
 
     if (didJetsCollide(p1, p2)) {
       resetJetPosition(p1, p2);
@@ -136,6 +143,7 @@ function goTheWayIsFacing(state) {
 
 function updateBulletsPositionAndCollision(gameState) {
   const { p1, p2 } = gameState;
+  let winPlayer;
 
   if (p1.spacePressed) {
     p1.spacePressed = false;
@@ -168,6 +176,7 @@ function updateBulletsPositionAndCollision(gameState) {
     if (didBulletLand(p2, p1.bullets[i])) {
       p1.bullets.splice(i, 1);
       winPlayer = incrementScore([p1], 1);
+      if (winPlayer) return winPlayer;
       resetJetPosition(p2);
     }
 
@@ -180,6 +189,7 @@ function updateBulletsPositionAndCollision(gameState) {
     if (didBulletLand(p1, p2.bullets[i])) {
       p2.bullets.splice(i, 1);
       winPlayer = incrementScore([p2], 1);
+      if (winPlayer) return winPlayer;
       resetJetPosition(p1);
     }
 
@@ -254,46 +264,5 @@ function incrementScore(players, amount) {
   for (let i = 0; i < players.length; i += 1) {
     players[i].score += amount;
     if (players[i].score === maxScore) return players[i].playerNumber;
-    console.log(`${players[i].playerNumber} score is ${players[i].score}`);
   }
 }
-// function animate() {
-
-//   const { p1, p2 } = gameState;
-
-//   goTheWayIsFacing(p1);
-//   goTheWayIsFacing(p2);
-//   wJet.draw(p1); // front
-//   bJet.draw(p2); // front
-
-//   ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-//   if (didJetsCollide(p1, p2)) {
-//     resetJetPosition(p2);
-//     resetJetPosition(p1);
-//     incrementScoreW();
-//     incrementScoreB();
-//     // resetPositionW();
-//     // resetPositionB();
-//   }
-
-//   for (let i = 0; i < p1.bullets.length; i += 1) {
-//     goTheWayIsFacing(p1.bullets[i]);
-//     if (didBulletLand(p2, p1.bullets[i])) {
-//       p1.bullets.splice(i, 1);
-//       incrementScoreW();
-//       resetJetPosition(p2);
-//     } else {
-//       drawBullet(p1.bullets[i]);
-//     }
-
-//     if (isOutOfBounds(p1.bullets[i])) p1.bullets.splice(i, 1);
-//   }
-
-//   for (let i = 0; i < p2.bullets.length; i += 1) {
-//     goTheWayIsFacing(p2.bullets[i]);
-//     drawBullet(p2.bullets[i]);
-//   }
-
-//   requestAnimationFrame(animate);
-// }

@@ -16,10 +16,6 @@ server.on('connection', (ws) => {
     const { eventFromClient, joinId, keysStatus, playerNumber } =
       JSON.parse(messageString);
 
-    // const state = createGameState();
-
-    // startGameInterval();
-
     // received newRoom event
     if (eventFromClient === 'newRoomRequest') {
       console.log(`newRoomRequest`);
@@ -40,9 +36,9 @@ server.on('connection', (ws) => {
     if (eventFromClient === 'joinRoomRequest') {
       console.log('joinRoomRequest');
 
-      const { status } = getRoomStatus(joinId, ws);
+      const { roomStatus } = getRoomStatus(joinId, ws);
 
-      if (status === 'notFound') {
+      if (roomStatus === 'notFound') {
         console.log('notFound');
         ws.send(
           JSON.stringify({
@@ -53,7 +49,7 @@ server.on('connection', (ws) => {
         return;
       }
 
-      if (status === 'full') {
+      if (roomStatus === 'full') {
         console.log('full');
         ws.send(
           JSON.stringify({
@@ -64,15 +60,15 @@ server.on('connection', (ws) => {
         return;
       }
 
-      if (status === 'joinable') {
+      if (roomStatus === 'joinable') {
         console.log('joinable');
-        const { ws1 } = { ...allRooms.get(joinId) }; // copy, not mutate
+        const { ws1 } = allRooms.get(joinId);
         const ws2 = ws;
 
-        ws2.connectionId = joinId; // unique socket id
+        ws2.connectionId = joinId; // received with join request
         createRoom(joinId, ws1, ws2);
 
-        const gameState = createGameState();
+        const gameState = createGameState({ roomId: joinId });
         ws1.intervalId = startGameLoop(ws1, ws2, gameState);
         ws2.intervalId = ws1.intervalId;
       }
@@ -81,7 +77,12 @@ server.on('connection', (ws) => {
     if (eventFromClient === 'keyPressed') {
       const jsonKeysStatus = JSON.parse(keysStatus);
       Object.keys(jsonKeysStatus).forEach((prop) => {
-        updateServerGameState(prop, jsonKeysStatus[prop], playerNumber);
+        updateServerGameState(
+          ws.connectionId,
+          playerNumber,
+          prop,
+          jsonKeysStatus[prop]
+        );
       });
     }
   });
@@ -101,20 +102,22 @@ function createRoom(roomId, ws1, ws2 = null) {
   allRooms.set(roomId, {
     ws1,
     ws2,
+    // add game state here??
   });
   console.log('room created');
 }
 
 function getRoomStatus(id) {
-  if (!id) console.log('id empty');
+  if (!id) {
+    console.log('no id passed');
+    return;
+  }
 
-  const room = { ...allRooms.get(id) }; // copy not mutate
+  const room = allRooms.get(id);
 
   if (!room.ws1) return { status: 'notFound' };
   if (room.ws2) return { status: 'full' };
-
-  // allRooms.set(id, room);
-  return { status: 'joinable' };
+  return { roomStatus: 'joinable' };
 }
 
 function sendDisconnectAndRemoveIds(roomId) {
