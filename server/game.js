@@ -16,7 +16,7 @@ const imgH = 16;
 const canvasW = 600;
 const canvasH = 300;
 const intervalDelay = 1000 / FPS;
-const maxScore = 1;
+const maxScore = 2;
 // const bulletSpeed = 4.5;
 
 const allGameStates = new Map();
@@ -37,6 +37,7 @@ function createGameState({ roomId }) {
       bullets: [],
       score: 0,
       playerNumber: 'p1',
+      color: '#fff',
     },
     p2: {
       x: 200,
@@ -51,9 +52,27 @@ function createGameState({ roomId }) {
       bullets: [],
       score: 0,
       playerNumber: 'p2',
+      color: '#000',
     },
     roomId,
     winPlayer: null,
+  };
+}
+
+// idea to cut the code in half
+// function createPlayer(params) {
+
+// }
+
+function createBulletFor(player) {
+  return {
+    // x, y => precision relative to jet model
+    x: player.x - 1,
+    y: player.y - 1,
+    angle: player.angle,
+    // speed: player.speed * 2,
+    speed: 3,
+    color: player.color,
   };
 }
 
@@ -110,11 +129,26 @@ function startGameLoop(ws1, ws2, gameState) {
 
     const { p1, p2 } = gameState;
     let winPlayer = null;
+    let bulletLanded = false;
 
     goTheWayIsFacing(p1);
     goTheWayIsFacing(p2);
 
-    winPlayer = updateBulletsPositionAndCollision(gameState);
+    createNewBulletsIfSpaceWasPressed(p1, p2);
+
+    // first player is whose bullets will be updated
+    bulletLanded = updateBulletsState(p1, p2);
+    if (bulletLanded) {
+      bulletLanded = false;
+      winPlayer = incrementScore([p1], 1);
+    }
+
+    bulletLanded = updateBulletsState(p2, p1);
+    if (bulletLanded) {
+      bulletLanded = false;
+      winPlayer = incrementScore([p2], 1);
+    }
+    // winPlayer = updateBulletsState(p1, p2);
 
     if (didJetsCollide(p1, p2)) {
       resetJetPosition(p1, p2);
@@ -141,59 +175,28 @@ function goTheWayIsFacing(state) {
   state.y += state.speed * Math.cos(rad);
 }
 
-function updateBulletsPositionAndCollision(gameState) {
-  const { p1, p2 } = gameState;
-  let winPlayer;
-
+// easy to scale, transform to receive array
+function createNewBulletsIfSpaceWasPressed(p1, p2) {
   if (p1.spacePressed) {
     p1.spacePressed = false;
-    p1.bullets.push({
-      // x, y => precision relative to jet model
-      x: p1.x - 1,
-      y: p1.y - 1,
-      angle: p1.angle,
-      // speed: p1.speed * 2,
-      speed: 3,
-      color: '#fff',
-    });
+    p1.bullets.push(createBulletFor(p1));
   }
   if (p2.spacePressed) {
     p2.spacePressed = false;
-    p2.bullets.push({
-      // x, y => precision relative to jet model
-      x: p2.x - 1,
-      y: p2.y - 1,
-      angle: p2.angle,
-      // speed: p2.speed * 2,
-      speed: 3,
-      color: '#000',
-    });
+    p2.bullets.push(createBulletFor(p2));
   }
+}
 
-  for (let i = 0; i < p1.bullets.length; i += 1) {
-    goTheWayIsFacing(p1.bullets[i]);
+function updateBulletsState(player1, player2) {
+  for (let i = 0; i < player1.bullets.length; i += 1) {
+    goTheWayIsFacing(player1.bullets[i]);
 
-    if (didBulletLand(p2, p1.bullets[i])) {
-      p1.bullets.splice(i, 1);
-      winPlayer = incrementScore([p1], 1);
-      if (winPlayer) return winPlayer;
-      resetJetPosition(p2);
+    if (didBulletLand(player2, player1.bullets[i])) {
+      player1.bullets.splice(i, 1);
+      return true;
     }
 
-    if (isOutOfBounds(p1.bullets[i])) p1.bullets.splice(i, 1);
-  }
-
-  for (let i = 0; i < p2.bullets.length; i += 1) {
-    goTheWayIsFacing(p2.bullets[i]);
-
-    if (didBulletLand(p1, p2.bullets[i])) {
-      p2.bullets.splice(i, 1);
-      winPlayer = incrementScore([p2], 1);
-      if (winPlayer) return winPlayer;
-      resetJetPosition(p1);
-    }
-
-    if (isOutOfBounds(p2.bullets[i])) p2.bullets.splice(i, 1);
+    if (isOutOfBounds(player1.bullets[i])) player1.bullets.splice(i, 1);
   }
 }
 
@@ -259,10 +262,12 @@ function didJetsCollide(stateJet1, stateJet2) {
 }
 
 function incrementScore(players, amount) {
-  if (!players) throw new Error('No players provided to increment score');
-
   for (let i = 0; i < players.length; i += 1) {
     players[i].score += amount;
+    console.log(
+      `score incremented for ${players[i].playerNumber} by 1 ` +
+        `, now it is ${players[i].score}`
+    );
     if (players[i].score === maxScore) return players[i].playerNumber;
   }
 }
