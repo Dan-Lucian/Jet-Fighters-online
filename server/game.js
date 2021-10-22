@@ -44,7 +44,7 @@ function createGameState({ roomId }) {
       y: 20,
       angle: 0,
       rotation: 5,
-      speed: 0,
+      speed: 0.3,
       scale: 1.5,
       leftArrowPressed: false,
       rightArrowPressed: false,
@@ -128,7 +128,6 @@ function startGameLoop(ws1, ws2, gameState) {
     sendGameState(ws1, ws2, gameState);
 
     const { p1, p2 } = gameState;
-    let winPlayer = null;
     let bulletLanded = false;
 
     goTheWayIsFacing(p1);
@@ -140,24 +139,24 @@ function startGameLoop(ws1, ws2, gameState) {
     bulletLanded = updateBulletsState(p1, p2);
     if (bulletLanded) {
       bulletLanded = false;
-      winPlayer = incrementScore([p1], 1);
+      incrementScore([p1], 1);
     }
 
     bulletLanded = updateBulletsState(p2, p1);
     if (bulletLanded) {
       bulletLanded = false;
-      winPlayer = incrementScore([p2], 1);
+      incrementScore([p2], 1);
     }
-    // winPlayer = updateBulletsState(p1, p2);
 
     if (didJetsCollide(p1, p2)) {
       resetJetPosition(p1, p2);
-      winPlayer = incrementScore([p1, p2], 1);
+      incrementScore([p1, p2], 1);
     }
 
-    if (winPlayer) {
+    const winner = getWinner([p1, p2]);
+    if (winner) {
       clearInterval(intervalId);
-      sendGameOver(ws1, ws2, winPlayer);
+      sendGameOver(ws1, ws2, winner);
     }
   }, intervalDelay);
 
@@ -268,6 +267,16 @@ function incrementScore(players, amount) {
       `score incremented for ${players[i].playerNumber} by 1 ` +
         `, now it is ${players[i].score}`
     );
-    if (players[i].score === maxScore) return players[i].playerNumber;
   }
+}
+
+function getWinner(players) {
+  const winners = [];
+  for (let i = 0; i < players.length; i += 1) {
+    if (players[i].score === maxScore) winners.push(players[i].playerNumber);
+  }
+
+  if (winners.length === 1) return winners[0];
+  if (winners.length > 1) return 'draw';
+  return null;
 }

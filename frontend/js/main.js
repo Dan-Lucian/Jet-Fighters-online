@@ -168,13 +168,15 @@ function hideGame() {
 // -----Game Over Menu render/hide-------
 // --------------------------------------
 function renderGameOverMenu({ winPlayer }, playerNumber) {
-  gameOverMenu.style.display = 'block';
-
-  if (winPlayer === playerNumber) {
+  if (winPlayer === 'draw') {
+    gameOverMenuMessage.textContent = 'It is a draw';
+  } else if (winPlayer === playerNumber) {
     gameOverMenuMessage.textContent = 'You Won';
   } else {
     gameOverMenuMessage.textContent = 'You Lost';
   }
+
+  gameOverMenu.style.display = 'block';
 }
 
 function hideGameOverMenu() {
