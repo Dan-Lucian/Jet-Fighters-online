@@ -24,6 +24,14 @@ export class Jet {
     ctx.rotate(rad);
     ctx.drawImage(this.img, -this.img.width / 2, -this.img.height / 2);
   }
+
+  setScore(number) {
+    this._score = number;
+  }
+
+  hasScoreChanged(number) {
+    if (this._score !== number) return true;
+  }
 }
 
 export function clearCanvas() {

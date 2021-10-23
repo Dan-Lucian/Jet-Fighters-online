@@ -17,6 +17,8 @@ const newGame = document.getElementById('btn-new-game');
 const form = document.getElementById('form');
 const input = document.getElementById('input-room-code');
 const roomIdElement = document.getElementById('room-id');
+const scoreP1 = document.getElementById('score-p1');
+const scoreP2 = document.getElementById('score-p2');
 
 const keysStatus = {
   leftArrowPressed: false,
@@ -145,19 +147,31 @@ function renderRoomId(id) {
 // --------------------------------------
 
 function renderGameScreen(gameState) {
+  wJet = new Jet('img/white-jet.webp', gameState.p1);
+  bJet = new Jet('img/black-jet.webp', gameState.p2);
+  wJet.setScore(0);
+  bJet.setScore(0);
+
   requestAnimationFrame(() => {
     game.style.display = 'block';
-
-    wJet = new Jet('img/white-jet.webp', gameState.p1);
-    bJet = new Jet('img/black-jet.webp', gameState.p2);
   });
 }
 
 function renderGame(gameState) {
   clearCanvas();
   drawBullets(gameState);
+
   wJet.draw(gameState.p1);
   bJet.draw(gameState.p2);
+
+  if (wJet.hasScoreChanged(gameState.p1.score)) {
+    wJet.setScore(gameState.p1.score);
+    scoreP1.textContent = `${gameState.p1.score}`;
+  }
+  if (bJet.hasScoreChanged(gameState.p2.score)) {
+    bJet.setScore(gameState.p2.score);
+    scoreP2.textContent = `${gameState.p2.score}`;
+  }
 }
 
 function hideGame() {

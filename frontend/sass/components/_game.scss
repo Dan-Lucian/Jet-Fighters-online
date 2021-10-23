@@ -1,9 +1,29 @@
 .game {
-  height: 500px;
-  width: 800px;
+  margin: 0 auto;
+  height: 400px;
+  width: 700px;
   display: none;
+  background: #fff;
+  position: relative;
 }
 
 .canvas {
-  background: #ccc;
+  background: pink;
+  margin: 50px;
+}
+
+.game__score-p1 {
+  font-size: 2.4rem;
+  position: absolute;
+  top: 0;
+  left: 200px;
+  text-align: center;
+}
+
+.game__score-p2 {
+  font-size: 2.4rem;
+  position: absolute;
+  top: 0;
+  right: 200px;
+  text-align: center;
 }
