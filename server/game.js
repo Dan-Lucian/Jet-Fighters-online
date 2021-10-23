@@ -128,6 +128,7 @@ function sendGameOver(ws1, ws2, winPlayer) {
 
 function startGameLoop(ws1, ws2, gameState) {
   allGameStates.set(ws1.connectionId, gameState);
+  resetJetsPosition([gameState.p1, gameState.p2]);
 
   const intervalId = setInterval(() => {
     sendGameState(ws1, ws2, gameState);
@@ -148,18 +149,18 @@ function startGameLoop(ws1, ws2, gameState) {
     if (bulletLanded) {
       bulletLanded = false;
       incrementScore([p1], 1);
-      resetJetPosition([p2]);
+      resetJetsPosition([p2]);
     }
 
     bulletLanded = updateBulletsState(p2, p1);
     if (bulletLanded) {
       bulletLanded = false;
       incrementScore([p2], 1);
-      resetJetPosition([p1]);
+      resetJetsPosition([p1]);
     }
 
     if (didJetsCollide(p1, p2)) {
-      resetJetPosition([p1, p2]);
+      resetJetsPosition([p1, p2]);
       incrementScore([p1, p2], 1);
     }
 
@@ -229,10 +230,12 @@ function didBulletLand(stateEnemyJet, stateBullet) {
     return true;
 }
 
-function resetJetPosition(jetStates) {
+function resetJetsPosition(jetStates) {
   for (let i = 0; i < jetStates.length; i += 1) {
     jetStates[i].x = getRandomInt(50, canvasW - 50);
     jetStates[i].y = getRandomInt(50, canvasH - 50);
+
+    jetStates[i].angle = getRandomInt(0, 360);
   }
 }
 
