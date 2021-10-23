@@ -148,16 +148,18 @@ function startGameLoop(ws1, ws2, gameState) {
     if (bulletLanded) {
       bulletLanded = false;
       incrementScore([p1], 1);
+      resetJetPosition([p2]);
     }
 
     bulletLanded = updateBulletsState(p2, p1);
     if (bulletLanded) {
       bulletLanded = false;
       incrementScore([p2], 1);
+      resetJetPosition([p1]);
     }
 
     if (didJetsCollide(p1, p2)) {
-      resetJetPosition(p1, p2);
+      resetJetPosition([p1, p2]);
       incrementScore([p1, p2], 1);
     }
 
@@ -214,9 +216,9 @@ function updateBulletsState(player1, player2) {
   }
 }
 
-function didBulletLand(stateJet, stateEnemyBullet) {
-  const { x: xJet, y: yJet, scale } = stateJet;
-  const { x: xBullet, y: yBullet } = stateEnemyBullet;
+function didBulletLand(stateEnemyJet, stateBullet) {
+  const { x: xJet, y: yJet, scale } = stateEnemyJet;
+  const { x: xBullet, y: yBullet } = stateBullet;
 
   const left = xJet - (imgW * scale) / 2;
   const right = xJet + (imgW * scale) / 2;
@@ -227,13 +229,11 @@ function didBulletLand(stateJet, stateEnemyBullet) {
     return true;
 }
 
-function resetJetPosition(jetState1, jetState2 = null) {
-  jetState1.x = getRandomInt(50, 550);
-  jetState1.y = getRandomInt(50, 250);
-
-  if (jetState2 === null) return;
-  jetState1.x = getRandomInt(50, 550);
-  jetState2.y = getRandomInt(50, 250);
+function resetJetPosition(jetStates) {
+  for (let i = 0; i < jetStates.length; i += 1) {
+    jetStates[i].x = getRandomInt(50, canvasW - 50);
+    jetStates[i].y = getRandomInt(50, canvasH - 50);
+  }
 }
 
 function isOutOfBounds(state) {
