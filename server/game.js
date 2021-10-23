@@ -16,7 +16,10 @@ const imgH = 16;
 const canvasW = 600;
 const canvasH = 300;
 const intervalDelay = 1000 / FPS;
-const maxScore = 2;
+const maxScore = 20;
+
+// counts in FPS per second
+const bulletLifeTime = 150;
 // const bulletSpeed = 4.5;
 
 const allGameStates = new Map();
@@ -73,6 +76,7 @@ function createBulletFor(player) {
     // speed: player.speed * 2,
     speed: 3,
     color: player.color,
+    timeAlive: 0,
   };
 }
 
@@ -82,6 +86,7 @@ function updateServerGameState(roomId, playerNumber, property, value) {
 }
 
 // change ws1, ws2 to allWs array
+// 4 duplications
 function sendGameState(ws1, ws2, gameState) {
   const stringGameState = JSON.stringify(gameState);
   ws1.send(
@@ -132,6 +137,9 @@ function startGameLoop(ws1, ws2, gameState) {
 
     goTheWayIsFacing(p1);
     goTheWayIsFacing(p2);
+
+    if (isOutOfBounds(p1)) teleportToOppositeSide(p1);
+    if (isOutOfBounds(p2)) teleportToOppositeSide(p2);
 
     createNewBulletsIfSpaceWasPressed(p1, p2);
 
@@ -195,7 +203,14 @@ function updateBulletsState(player1, player2) {
       return true;
     }
 
-    if (isOutOfBounds(player1.bullets[i])) player1.bullets.splice(i, 1);
+    player1.bullets[i].timeAlive += 1;
+    if (player1.bullets[i].timeAlive > bulletLifeTime) {
+      player1.bullets.splice(i, 1);
+      return false;
+    }
+
+    if (isOutOfBounds(player1.bullets[i]))
+      teleportToOppositeSide(player1.bullets[i]);
   }
 }
 
@@ -208,10 +223,8 @@ function didBulletLand(stateJet, stateEnemyBullet) {
   const top = yJet - (imgH * scale) / 2 - 4;
   const bottom = yJet + (imgH * scale) / 2 + 4;
 
-  if (xBullet > left && xBullet < right && yBullet > top && yBullet < bottom) {
-    // if (pixelColorUnder(xBullet, yBullet, '#000000')) return true;
+  if (xBullet > left && xBullet < right && yBullet > top && yBullet < bottom)
     return true;
-  }
 }
 
 function resetJetPosition(jetState1, jetState2 = null) {
@@ -230,6 +243,16 @@ function isOutOfBounds(state) {
   if (x < 0 || x > canvasW || y < 0 || y > canvasH) return true;
 }
 
+function teleportToOppositeSide(state) {
+  if (!state) return;
+
+  const { x, y } = state;
+  if (x < 0) state.x = canvasW;
+  if (x > canvasW) state.x = 0;
+  if (y < 0) state.y = canvasH;
+  if (y > canvasH) state.y = 0;
+}
+
 function didJetsCollide(stateJet1, stateJet2) {
   const { x: x1, y: y1, scale: scale1 } = stateJet1;
   const { x: x2, y: y2, scale: scale2 } = stateJet2;
@@ -239,7 +262,7 @@ function didJetsCollide(stateJet1, stateJet2) {
   const top1 = y1 - (imgH * scale1) / 2 - 4;
   const bottom1 = y1 + (imgH * scale1) / 2 + 4;
 
-  // get 4 corners
+  // get 4 sides
   const left2 = x2 - (imgW * scale2) / 2;
   const right2 = x2 + (imgW * scale2) / 2;
   const top2 = y2 - (imgH * scale2) / 2 - 4;
