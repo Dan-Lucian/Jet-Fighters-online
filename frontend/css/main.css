@@ -457,6 +457,10 @@ body {
   color: #fff;
 }
 
+.btn:hover {
+  background: #239f76;
+}
+
 .pop-up-message {
   --color-pop-up-message-bg: #000;
   --color-pop-up-message-text: #fff;
@@ -557,6 +561,10 @@ body {
   margin: auto;
   text-align: center;
   display: none;
+}
+
+.game-over-menu__play-again-response {
+  margin-top: 30px;
 }
 
 /*# sourceMappingURL=main.css.map */

@@ -1,8 +1,6 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable no-use-before-define */
 
-// const imgW = 22;
-// const imgH = 16;
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const { PI } = Math;

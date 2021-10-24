@@ -9,16 +9,23 @@ ws.onmessage = onMessage;
 ws.onerror = onError;
 ws.onclose = onClose;
 
+// game elements
 const game = document.getElementById('game');
-const gameMenu = document.getElementById('game-menu');
-const gameOverMenu = document.getElementById('game-over-menu');
-const gameOverMenuMessage = document.getElementById('game-over-menu__message');
-const newGame = document.getElementById('btn-new-game');
-const form = document.getElementById('form');
-const input = document.getElementById('input-room-code');
-const roomIdElement = document.getElementById('room-id');
 const scoreP1 = document.getElementById('score-p1');
 const scoreP2 = document.getElementById('score-p2');
+
+// game menu elements
+const gameMenu = document.getElementById('game-menu');
+const form = document.getElementById('form');
+const input = document.getElementById('input-room-code');
+const btnNewGame = document.getElementById('btn-new-game');
+const roomIdElement = document.getElementById('room-id');
+
+// game over menu elements
+const gameOverMenu = document.getElementById('game-over-menu');
+const gameOverMenuMessage = document.getElementById('game-over-menu__message');
+const btnReturnToMainMenu = document.getElementById('btn-return-to-main-menu');
+const btnPlayAgain = document.getElementById('btn-play-again');
 
 const keysStatus = {
   leftArrowPressed: false,
@@ -32,7 +39,9 @@ let wJet;
 let bJet;
 
 form.onsubmit = onSubmit;
-newGame.onclick = onClick;
+btnNewGame.onclick = handleBtnNewGameClick;
+btnReturnToMainMenu.onclick = handleBtnReturnToMainMenuClick;
+btnPlayAgain.onclick = handleBtnPlayAgainClick;
 
 function onOpen() {
   console.log('Connection established');
@@ -52,30 +61,6 @@ function onMessage(message) {
   let gameState;
   if (stringGameState) gameState = JSON.parse(stringGameState);
 
-  if (eventFromServer === 'newRoomResponse') {
-    console.log(`Server new room created: ${roomId}`);
-    renderRoomId(roomId);
-  }
-
-  if (eventFromServer === 'joinRoomResponse') {
-    if (!joinable) {
-      console.log(`Join denial because: ${textMessage}`);
-      return;
-    }
-    console.log(`Joining: ${roomId}`);
-  }
-
-  if (eventFromServer === 'otherPlayerDisconnected') {
-    console.log('Other player disconnected');
-    removeKeysControls();
-    renderGameMenu();
-    hideGameOverMenu();
-    hideGame();
-    requestAnimationFrame(() => renderMessage('Other player disconnected'));
-    isGameRunning = false;
-    player = null;
-  }
-
   if (eventFromServer === 'gameState') {
     if (!isGameRunning) {
       // need for button disactivating
@@ -88,6 +73,34 @@ function onMessage(message) {
       return;
     }
     renderGame(gameState, playerNumber);
+    return;
+  }
+
+  if (eventFromServer === 'responseNewRoom') {
+    console.log(`Server new room created: ${roomId}`);
+    renderRoomId(roomId);
+    return;
+  }
+
+  if (eventFromServer === 'responseJoinRoom') {
+    if (!joinable) {
+      console.log(`Join denial because: ${textMessage}`);
+      return;
+    }
+    console.log(`Joining: ${roomId}`);
+    return;
+  }
+
+  if (eventFromServer === 'roomDestroyed') {
+    console.log('Room destroyed');
+    removeKeysControls();
+    renderGameMenu();
+    hideGameOverMenu();
+    hideGame();
+    requestAnimationFrame(() => renderMessage(textMessage));
+    isGameRunning = false;
+    player = null;
+    return;
   }
 
   // remove playerNumber on gameOver ??
@@ -95,6 +108,17 @@ function onMessage(message) {
     renderGameOverMenu(gameState, playerNumber);
     hideGame();
     isGameRunning = false;
+    return;
+  }
+
+  if (eventFromServer === 'askPlayAgain') {
+    console.log('Other player asked to play again');
+    renderAskPlayAgain();
+    return;
+  }
+
+  if (eventFromServer === 'playAgainDenied') {
+    console.log('Other player denied to play again');
   }
 }
 
@@ -119,19 +143,13 @@ function onSubmit(e) {
     return;
   }
 
-  requestJoin(inputValue);
+  ws.send(
+    JSON.stringify({ eventFromClient: 'requestJoinRoom', joinId: inputValue })
+  );
 }
 
-async function onClick() {
-  requestNewRoom();
-}
-
-function requestNewRoom() {
-  ws.send(JSON.stringify({ eventFromClient: 'newRoomRequest' }));
-}
-
-function requestJoin(joinId) {
-  ws.send(JSON.stringify({ eventFromClient: 'joinRoomRequest', joinId }));
+async function handleBtnNewGameClick() {
+  ws.send(JSON.stringify({ eventFromClient: 'requestNewRoom' }));
 }
 
 function renderRoomId(id) {
@@ -140,6 +158,14 @@ function renderRoomId(id) {
   requestAnimationFrame(() =>
     renderMessage('The game will start when the 2nd player will join this room')
   );
+}
+
+function handleBtnReturnToMainMenuClick(e) {
+  // disconnect from ws
+}
+
+function handleBtnPlayAgainClick(e) {
+  ws.send(JSON.stringify({ eventFromClient: 'requestPlayAgain' }));
 }
 
 // --------------------------------------
@@ -197,13 +223,45 @@ function hideGameOverMenu() {
   gameOverMenu.style.display = 'none';
 }
 
+function renderAskPlayAgain() {
+  gameOverMenu.insertAdjacentHTML(
+    'beforeend',
+    '<div class="game-over-menu__play-again-response"> <p>Other player asks to play again, do you agree?</p> <button class="btn" id="btn-play-again-yes">Yes</button> <button class="btn" id="btn-play-again-no">No</button> </div>'
+  );
+
+  setTimeout(() => {
+    const btnYes = document.getElementById('btn-play-again-yes');
+    const btnNo = document.getElementById('btn-play-again-no');
+
+    btnYes.onclick = () => {
+      ws.send(
+        JSON.stringify({
+          eventFromClient: 'responseAskPlayAgain',
+          acceptPlayAgain: true,
+        })
+      );
+      btnNo.disable = true;
+    };
+
+    btnNo.onclick = () => {
+      ws.send(
+        JSON.stringify({
+          eventFromClient: 'responseAskPlayAgain',
+          acceptPlayAgain: false,
+        })
+      );
+      btnYes.disable = true;
+    };
+  });
+}
+
 // --------------------------------------
 // --------Game Menu render/hide---------
 // --------------------------------------
 
 function renderGameMenu() {
   gameMenu.style.display = 'block';
-  newGame.disabled = '';
+  btnNewGame.disabled = '';
   roomIdElement.style.display = 'none';
 }
 
@@ -253,7 +311,7 @@ function onkeydown(e) {
   }
 
   if (e.key === ' ') {
-    // sending a copt bc no need for how much the key is pressed
+    // sending a copy bc no need for how much the key is pressed
     const copyKeysStatus = { ...keysStatus, spacePressed: true };
     ws.send(
       JSON.stringify({

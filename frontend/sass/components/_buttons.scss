@@ -5,3 +5,7 @@
   padding: 1rem;
   color: #fff;
 }
+
+.btn:hover {
+  background: darken($color-green-dark, 5%);
+}

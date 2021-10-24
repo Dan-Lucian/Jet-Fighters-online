@@ -16,7 +16,7 @@ const imgH = 16;
 const canvasW = 600;
 const canvasH = 300;
 const intervalDelay = 1000 / FPS;
-const maxScore = 20;
+const maxScore = 1;
 
 // counts in FPS per second
 const bulletLifeTime = 150;

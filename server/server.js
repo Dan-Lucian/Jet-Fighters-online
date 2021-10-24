@@ -13,12 +13,17 @@ const allRooms = new Map();
 
 server.on('connection', (ws) => {
   ws.on('message', (messageString) => {
-    const { eventFromClient, joinId, keysStatus, playerNumber } =
-      JSON.parse(messageString);
+    const {
+      eventFromClient,
+      joinId,
+      keysStatus,
+      playerNumber,
+      acceptPlayAgain,
+    } = JSON.parse(messageString);
 
     // received newRoom event
-    if (eventFromClient === 'newRoomRequest') {
-      console.log(`newRoomRequest`);
+    if (eventFromClient === 'requestNewRoom') {
+      console.log(`requestNewRoom`);
 
       const roomId = `r${createId(5)}`;
       createRoom(roomId, ws);
@@ -26,23 +31,25 @@ server.on('connection', (ws) => {
 
       ws.send(
         JSON.stringify({
-          eventFromServer: 'newRoomResponse',
+          eventFromServer: 'responseNewRoom',
           roomId,
         })
       );
+      return;
     }
 
     // received joinRoom
-    if (eventFromClient === 'joinRoomRequest') {
-      console.log('joinRoomRequest');
+    if (eventFromClient === 'requestJoinRoom') {
+      console.log('requestJoinRoom');
 
-      const { roomStatus } = getRoomStatus(joinId, ws);
+      const { roomStatus } = getRoomStatus(joinId);
+      console.log(roomStatus);
 
       if (roomStatus === 'notFound') {
         console.log('notFound');
         ws.send(
           JSON.stringify({
-            eventFromServer: 'joinRoomResponse',
+            eventFromServer: 'responseJoinRoom',
             textMessage: 'Room not found',
           })
         );
@@ -53,7 +60,7 @@ server.on('connection', (ws) => {
         console.log('full');
         ws.send(
           JSON.stringify({
-            eventFromServer: 'joinRoomResponse',
+            eventFromServer: 'responseJoinRoom',
             textMessage: 'Full room',
           })
         );
@@ -71,7 +78,9 @@ server.on('connection', (ws) => {
         const gameState = createGameState({ roomId: joinId });
         ws1.intervalId = startGameLoop(ws1, ws2, gameState);
         ws2.intervalId = ws1.intervalId;
+        return;
       }
+      console.log(`fallen room status ${roomStatus}`);
     }
 
     if (eventFromClient === 'keyPressed') {
@@ -84,7 +93,42 @@ server.on('connection', (ws) => {
           jsonKeysStatus[prop]
         );
       });
+      return;
     }
+
+    if (eventFromClient === 'requestPlayAgain') {
+      const { ws1, ws2 } = allRooms.get(ws.connectionId);
+      const otherWs = ws === ws1 ? ws2 : ws1;
+
+      otherWs.send(
+        JSON.stringify({
+          eventFromServer: 'askPlayAgain',
+        })
+      );
+    }
+
+    if (eventFromClient === 'responseAskPlayAgain') {
+      const { ws1, ws2 } = allRooms.get(ws.connectionId);
+
+      if (acceptPlayAgain) {
+        console.log('play again accepted');
+        // eslint-disable-next-line no-shadow
+        const gameState = createGameState({ roomId: ws.connectionId });
+        ws1.intervalId = startGameLoop(ws1, ws2, gameState);
+        ws2.intervalId = ws1.intervalId;
+        return;
+      }
+
+      console.log('play again denied');
+      // const otherWs = ws === ws1 ? ws2 : ws1;
+      sendRoomDestroyed(
+        ws.connectionId,
+        'Room destroyed because a player denied to play again'
+      );
+      return;
+    }
+
+    console.log(`unknown client request received: ${eventFromClient}`);
   });
 
   ws.on('close', () => {
@@ -92,7 +136,7 @@ server.on('connection', (ws) => {
     if (!ws.connectionId) return;
 
     const { connectionId } = ws;
-    sendDisconnectAndRemoveIds(connectionId);
+    sendRoomDestroyed(connectionId, 'Other player disconnected');
     clearInterval(ws.intervalId);
     allRooms.delete(connectionId);
   });
@@ -114,17 +158,19 @@ function getRoomStatus(id) {
   }
 
   const room = allRooms.get(id);
+  console.log(!room);
 
-  if (!room.ws1) return { status: 'notFound' };
+  if (!room) return { status: 'notFound' };
   if (room.ws2) return { status: 'full' };
   return { roomStatus: 'joinable' };
 }
 
-function sendDisconnectAndRemoveIds(roomId) {
+function sendRoomDestroyed(roomId, textMessage) {
   for (const ws of Object.values(allRooms.get(roomId))) {
     ws.send(
       JSON.stringify({
-        eventFromServer: 'otherPlayerDisconnected',
+        eventFromServer: 'roomDestroyed',
+        textMessage,
       })
     );
     ws.connectionId = null;
