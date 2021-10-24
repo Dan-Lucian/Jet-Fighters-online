@@ -103,6 +103,7 @@ server.on('connection', (ws) => {
           eventFromServer: 'askPlayAgain',
         })
       );
+      return;
     }
 
     if (eventFromClient === 'responseAskPlayAgain') {
@@ -117,12 +118,13 @@ server.on('connection', (ws) => {
         return;
       }
 
-      console.log('play again denied');
-      // const otherWs = ws === ws1 ? ws2 : ws1;
-      sendRoomDestroyed(
+      const { connectionId } = ws;
+      sendRoomDestroyedAndRemoveIds(
         ws.connectionId,
         'Room destroyed because a player denied to play again'
       );
+      allRooms.delete(connectionId);
+
       return;
     }
 
@@ -133,8 +135,9 @@ server.on('connection', (ws) => {
     console.log('connection closed');
     if (!ws.connectionId) return;
 
+    // saved here because sendRoom... will remove it
     const { connectionId } = ws;
-    sendRoomDestroyed(connectionId, 'Other player disconnected');
+    sendRoomDestroyedAndRemoveIds(connectionId, 'Other player disconnected');
     clearInterval(ws.intervalId);
     allRooms.delete(connectionId);
   });
@@ -162,7 +165,7 @@ function getRoomStatus(id) {
   return { roomStatus: 'joinable' };
 }
 
-function sendRoomDestroyed(roomId, textMessage) {
+function sendRoomDestroyedAndRemoveIds(roomId, textMessage) {
   for (const ws of Object.values(allRooms.get(roomId))) {
     ws.send(
       JSON.stringify({
