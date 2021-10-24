@@ -12,6 +12,10 @@ const server = new WebSocket.Server({ port: '3000' });
 const allRooms = new Map();
 
 server.on('connection', (ws) => {
+  function sendToClient(obj) {
+    ws.send(JSON.stringify(obj));
+  }
+
   ws.on('message', (messageString) => {
     const {
       eventFromClient,
@@ -29,12 +33,10 @@ server.on('connection', (ws) => {
       createRoom(roomId, ws);
       ws.connectionId = roomId;
 
-      ws.send(
-        JSON.stringify({
-          eventFromServer: 'responseNewRoom',
-          roomId,
-        })
-      );
+      sendToClient({
+        eventFromServer: 'responseNewRoom',
+        roomId,
+      });
       return;
     }
 
@@ -46,23 +48,19 @@ server.on('connection', (ws) => {
 
       if (roomStatus === 'notFound') {
         console.log('notFound');
-        ws.send(
-          JSON.stringify({
-            eventFromServer: 'denialJoinRoom',
-            textMessage: 'Room not found',
-          })
-        );
+        sendToClient({
+          eventFromServer: 'denialJoinRoom',
+          textMessage: 'Room not found',
+        });
         return;
       }
 
       if (roomStatus === 'full') {
         console.log('full');
-        ws.send(
-          JSON.stringify({
-            eventFromServer: 'denialJoinRoom',
-            textMessage: 'Full room',
-          })
-        );
+        sendToClient({
+          eventFromServer: 'denialJoinRoom',
+          textMessage: 'Full room',
+        });
         return;
       }
 
@@ -110,7 +108,6 @@ server.on('connection', (ws) => {
       const { ws1, ws2 } = allRooms.get(ws.connectionId);
 
       if (acceptPlayAgain) {
-        console.log('play again accepted');
         // eslint-disable-next-line no-shadow
         const gameState = createGameState({ roomId: ws.connectionId });
         ws1.intervalId = startGameLoop(ws1, ws2, gameState);
@@ -118,9 +115,10 @@ server.on('connection', (ws) => {
         return;
       }
 
+      // saved here because sendRoom... will destroy it
       const { connectionId } = ws;
       sendRoomDestroyedAndRemoveIds(
-        ws.connectionId,
+        connectionId,
         'Room destroyed because a player denied to play again'
       );
       allRooms.delete(connectionId);
@@ -166,13 +164,13 @@ function getRoomStatus(id) {
 }
 
 function sendRoomDestroyedAndRemoveIds(roomId, textMessage) {
-  for (const ws of Object.values(allRooms.get(roomId))) {
-    ws.send(
+  for (const wsFromRoom of Object.values(allRooms.get(roomId))) {
+    wsFromRoom.send(
       JSON.stringify({
         eventFromServer: 'roomDestroyed',
         textMessage,
       })
     );
-    ws.connectionId = null;
+    wsFromRoom.connectionId = null;
   }
 }
