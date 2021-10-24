@@ -43,6 +43,10 @@ btnNewGame.onclick = handleBtnNewGameClick;
 btnReturnToMainMenu.onclick = handleBtnReturnToMainMenuClick;
 btnPlayAgain.onclick = handleBtnPlayAgainClick;
 
+function sendToServer(obj) {
+  ws.send(JSON.stringify(obj));
+}
+
 function onOpen() {
   console.log('Connection established');
 }
@@ -140,13 +144,11 @@ function onSubmit(e) {
     return;
   }
 
-  ws.send(
-    JSON.stringify({ eventFromClient: 'requestJoinRoom', joinId: inputValue })
-  );
+  sendToServer({ eventFromClient: 'requestJoinRoom', joinId: inputValue });
 }
 
 async function handleBtnNewGameClick() {
-  ws.send(JSON.stringify({ eventFromClient: 'requestNewRoom' }));
+  sendToServer({ eventFromClient: 'requestNewRoom' });
 }
 
 function renderRoomId(id) {
@@ -162,7 +164,7 @@ function handleBtnReturnToMainMenuClick(e) {
 }
 
 function handleBtnPlayAgainClick(e) {
-  ws.send(JSON.stringify({ eventFromClient: 'requestPlayAgain' }));
+  sendToServer({ eventFromClient: 'requestPlayAgain' });
 }
 
 // --------------------------------------
@@ -231,22 +233,18 @@ function renderAskPlayAgain() {
     const btnNo = document.getElementById('btn-play-again-no');
 
     btnYes.onclick = () => {
-      ws.send(
-        JSON.stringify({
-          eventFromClient: 'responseAskPlayAgain',
-          acceptPlayAgain: true,
-        })
-      );
+      sendToServer({
+        eventFromClient: 'responseAskPlayAgain',
+        acceptPlayAgain: true,
+      });
       btnNo.disable = true;
     };
 
     btnNo.onclick = () => {
-      ws.send(
-        JSON.stringify({
-          eventFromClient: 'responseAskPlayAgain',
-          acceptPlayAgain: false,
-        })
-      );
+      sendToServer({
+        eventFromClient: 'responseAskPlayAgain',
+        acceptPlayAgain: false,
+      });
       btnYes.disable = true;
     };
   });
@@ -287,36 +285,30 @@ function onkeydown(e) {
 
   if (e.key === 'ArrowRight') {
     keysStatus.rightArrowPressed = true;
-    ws.send(
-      JSON.stringify({
-        eventFromClient: 'keyPressed',
-        keysStatus: JSON.stringify(keysStatus),
-        playerNumber: player,
-      })
-    );
+    sendToServer({
+      eventFromClient: 'keyPressed',
+      keysStatus: JSON.stringify(keysStatus),
+      playerNumber: player,
+    });
   }
 
   if (e.key === 'ArrowLeft') {
     keysStatus.leftArrowPressed = true;
-    ws.send(
-      JSON.stringify({
-        eventFromClient: 'keyPressed',
-        keysStatus: JSON.stringify(keysStatus),
-        playerNumber: player,
-      })
-    );
+    sendToServer({
+      eventFromClient: 'keyPressed',
+      keysStatus: JSON.stringify(keysStatus),
+      playerNumber: player,
+    });
   }
 
   if (e.key === ' ') {
     // sending a copy bc no need for how much the key is pressed
     const copyKeysStatus = { ...keysStatus, spacePressed: true };
-    ws.send(
-      JSON.stringify({
-        eventFromClient: 'keyPressed',
-        keysStatus: JSON.stringify(copyKeysStatus),
-        playerNumber: player,
-      })
-    );
+    sendToServer({
+      eventFromClient: 'keyPressed',
+      keysStatus: JSON.stringify(copyKeysStatus),
+      playerNumber: player,
+    });
   }
 }
 
@@ -325,23 +317,19 @@ function onKeyUp(e) {
 
   if (e.key === 'ArrowRight') {
     keysStatus.rightArrowPressed = false;
-    ws.send(
-      JSON.stringify({
-        eventFromClient: 'keyPressed',
-        keysStatus: JSON.stringify(keysStatus),
-        playerNumber: player,
-      })
-    );
+    sendToServer({
+      eventFromClient: 'keyPressed',
+      keysStatus: JSON.stringify(keysStatus),
+      playerNumber: player,
+    });
   }
 
   if (e.key === 'ArrowLeft') {
     keysStatus.leftArrowPressed = false;
-    ws.send(
-      JSON.stringify({
-        eventFromClient: 'keyPressed',
-        keysStatus: JSON.stringify(keysStatus),
-        playerNumber: player,
-      })
-    );
+    sendToServer({
+      eventFromClient: 'keyPressed',
+      keysStatus: JSON.stringify(keysStatus),
+      playerNumber: player,
+    });
   }
 }
