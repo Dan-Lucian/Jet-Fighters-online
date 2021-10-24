@@ -82,13 +82,10 @@ function onMessage(message) {
     return;
   }
 
-  if (eventFromServer === 'responseJoinRoom') {
-    if (!joinable) {
-      console.log(`Join denial because: ${textMessage}`);
-      return;
-    }
-    console.log(`Joining: ${roomId}`);
-    return;
+  if (eventFromServer === 'denialJoinRoom') {
+    requestAnimationFrame(() =>
+      renderMessage(`Join denial because: ${textMessage}`)
+    );
   }
 
   if (eventFromServer === 'roomDestroyed') {

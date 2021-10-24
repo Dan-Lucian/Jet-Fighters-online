@@ -43,13 +43,12 @@ server.on('connection', (ws) => {
       console.log('requestJoinRoom');
 
       const { roomStatus } = getRoomStatus(joinId);
-      console.log(roomStatus);
 
       if (roomStatus === 'notFound') {
         console.log('notFound');
         ws.send(
           JSON.stringify({
-            eventFromServer: 'responseJoinRoom',
+            eventFromServer: 'denialJoinRoom',
             textMessage: 'Room not found',
           })
         );
@@ -60,7 +59,7 @@ server.on('connection', (ws) => {
         console.log('full');
         ws.send(
           JSON.stringify({
-            eventFromServer: 'responseJoinRoom',
+            eventFromServer: 'denialJoinRoom',
             textMessage: 'Full room',
           })
         );
@@ -80,7 +79,6 @@ server.on('connection', (ws) => {
         ws2.intervalId = ws1.intervalId;
         return;
       }
-      console.log(`fallen room status ${roomStatus}`);
     }
 
     if (eventFromClient === 'keyPressed') {
@@ -158,10 +156,9 @@ function getRoomStatus(id) {
   }
 
   const room = allRooms.get(id);
-  console.log(!room);
 
-  if (!room) return { status: 'notFound' };
-  if (room.ws2) return { status: 'full' };
+  if (!room) return { roomStatus: 'notFound' };
+  if (room.ws2) return { roomStatus: 'full' };
   return { roomStatus: 'joinable' };
 }
 
