@@ -4,10 +4,10 @@ import { renderMessage, isInputValid } from './helpers.js';
 import { Jet, clearCanvas, drawBullets } from './canvas-painting.js';
 
 const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
-ws.onopen = onOpen;
-ws.onmessage = onMessage;
-ws.onerror = onError;
-ws.onclose = onClose;
+ws.onopen = onWsOpen;
+ws.onmessage = onWsMessage;
+ws.onerror = onWsError;
+ws.onclose = onWsClose;
 
 // game elements
 const game = document.getElementById('game');
@@ -16,7 +16,7 @@ const scoreP2 = document.getElementById('score-p2');
 
 // game menu elements
 const gameMenu = document.getElementById('game-menu');
-const form = document.getElementById('form');
+const joinForm = document.getElementById('form');
 const input = document.getElementById('input-room-code');
 const btnNewGame = document.getElementById('btn-new-game');
 const roomIdElement = document.getElementById('room-id');
@@ -33,12 +33,13 @@ const keysStatus = {
   spacePressed: false,
 };
 
+// will be assigned inside ws connection
 let player;
 let isGameRunning = false;
 let wJet;
 let bJet;
 
-form.onsubmit = onSubmit;
+joinForm.onsubmit = onJoinFormSubmit;
 btnNewGame.onclick = handleBtnNewGameClick;
 btnReturnToMainMenu.onclick = handleBtnReturnToMainMenuClick;
 btnPlayAgain.onclick = handleBtnPlayAgainClick;
@@ -47,11 +48,11 @@ function sendToServer(obj) {
   ws.send(JSON.stringify(obj));
 }
 
-function onOpen() {
+function onWsOpen() {
   console.log('Connection established');
 }
 
-function onMessage(message) {
+function onWsMessage(message) {
   const jsonMessage = JSON.parse(message.data);
   const {
     eventFromServer,
@@ -123,19 +124,24 @@ function onMessage(message) {
   }
 }
 
-function onError() {
+function onWsError() {
   console.log('Connection error');
 }
 
-function onClose() {
+function onWsClose() {
   console.log('Connection close');
 }
 
-function onSubmit(e) {
+function onJoinFormSubmit(e) {
   e.preventDefault();
 
   // if room id code already displayed then ignore submit
-  if (roomIdElement.offsetHeight !== 0) return;
+  if (roomIdElement.offsetHeight !== 0) {
+    requestAnimationFrame(() =>
+      renderMessage('You should wait for the other player')
+    );
+    return;
+  }
 
   const { value: inputValue } = input;
 
@@ -148,6 +154,12 @@ function onSubmit(e) {
 }
 
 async function handleBtnNewGameClick() {
+  if (roomIdElement.offsetHeight !== 0) {
+    requestAnimationFrame(() =>
+      renderMessage('You have already created a room')
+    );
+    return;
+  }
   sendToServer({ eventFromClient: 'requestNewRoom' });
 }
 
@@ -159,8 +171,11 @@ function renderRoomId(id) {
   );
 }
 
-function handleBtnReturnToMainMenuClick(e) {
-  // disconnect from ws
+function handleBtnReturnToMainMenuClick() {
+  sendToServer({
+    eventFromClient: 'responseAskPlayAgain',
+    acceptPlayAgain: false,
+  });
 }
 
 function handleBtnPlayAgainClick(e) {

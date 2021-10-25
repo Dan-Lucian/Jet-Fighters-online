@@ -122,6 +122,7 @@ server.on('connection', (ws) => {
         'Room destroyed because a player denied to play again'
       );
       allRooms.delete(connectionId);
+      console.log(`room ${connectionId} destroyed`);
 
       return;
     }
@@ -138,6 +139,7 @@ server.on('connection', (ws) => {
     sendRoomDestroyedAndRemoveIds(connectionId, 'Other player disconnected');
     clearInterval(ws.intervalId);
     allRooms.delete(connectionId);
+    console.log(`room ${connectionId} destroyed`);
   });
 });
 
@@ -165,12 +167,14 @@ function getRoomStatus(id) {
 
 function sendRoomDestroyedAndRemoveIds(roomId, textMessage) {
   for (const wsFromRoom of Object.values(allRooms.get(roomId))) {
-    wsFromRoom.send(
-      JSON.stringify({
-        eventFromServer: 'roomDestroyed',
-        textMessage,
-      })
-    );
-    wsFromRoom.connectionId = null;
+    if (wsFromRoom) {
+      wsFromRoom.send(
+        JSON.stringify({
+          eventFromServer: 'roomDestroyed',
+          textMessage,
+        })
+      );
+      wsFromRoom.connectionId = null;
+    }
   }
 }
