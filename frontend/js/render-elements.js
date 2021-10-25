@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable import/no-cycle */
 
-import { sendToServer } from './main.js';
+import { sendToServer, getPlayerNumber } from './main.js';
 import { renderMessage, isInputValid } from './helpers.js';
 import { Jet } from './canvas-painting.js';
 
@@ -32,6 +32,12 @@ let gameOverMenuMessage;
 // -----------Game render/unrender-----------
 // ------------------------------------------
 
+const keysStatus = {
+  leftArrowPressed: false,
+  rightArrowPressed: false,
+  spacePressed: false,
+};
+
 function renderGameScreen(gameState) {
   requestAnimationFrame(() => {
     // game.style.display = 'block';
@@ -60,6 +66,9 @@ function renderGameScreen(gameState) {
 
       scoreP1 = document.getElementById('score-p1');
       scoreP2 = document.getElementById('score-p2');
+
+      document.addEventListener('keydown', onkeydown);
+      document.addEventListener('keyup', onKeyUp);
     });
   });
 }
@@ -88,7 +97,70 @@ function unrenderGame() {
     root.innerHTML = '';
     scoreP1 = null;
     scoreP2 = null;
+
+    document.removeEventListener('keydown', onkeydown);
+    document.removeEventListener('keyup', onKeyUp);
   });
+}
+
+function onkeydown(e) {
+  e.preventDefault();
+
+  if (
+    (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== ' ') ||
+    e.repeat
+  )
+    return;
+
+  if (e.key === 'ArrowRight') {
+    keysStatus.rightArrowPressed = true;
+    sendToServer({
+      eventFromClient: 'keyPressed',
+      keysStatus: JSON.stringify(keysStatus),
+      playerNumber: getPlayerNumber(),
+    });
+  }
+
+  if (e.key === 'ArrowLeft') {
+    keysStatus.leftArrowPressed = true;
+    sendToServer({
+      eventFromClient: 'keyPressed',
+      keysStatus: JSON.stringify(keysStatus),
+      playerNumber: getPlayerNumber(),
+    });
+  }
+
+  if (e.key === ' ') {
+    // sending a copy bc no need for how much the key is pressed
+    const copyKeysStatus = { ...keysStatus, spacePressed: true };
+    sendToServer({
+      eventFromClient: 'keyPressed',
+      keysStatus: JSON.stringify(copyKeysStatus),
+      playerNumber: getPlayerNumber(),
+    });
+  }
+}
+
+function onKeyUp(e) {
+  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+
+  if (e.key === 'ArrowRight') {
+    keysStatus.rightArrowPressed = false;
+    sendToServer({
+      eventFromClient: 'keyPressed',
+      keysStatus: JSON.stringify(keysStatus),
+      playerNumber: getPlayerNumber(),
+    });
+  }
+
+  if (e.key === 'ArrowLeft') {
+    keysStatus.leftArrowPressed = false;
+    sendToServer({
+      eventFromClient: 'keyPressed',
+      keysStatus: JSON.stringify(keysStatus),
+      playerNumber: getPlayerNumber(),
+    });
+  }
 }
 
 // ------------------------------------------

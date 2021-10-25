@@ -1,3 +1,5 @@
+/* eslint-disable import/no-mutable-exports */
+
 /* eslint-disable import/no-cycle */
 /* eslint-disable no-use-before-define */
 import { info } from './config.js';
@@ -10,11 +12,11 @@ ws.onmessage = onWsMessage;
 ws.onerror = onWsError;
 ws.onclose = onWsClose;
 
-const keysStatus = {
-  leftArrowPressed: false,
-  rightArrowPressed: false,
-  spacePressed: false,
-};
+// const keysStatus = {
+//   leftArrowPressed: false,
+//   rightArrowPressed: false,
+//   spacePressed: false,
+// };
 
 // will be assigned inside ws connection
 let player;
@@ -48,7 +50,6 @@ function onWsMessage(message) {
       Render.unrenderGameOverMenu();
       Render.renderGameScreen(gameState);
 
-      setupKeysControls();
       player = playerNumber;
       isGameRunning = true;
       return;
@@ -75,7 +76,6 @@ function onWsMessage(message) {
     console.log('Room destroyed');
     requestAnimationFrame(() => renderMessage(textMessage));
 
-    removeKeysControls();
     Render.unrenderGame();
     Render.unrenderGameOverMenu();
     Render.renderGameMenu();
@@ -112,74 +112,8 @@ function onWsClose() {
   console.log('Connection close');
 }
 
-function setupKeysControls() {
-  document.addEventListener('keydown', onkeydown);
-  document.addEventListener('keyup', onKeyUp);
+function getPlayerNumber() {
+  return player;
 }
 
-function removeKeysControls() {
-  document.removeEventListener('keydown', onkeydown);
-  document.removeEventListener('keyup', onKeyUp);
-}
-
-function onkeydown(e) {
-  e.preventDefault();
-
-  if (
-    (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== ' ') ||
-    e.repeat
-  )
-    return;
-
-  if (e.key === 'ArrowRight') {
-    keysStatus.rightArrowPressed = true;
-    sendToServer({
-      eventFromClient: 'keyPressed',
-      keysStatus: JSON.stringify(keysStatus),
-      playerNumber: player,
-    });
-  }
-
-  if (e.key === 'ArrowLeft') {
-    keysStatus.leftArrowPressed = true;
-    sendToServer({
-      eventFromClient: 'keyPressed',
-      keysStatus: JSON.stringify(keysStatus),
-      playerNumber: player,
-    });
-  }
-
-  if (e.key === ' ') {
-    // sending a copy bc no need for how much the key is pressed
-    const copyKeysStatus = { ...keysStatus, spacePressed: true };
-    sendToServer({
-      eventFromClient: 'keyPressed',
-      keysStatus: JSON.stringify(copyKeysStatus),
-      playerNumber: player,
-    });
-  }
-}
-
-function onKeyUp(e) {
-  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-
-  if (e.key === 'ArrowRight') {
-    keysStatus.rightArrowPressed = false;
-    sendToServer({
-      eventFromClient: 'keyPressed',
-      keysStatus: JSON.stringify(keysStatus),
-      playerNumber: player,
-    });
-  }
-
-  if (e.key === 'ArrowLeft') {
-    keysStatus.leftArrowPressed = false;
-    sendToServer({
-      eventFromClient: 'keyPressed',
-      keysStatus: JSON.stringify(keysStatus),
-      playerNumber: player,
-    });
-  }
-}
-
-export { sendToServer };
+export { sendToServer, getPlayerNumber };
