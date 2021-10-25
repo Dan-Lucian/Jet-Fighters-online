@@ -1,31 +1,14 @@
+/* eslint-disable import/no-cycle */
 /* eslint-disable no-use-before-define */
 import { info } from './config.js';
-import { renderMessage, isInputValid } from './helpers.js';
-import { Jet, clearCanvas, drawBullets } from './canvas-painting.js';
+import { renderMessage } from './helpers.js';
+import * as Render from './render-elements.js';
 
 const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
 ws.onopen = onWsOpen;
 ws.onmessage = onWsMessage;
 ws.onerror = onWsError;
 ws.onclose = onWsClose;
-
-// game elements
-const game = document.getElementById('game');
-const scoreP1 = document.getElementById('score-p1');
-const scoreP2 = document.getElementById('score-p2');
-
-// game menu elements
-const gameMenu = document.getElementById('game-menu');
-const joinForm = document.getElementById('form');
-const input = document.getElementById('input-room-code');
-const btnNewGame = document.getElementById('btn-new-game');
-const roomIdElement = document.getElementById('room-id');
-
-// game over menu elements
-const gameOverMenu = document.getElementById('game-over-menu');
-const gameOverMenuMessage = document.getElementById('game-over-menu__message');
-const btnReturnToMainMenu = document.getElementById('btn-return-to-main-menu');
-const btnPlayAgain = document.getElementById('btn-play-again');
 
 const keysStatus = {
   leftArrowPressed: false,
@@ -36,13 +19,6 @@ const keysStatus = {
 // will be assigned inside ws connection
 let player;
 let isGameRunning = false;
-let wJet;
-let bJet;
-
-joinForm.onsubmit = onJoinFormSubmit;
-btnNewGame.onclick = handleBtnNewGameClick;
-btnReturnToMainMenu.onclick = handleBtnReturnToMainMenuClick;
-btnPlayAgain.onclick = handleBtnPlayAgainClick;
 
 function sendToServer(obj) {
   ws.send(JSON.stringify(obj));
@@ -50,6 +26,7 @@ function sendToServer(obj) {
 
 function onWsOpen() {
   console.log('Connection established');
+  Render.renderGameMenu();
 }
 
 function onWsMessage(message) {
@@ -57,7 +34,6 @@ function onWsMessage(message) {
   const {
     eventFromServer,
     roomId,
-    joinable,
     textMessage,
     gameState: stringGameState,
     playerNumber,
@@ -68,22 +44,23 @@ function onWsMessage(message) {
 
   if (eventFromServer === 'gameState') {
     if (!isGameRunning) {
-      // need for button disactivating
-      hideGameMenu();
-      hideGameOverMenu();
-      renderGameScreen(gameState);
+      Render.unrenderGameMenu();
+      Render.unrenderGameOverMenu();
+      Render.renderGameScreen(gameState);
+
       setupKeysControls();
       player = playerNumber;
       isGameRunning = true;
       return;
     }
-    renderGame(gameState, playerNumber);
+
+    Render.renderGame(gameState, playerNumber);
     return;
   }
 
   if (eventFromServer === 'responseNewRoom') {
     console.log(`Server new room created: ${roomId}`);
-    renderRoomId(roomId);
+    Render.renderRoomId(roomId);
     return;
   }
 
@@ -91,31 +68,34 @@ function onWsMessage(message) {
     requestAnimationFrame(() =>
       renderMessage(`Join denial because: ${textMessage}`)
     );
+    return;
   }
 
   if (eventFromServer === 'roomDestroyed') {
     console.log('Room destroyed');
-    removeKeysControls();
-    renderGameMenu();
-    hideGameOverMenu();
-    hideGame();
     requestAnimationFrame(() => renderMessage(textMessage));
+
+    removeKeysControls();
+    Render.unrenderGame();
+    Render.unrenderGameOverMenu();
+    Render.renderGameMenu();
+
     isGameRunning = false;
     player = null;
     return;
   }
 
-  // remove playerNumber on gameOver ??
   if (eventFromServer === 'gameOver') {
-    renderGameOverMenu(gameState, playerNumber);
-    hideGame();
+    Render.unrenderGame();
+    Render.renderGameOverMenu(gameState, playerNumber);
+
     isGameRunning = false;
     return;
   }
 
   if (eventFromServer === 'askPlayAgain') {
     console.log('Other player asked to play again');
-    renderAskPlayAgain();
+    Render.renderAskPlayAgain();
     return;
   }
 
@@ -130,153 +110,6 @@ function onWsError() {
 
 function onWsClose() {
   console.log('Connection close');
-}
-
-function onJoinFormSubmit(e) {
-  e.preventDefault();
-
-  // if room id code already displayed then ignore submit
-  if (roomIdElement.offsetHeight !== 0) {
-    requestAnimationFrame(() =>
-      renderMessage('You should wait for the other player')
-    );
-    return;
-  }
-
-  const { value: inputValue } = input;
-
-  if (!isInputValid(inputValue, '^r[A-Za-z0-9]{5}$')) {
-    requestAnimationFrame(() => renderMessage('Invalid room ID'));
-    return;
-  }
-
-  sendToServer({ eventFromClient: 'requestJoinRoom', joinId: inputValue });
-}
-
-async function handleBtnNewGameClick() {
-  if (roomIdElement.offsetHeight !== 0) {
-    requestAnimationFrame(() =>
-      renderMessage('You have already created a room')
-    );
-    return;
-  }
-  sendToServer({ eventFromClient: 'requestNewRoom' });
-}
-
-function renderRoomId(id) {
-  roomIdElement.textContent = `Room Id: ${id}`;
-  roomIdElement.style.display = 'block';
-  requestAnimationFrame(() =>
-    renderMessage('The game will start when the 2nd player will join this room')
-  );
-}
-
-function handleBtnReturnToMainMenuClick() {
-  sendToServer({
-    eventFromClient: 'responseAskPlayAgain',
-    acceptPlayAgain: false,
-  });
-}
-
-function handleBtnPlayAgainClick(e) {
-  sendToServer({ eventFromClient: 'requestPlayAgain' });
-}
-
-// --------------------------------------
-// -----------Game render/hide-----------
-// --------------------------------------
-
-function renderGameScreen(gameState) {
-  wJet = new Jet('img/white-jet.webp', gameState.p1);
-  bJet = new Jet('img/black-jet.webp', gameState.p2);
-  wJet.setScore(0);
-  bJet.setScore(0);
-
-  requestAnimationFrame(() => {
-    game.style.display = 'block';
-  });
-}
-
-function renderGame(gameState) {
-  clearCanvas();
-  drawBullets(gameState);
-
-  wJet.draw(gameState.p1);
-  bJet.draw(gameState.p2);
-
-  if (wJet.hasScoreChanged(gameState.p1.score)) {
-    wJet.setScore(gameState.p1.score);
-    scoreP1.textContent = `${gameState.p1.score}`;
-  }
-  if (bJet.hasScoreChanged(gameState.p2.score)) {
-    bJet.setScore(gameState.p2.score);
-    scoreP2.textContent = `${gameState.p2.score}`;
-  }
-}
-
-function hideGame() {
-  game.style.display = 'none';
-}
-
-// --------------------------------------
-// -----Game Over Menu render/hide-------
-// --------------------------------------
-function renderGameOverMenu({ winPlayer }, playerNumber) {
-  if (winPlayer === 'draw') {
-    gameOverMenuMessage.textContent = 'It is a draw';
-  } else if (winPlayer === playerNumber) {
-    gameOverMenuMessage.textContent = 'You Won';
-  } else {
-    gameOverMenuMessage.textContent = 'You Lost';
-  }
-
-  gameOverMenu.style.display = 'block';
-}
-
-function hideGameOverMenu() {
-  gameOverMenu.style.display = 'none';
-}
-
-function renderAskPlayAgain() {
-  gameOverMenu.insertAdjacentHTML(
-    'beforeend',
-    '<div class="game-over-menu__play-again-response"> <p>Other player asks to play again, do you agree?</p> <button class="btn" id="btn-play-again-yes">Yes</button> <button class="btn" id="btn-play-again-no">No</button> </div>'
-  );
-
-  setTimeout(() => {
-    const btnYes = document.getElementById('btn-play-again-yes');
-    const btnNo = document.getElementById('btn-play-again-no');
-
-    btnYes.onclick = () => {
-      sendToServer({
-        eventFromClient: 'responseAskPlayAgain',
-        acceptPlayAgain: true,
-      });
-      btnNo.disable = true;
-    };
-
-    btnNo.onclick = () => {
-      sendToServer({
-        eventFromClient: 'responseAskPlayAgain',
-        acceptPlayAgain: false,
-      });
-      btnYes.disable = true;
-    };
-  });
-}
-
-// --------------------------------------
-// --------Game Menu render/hide---------
-// --------------------------------------
-
-function renderGameMenu() {
-  gameMenu.style.display = 'block';
-  btnNewGame.disabled = '';
-  roomIdElement.style.display = 'none';
-}
-
-function hideGameMenu() {
-  gameMenu.style.display = 'none';
 }
 
 function setupKeysControls() {
@@ -348,3 +181,5 @@ function onKeyUp(e) {
     });
   }
 }
+
+export { sendToServer };

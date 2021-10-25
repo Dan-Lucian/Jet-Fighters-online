@@ -486,7 +486,7 @@ body {
   opacity: 1;
 }
 
-.game-container {
+.root {
   width: 100%;
   height: 100%;
   background: pink;
@@ -501,7 +501,6 @@ body {
   margin: 0 auto;
   height: 400px;
   width: 700px;
-  display: none;
   background: #fff;
   position: relative;
 }
@@ -560,7 +559,6 @@ body {
   height: 300px;
   margin: auto;
   text-align: center;
-  display: none;
 }
 
 .game-over-menu__play-again-response {
