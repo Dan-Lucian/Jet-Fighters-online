@@ -354,6 +354,36 @@ function renderAskPlayAgain() {
   });
 }
 
+// ------------------------------------------
+// -------Preconnection loading screen-------
+// ------------------------------------------
+
+function renderWsPreonnectionLoadingScreen() {
+  root.innerHTML = `
+  <div class="lds-spinner">
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  </div>
+  <div class="connection-message">Connecting to the server...</div>
+  `;
+}
+
+function renderWsConnectionError() {
+  root.innerHTML = `
+  <div class="connection-message">Connection error, please try again.</div>
+  `;
+}
+
 export {
   renderGameOverMenu,
   unrenderGameOverMenu,
@@ -364,4 +394,6 @@ export {
   renderGameMenu,
   unrenderGameMenu,
   renderRoomId,
+  renderWsPreonnectionLoadingScreen,
+  renderWsConnectionError,
 };

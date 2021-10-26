@@ -6,6 +6,8 @@ import { info } from './config.js';
 import { renderMessage } from './helpers.js';
 import * as Render from './render-elements.js';
 
+Render.renderWsPreonnectionLoadingScreen();
+
 const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
 ws.onopen = onWsOpen;
 ws.onmessage = onWsMessage;
@@ -106,6 +108,7 @@ function onWsMessage(message) {
 
 function onWsError() {
   console.log('Connection error');
+  Render.renderWsConnectionError();
 }
 
 function onWsClose() {
