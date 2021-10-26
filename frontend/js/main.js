@@ -113,6 +113,7 @@ function onWsError() {
 
 function onWsClose() {
   console.log('Connection close');
+  Render.renderWsConnectionError();
 }
 
 function getPlayerNumber() {
