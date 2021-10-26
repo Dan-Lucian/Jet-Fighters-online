@@ -324,7 +324,17 @@ function renderGameOverMenu({ winPlayer }, playerNumber) {
   }
 
   function handleBtnPlayAgainClick() {
-    sendToServer({ eventFromClient: 'requestPlayAgain' });
+    sendToServer({
+      eventFromClient: 'requestPlayAgain',
+      gameSettings: {
+        settings: { maxScore: 2 },
+        p1JetCharacteristics: {
+          rotation: 3,
+          speed: 0,
+          color: '#fff',
+        },
+      },
+    });
   }
 }
 
@@ -360,7 +370,15 @@ function renderAskPlayAgain() {
       sendToServer({
         eventFromClient: 'responseAskPlayAgain',
         acceptPlayAgain: true,
+        gameSettings: {
+          p2JetCharacteristics: {
+            rotation: 5,
+            speed: 1,
+            color: '#000',
+          },
+        },
       });
+
       btnNo.disable = true;
     };
 

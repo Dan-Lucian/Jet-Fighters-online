@@ -75,7 +75,6 @@ server.on('connection', (ws) => {
 
         joinRoom(joinId, gameSettings, ws);
 
-        // eslint-disable-next-line no-shadow
         const copyGameSettings = { ...allRooms.get(joinId).gameSettings };
         const gameState = createGameState(copyGameSettings);
 
@@ -108,17 +107,23 @@ server.on('connection', (ws) => {
           eventFromServer: 'askPlayAgain',
         })
       );
+
+      createRoom(ws.connectionId, gameSettings, ws, otherWs);
       return;
     }
 
     if (eventFromClient === 'responseAskPlayAgain') {
-      const { ws1, ws2 } = allRooms.get(ws.connectionId);
-
       if (acceptPlayAgain) {
-        // eslint-disable-next-line no-shadow
-        const gameState = createGameState({ roomId: ws.connectionId });
-        ws1.intervalId = startGameLoop(ws1, ws2, gameState);
-        ws2.intervalId = ws1.intervalId;
+        joinRoom(ws.connectionId, gameSettings, ws);
+
+        const copyGameSettings = {
+          ...allRooms.get(ws.connectionId).gameSettings,
+        };
+        const gameState = createGameState(copyGameSettings);
+
+        const { ws1 } = allRooms.get(ws.connectionId);
+        ws1.intervalId = startGameLoop(ws1, ws, gameState);
+        ws.intervalId = ws1.intervalId;
         return;
       }
 
@@ -150,11 +155,12 @@ server.on('connection', (ws) => {
   });
 });
 
-function createRoom(roomId, gameSettings, ws1) {
+function createRoom(roomId, gameSettings, ws1, ws2 = null) {
   gameSettings.settings.roomId = roomId;
 
   allRooms.set(roomId, {
     ws1,
+    ws2,
     gameSettings: { ...gameSettings },
   });
   console.log('room created');
@@ -184,7 +190,12 @@ function getRoomStatus(id) {
 }
 
 function sendRoomDestroyedAndRemoveIds(roomId, textMessage) {
+  if (!allRooms.get(roomId)) {
+    console.log('attempted to destroy a non existent room');
+    return;
+  }
   for (const wsFromRoom of Object.values(allRooms.get(roomId))) {
+    // 2nd bc not to include game settings
     if (wsFromRoom && !wsFromRoom.p1JetCharacteristics) {
       wsFromRoom.send(
         JSON.stringify({
