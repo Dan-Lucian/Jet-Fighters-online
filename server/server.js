@@ -1,11 +1,11 @@
 /* eslint-disable no-use-before-define */
 const WebSocket = require('ws');
+const { createId } = require('./helpers');
 const {
   createGameState,
   startGameLoop,
   updateServerGameState,
 } = require('./game.js');
-const { createId } = require('./helpers');
 
 const server = new WebSocket.Server({ port: '3000' });
 
@@ -17,20 +17,24 @@ server.on('connection', (ws) => {
   }
 
   ws.on('message', (messageString) => {
+    // const jsonFromFront = JSON.parse(messageString);
     const {
       eventFromClient,
       joinId,
       keysStatus,
       playerNumber,
       acceptPlayAgain,
+      gameSettings,
     } = JSON.parse(messageString);
 
     // received newRoom event
     if (eventFromClient === 'requestNewRoom') {
       console.log(`requestNewRoom`);
 
+      // const { gameSettings } = jsonFromFront;
       const roomId = `r${createId(5)}`;
-      createRoom(roomId, ws);
+
+      createRoom(roomId, gameSettings, ws);
       ws.connectionId = roomId;
 
       sendToClient({
@@ -66,15 +70,18 @@ server.on('connection', (ws) => {
 
       if (roomStatus === 'joinable') {
         console.log('joinable');
+
+        ws.connectionId = joinId; // received with join request
+
+        joinRoom(joinId, gameSettings, ws);
+
+        // eslint-disable-next-line no-shadow
+        const copyGameSettings = { ...allRooms.get(joinId).gameSettings };
+        const gameState = createGameState(copyGameSettings);
+
         const { ws1 } = allRooms.get(joinId);
-        const ws2 = ws;
-
-        ws2.connectionId = joinId; // received with join request
-        createRoom(joinId, ws1, ws2);
-
-        const gameState = createGameState({ roomId: joinId });
-        ws1.intervalId = startGameLoop(ws1, ws2, gameState);
-        ws2.intervalId = ws1.intervalId;
+        ws1.intervalId = startGameLoop(ws1, ws, gameState);
+        ws.intervalId = ws1.intervalId;
         return;
       }
     }
@@ -143,13 +150,24 @@ server.on('connection', (ws) => {
   });
 });
 
-function createRoom(roomId, ws1, ws2 = null) {
+function createRoom(roomId, gameSettings, ws1) {
+  gameSettings.settings.roomId = roomId;
+
+  allRooms.set(roomId, {
+    ws1,
+    gameSettings: { ...gameSettings },
+  });
+  console.log('room created');
+}
+
+function joinRoom(roomId, additionalGameSettings, ws2) {
+  const { ws1, gameSettings } = allRooms.get(roomId);
+
   allRooms.set(roomId, {
     ws1,
     ws2,
-    // add game state here??
+    gameSettings: { ...gameSettings, ...additionalGameSettings },
   });
-  console.log('room created');
 }
 
 function getRoomStatus(id) {
@@ -167,7 +185,7 @@ function getRoomStatus(id) {
 
 function sendRoomDestroyedAndRemoveIds(roomId, textMessage) {
   for (const wsFromRoom of Object.values(allRooms.get(roomId))) {
-    if (wsFromRoom) {
+    if (wsFromRoom && !wsFromRoom.p1JetCharacteristics) {
       wsFromRoom.send(
         JSON.stringify({
           eventFromServer: 'roomDestroyed',

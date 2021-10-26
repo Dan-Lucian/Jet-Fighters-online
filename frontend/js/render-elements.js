@@ -226,7 +226,17 @@ function renderGameMenu() {
       return;
     }
 
-    sendToServer({ eventFromClient: 'requestJoinRoom', joinId: inputValue });
+    sendToServer({
+      eventFromClient: 'requestJoinRoom',
+      joinId: inputValue,
+      gameSettings: {
+        p2JetCharacteristics: {
+          rotation: 5,
+          speed: 1,
+          color: '#000',
+        },
+      },
+    });
   }
 
   async function handleBtnNewGameClick() {
@@ -236,7 +246,17 @@ function renderGameMenu() {
       );
       return;
     }
-    sendToServer({ eventFromClient: 'requestNewRoom' });
+    sendToServer({
+      eventFromClient: 'requestNewRoom',
+      gameSettings: {
+        settings: { maxScore: 2 },
+        p1JetCharacteristics: {
+          rotation: 3,
+          speed: 0,
+          color: '#fff',
+        },
+      },
+    });
   }
 }
 

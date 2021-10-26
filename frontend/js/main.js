@@ -14,12 +14,6 @@ ws.onmessage = onWsMessage;
 ws.onerror = onWsError;
 ws.onclose = onWsClose;
 
-// const keysStatus = {
-//   leftArrowPressed: false,
-//   rightArrowPressed: false,
-//   spacePressed: false,
-// };
-
 // will be assigned inside ws connection
 let player;
 let isGameRunning = false;

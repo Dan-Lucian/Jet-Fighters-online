@@ -7,16 +7,10 @@ module.exports = {
   updateServerGameState,
 };
 
-const { FPS } = require('./constants.js');
+const { FPS, PI, imgW, imgH, canvasW, canvasH } = require('./constants.js');
 const { getRandomInt } = require('./helpers.js');
 
-const { PI } = Math;
-const imgW = 22;
-const imgH = 16;
-const canvasW = 600;
-const canvasH = 300;
 const intervalDelay = 1000 / FPS;
-const maxScore = 1;
 
 // counts in FPS per second
 const bulletLifeTime = 150;
@@ -25,14 +19,28 @@ const bulletLifeTime = 150;
 const allGameStates = new Map();
 
 // can use this functio to create a user defined game config
-function createGameState({ roomId }) {
+function createGameState(gameSettings) {
+  const {
+    rotation: p1Rotation,
+    speed: p1Speed,
+    color: p1Color,
+  } = gameSettings.p1JetCharacteristics;
+
+  const {
+    rotation: p2Rotation,
+    speed: p2Speed,
+    color: p2Color,
+  } = gameSettings.p2JetCharacteristics;
+
+  const { maxScore, roomId } = gameSettings.settings;
+
   return {
     p1: {
       x: 20,
       y: 21,
       angle: 90,
-      rotation: 2,
-      speed: 0,
+      rotation: p1Rotation,
+      speed: p1Speed,
       scale: 1.5,
       leftArrowPressed: false,
       rightArrowPressed: false,
@@ -40,14 +48,14 @@ function createGameState({ roomId }) {
       bullets: [],
       score: 0,
       playerNumber: 'p1',
-      color: '#fff',
+      color: p1Color,
     },
     p2: {
       x: 200,
       y: 20,
       angle: 0,
-      rotation: 5,
-      speed: 0.3,
+      rotation: p2Rotation,
+      speed: p2Speed,
       scale: 1.5,
       leftArrowPressed: false,
       rightArrowPressed: false,
@@ -55,10 +63,13 @@ function createGameState({ roomId }) {
       bullets: [],
       score: 0,
       playerNumber: 'p2',
-      color: '#000',
+      color: p2Color,
     },
-    roomId,
-    winPlayer: null,
+    settings: {
+      roomId,
+      winPlayer: null,
+      maxScore,
+    },
   };
 }
 
@@ -164,7 +175,7 @@ function startGameLoop(ws1, ws2, gameState) {
       incrementScore([p1, p2], 1);
     }
 
-    const winner = getWinner([p1, p2]);
+    const winner = getWinner([p1, p2], gameState.settings.maxScore);
     if (winner) {
       clearInterval(intervalId);
       sendGameOver(ws1, ws2, winner);
@@ -296,7 +307,7 @@ function incrementScore(players, amount) {
   }
 }
 
-function getWinner(players) {
+function getWinner(players, maxScore) {
   const winners = [];
   for (let i = 0; i < players.length; i += 1) {
     if (players[i].score === maxScore) winners.push(players[i].playerNumber);
