@@ -6,8 +6,8 @@ import { info } from './config.js';
 import { renderMessage } from './helpers.js';
 import * as Render from './render-elements.js';
 
-Render.renderWsPreonnectionLoadingScreen();
-
+// Render.renderWsPreonnectionLoadingScreen();
+Render.renderGameMenu();
 const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
 ws.onopen = onWsOpen;
 ws.onmessage = onWsMessage;
@@ -24,7 +24,6 @@ function sendToServer(obj) {
 
 function onWsOpen() {
   console.log('Connection established');
-  Render.renderGameMenu();
 }
 
 function onWsMessage(message) {
@@ -102,12 +101,12 @@ function onWsMessage(message) {
 
 function onWsError() {
   console.log('Connection error');
-  Render.renderWsConnectionError();
+  requestAnimationFrame(() => renderMessage(`Connection Error`));
 }
 
 function onWsClose() {
   console.log('Connection close');
-  Render.renderWsConnectionError();
+  requestAnimationFrame(() => renderMessage(`Connection Error`));
 }
 
 function getPlayerNumber() {

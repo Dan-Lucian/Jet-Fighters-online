@@ -1,6 +1,6 @@
-// -----------------------------------------------------------------------------
-// This file contains very basic styles.
-// -----------------------------------------------------------------------------
+// ------------------------------------
+// This file contains very basic styles
+// ------------------------------------
 
 /**
  * Set up a decent box model on the root element
@@ -21,13 +21,17 @@ html {
   box-sizing: inherit;
 }
 
+h1, h2, h3, h4, h5, h6{
+  margin: 0;
+}
+
 html,
 body {
   height: 100%;
 }
 
 body{
-  background-color: pink;
+  background-color: $color-bg-main;
 }
 
 /**
@@ -44,7 +48,7 @@ a {
 }
 
 /**
- * Don't know why but it helps 
+ * Makes img adjust to container dimensions
  */
 
 img {

@@ -1,11 +1,51 @@
 .btn {
-  background: $color-green-dark;
   border: none;
-  border-radius: 5px;
-  padding: 1rem;
-  color: #fff;
+  border-radius: 6px;
+  padding: 1.2rem;
+  color: $color-text;
 }
 
-.btn:hover {
-  background: darken($color-green-dark, 5%);
+.btn-question {
+  background: $color-bg-main;
+  width: 90px;
+  height: 90px;
+  font-size: 3rem;
+  font-weight: 700;
+
+  &:hover {
+    background: darken($color-bg-main, 4%);
+  }
+}
+
+.btn-menu {
+  background: $color-bg-accent;
+  font-size: 2rem;
+  font-weight: 700;
+  width: 100%;
+
+  &:hover {
+    background: darken($color-bg-accent, 15%);
+  }
+}
+
+.btn-select-jet {
+  background: $color-bg-fade;
+  width: 80px;
+  height: 80px;
+  img {
+    transform: scale(2, 2);
+  }
+
+  &:hover {
+    outline: 4px solid $color-bg-accent;
+    outline-offset: -4px;
+  }
+}
+
+.btn-accept {
+  background: $color-btn-accept;
+}
+
+.btn-decline {
+  background: $color-btn-decline;
 }

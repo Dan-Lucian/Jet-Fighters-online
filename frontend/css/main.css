@@ -356,13 +356,17 @@ html {
   box-sizing: inherit;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
 html,
 body {
   height: 100%;
 }
 
 body {
-  background-color: pink;
+  background-color: #141C2F;
 }
 
 /**
@@ -378,7 +382,7 @@ a:hover, a:active, a:focus {
 }
 
 /**
- * Don't know why but it helps 
+ * Makes img adjust to container dimensions
  */
 img {
   max-width: 100%;
@@ -390,8 +394,8 @@ img {
  * the color, size, spacing, and shape of text.
  */
 body {
-  color: #222222;
-  font: normal 125%/1.4 "Open Sans", "Helvetica Neue Light", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  color: #FCFCFE;
+  font: normal 200%/1.4 "Open Sans", "Helvetica Neue Light", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 }
 
 /**
@@ -454,15 +458,52 @@ body {
 }
 
 .btn {
-  background: #28b485;
   border: none;
-  border-radius: 5px;
-  padding: 1rem;
-  color: #fff;
+  border-radius: 6px;
+  padding: 1.2rem;
+  color: #FCFCFE;
 }
 
-.btn:hover {
-  background: #239f76;
+.btn-question {
+  background: #141C2F;
+  width: 90px;
+  height: 90px;
+  font-size: 3rem;
+  font-weight: 700;
+}
+.btn-question:hover {
+  background: #0e1321;
+}
+
+.btn-menu {
+  background: #0079FE;
+  font-size: 2rem;
+  font-weight: 700;
+  width: 100%;
+}
+.btn-menu:hover {
+  background: #0055b2;
+}
+
+.btn-select-jet {
+  background: #D2D9E5;
+  width: 80px;
+  height: 80px;
+}
+.btn-select-jet img {
+  transform: scale(2, 2);
+}
+.btn-select-jet:hover {
+  outline: 4px solid #0079FE;
+  outline-offset: -4px;
+}
+
+.btn-accept {
+  background: #28B485;
+}
+
+.btn-decline {
+  background: #DC143C;
 }
 
 .pop-up-message {
@@ -493,7 +534,6 @@ body {
 .root {
   width: 100%;
   height: 100%;
-  margin: auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -531,31 +571,100 @@ body {
 }
 
 .game-menu {
+  padding: 50px;
+  border-radius: 10px;
   text-align: center;
+  background: #1F2A48;
+  width: 900px;
 }
 
-.game-menu__buttons {
-  margin-top: 50px;
+.game-menu__start-buttons {
+  margin-bottom: 35px;
   display: flex;
+  justify-content: center;
   align-items: center;
-  width: 500px;
+  flex-direction: row;
   justify-content: space-between;
 }
 
-.game-menu__input {
-  display: block;
-  margin-bottom: 10px;
-  border-radius: 0;
-  border: none;
-}
-.game-menu__input:focus {
-  outline: 2px solid #000;
+.game-menu__start-buttons__create,
+.game-menu__start-buttons__join {
+  flex-basis: 45%;
 }
 
-.room-id {
-  display: none;
-  height: 25px;
-  margin-bottom: 10px;
+.game-menu__start-buttons__create__room-id {
+  font-size: 1.5rem;
+  margin-top: 20px;
+  padding: 5px;
+  border-radius: 5px;
+  background: #141C2F;
+}
+
+.game-menu__start-buttons__create__join-id {
+  margin-top: 20px;
+  height: 43px;
+  width: 100%;
+  font-size: 1.5rem;
+  border: none;
+  padding: 5px;
+  border-radius: 5px;
+  background: #141C2F;
+  display: block;
+  color: #FCFCFE;
+}
+.game-menu__start-buttons__create__join-id:focus {
+  outline: 2px solid #0079FE;
+}
+
+.game-menu__customization {
+  font-size: 1.5rem;
+  padding: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-around;
+  border-radius: 10px;
+  background: #141C2F;
+}
+
+.game-menu__customization__title {
+  margin-bottom: 35px;
+  background: #1F2A48;
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+.game-menu__customization__game {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.game-menu__customization__game input {
+  border: none;
+  padding: 5px;
+  border-radius: 5px;
+  background: #1F2A48;
+  font-size: 1.5rem;
+  width: 70px;
+  color: #FCFCFE;
+}
+.game-menu__customization__game input:focus {
+  outline: 2px solid #0079FE;
+}
+
+.game-menu__customization__form {
+  text-align: left;
+}
+.game-menu__customization__form table {
+  height: 150px;
+}
+
+.game-menu__customization__jet h3 {
+  margin-bottom: 20px;
 }
 
 .game-over-menu {
@@ -666,6 +775,22 @@ body {
   100% {
     opacity: 0;
   }
+}
+.header {
+  margin-top: 40px;
+  margin-bottom: 60px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  padding: 10px;
+  background: #1F2A48;
+}
+
+.header__greeting {
+  margin: 0;
+  margin-right: 30px;
 }
 
 /*# sourceMappingURL=main.css.map */

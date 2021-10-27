@@ -22,6 +22,64 @@
   </head>
 
   <body>
-    <div class="root" id="root"></div>
+    <main class="root" id="root">
+      <header class="header">
+        <h1 class="header__greeting">Welcome to Jet Fighters Online</h1>
+        <button class="btn btn-question">?</button>
+      </header>
+
+      <article class="game-menu">
+        <section class="game-menu__start-buttons">
+          <div class="game-menu__start-buttons__create">
+            <button class="btn btn-menu" id="btn-new-game">
+              Create a new game
+            </button>
+            <div class="game-menu__start-buttons__create__room-id" id="room-id">
+              You haven't created a room yet
+            </div>
+          </div>
+          <form class="game-menu__start-buttons__join" id="join-form">
+            <input type="button" class="btn btn-menu" value="Join a game" />
+            <input
+              type="text"
+              placeholder="Write room code here"
+              id="input-room-id"
+              class="game-menu__start-buttons__create__join-id"
+            />
+          </form>
+        </section>
+        <section class="game-menu__customization">
+          <h3 class="game-menu__customization__title">Customize your game</h3>
+          <div class="game-menu__customization__game">
+            <form class="game-menu__customization__form" id="game-form">
+              <table>
+                <tr>
+                  <td><label for="input-max-score">Max Score: </label></td>
+                  <td><input type="text" value="2" id="input-max-score" /></td>
+                </tr>
+                <tr>
+                  <td><label for="input-map-width">Map Width: </label></td>
+                  <td>
+                    <input type="text" value="600" id="input-map-width" />
+                  </td>
+                </tr>
+                <tr>
+                  <td><label for="input-map-height">Map Height: </label></td>
+                  <td>
+                    <input type="text" value="300" id="input-map-height" />
+                  </td>
+                </tr>
+              </table>
+            </form>
+            <div class="game-menu__customization__jet">
+              <h3>Selected Jet</h3>
+              <button class="btn btn-select-jet">
+                <img src="img/black-jet.webp" alt="black jet" />
+              </button>
+            </div>
+          </div>
+        </section>
+      </article>
+    </main>
   </body>
 </html>

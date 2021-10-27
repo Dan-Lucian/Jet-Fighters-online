@@ -1,28 +1,92 @@
 .game-menu {
+  padding: 50px;
+  border-radius: 10px;
   text-align: center;
+  background: $color-bg-secondary;
+  width: 900px;
 }
 
-.game-menu__buttons {
-  margin-top: 50px;
-  display: flex;
-  align-items: center;
-  width: 500px;
+.game-menu__start-buttons {
+  margin-bottom: 35px;
+  @include flexCenter(row);
   justify-content: space-between;
 }
 
-.game-menu__input {
-  display: block;
-  margin-bottom: 10px;
-  border-radius: 0;
+.game-menu__start-buttons__create,
+.game-menu__start-buttons__join {
+  flex-basis: 45%;
+}
+
+.game-menu__start-buttons__create__room-id {
+  font-size: 1.5rem;
+  margin-top: 20px;
+  padding: 5px;
+  border-radius: 5px;
+  background: $color-bg-main;
+}
+
+.game-menu__start-buttons__create__join-id {
+  margin-top: 20px;
+  height: 43px;
+  width: 100%;
+  font-size: 1.5rem;
   border: none;
+  padding: 5px;
+  border-radius: 5px;
+  background: $color-bg-main;
+  display: block;
+  color: $color-text;
 
   &:focus {
-    outline: 2px solid #000;
+    outline: 2px solid $color-bg-accent;
   }
 }
 
-.room-id {
-  display: none;
-  height: 25px;
-  margin-bottom: 10px;
+.game-menu__customization {
+  font-size: 1.5rem;
+  padding: 35px;
+  @include flexCenter(column);
+  justify-content: space-around;
+  border-radius: 10px;
+  background: $color-bg-main;
+}
+
+.game-menu__customization__title {
+  margin-bottom: 35px;
+  background: $color-bg-secondary;
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+.game-menu__customization__game {
+  width: 100%;
+  @include flexCenter(row);
+  justify-content: space-around;
+
+  input {
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    background: $color-bg-secondary;
+    font-size: 1.5rem;
+    width: 70px;
+    color: $color-text;
+
+    &:focus {
+      outline: 2px solid $color-bg-accent;
+    }
+  }
+}
+
+.game-menu__customization__form {
+  text-align: left;
+  table {
+    height: 150px;
+  }
+}
+
+.game-menu__customization__jet {
+  h3 {
+    margin-bottom: 20px;
+  }
 }

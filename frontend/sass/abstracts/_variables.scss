@@ -1,6 +1,19 @@
-// -----------------------------------------------------------------------------
-// This file contains all application-wide Sass variables.
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------
+// This file contains all application-wide Sass variables
+// ------------------------------------------------------
+
+// App colors
+$color-bg-main: #141C2F;
+$color-bg-secondary: #1F2A48;
+$color-bg-accent: #0079FE;
+$color-bg-fade: #D2D9E5;
+$color-text: #FCFCFE;
+$color-btn-accept: #28B485;
+$color-btn-decline: #DC143C;
+
+// popup message styling
+$color-pop-up-message-bg-light: #000;
+$color-pop-up-message-text-light: #fff;
 
 
 
@@ -26,18 +39,6 @@ $text-color: rgb(34, 34, 34) !default;
 /// @type Color
 $brand-color: rgb(229, 0, 80) !default;
 
-/// Light grey
-/// @type Color
-$light-grey: rgb(237, 237, 237) !default;
-
-/// Medium grey
-/// @type Color
-$mid-grey: rgb(153, 153, 153) !default;
-
-/// Dark grey
-/// @type Color
-$dark-grey: rgb(68, 68, 68) !default;
-
 
 
 
@@ -58,48 +59,3 @@ $breakpoints: (
   'medium': 768px,
   'large': 1024px,
 ) !default;
-
-
-
-
-
-
-/// Relative or absolute URL where all assets are served from
-/// @type String
-/// @example scss - When using a CDN
-///   $base-url: 'http://cdn.example.com/assets/';
-$base-url: '/assets/' !default;
-
-
-// popup message styling
-$color-pop-up-message-bg-light: #000;
-$color-pop-up-message-text-light: #fff;
-
-
-// Colors
-$color-green: #55c57a;
-$color-green-light: #7ed56f;
-$color-green-dark: #28b485;
-
-$color-orange-light:#ffb900;
-$color-orange-dark:#ff7730;
-
-$color-blue-light: #2998ff;
-$color-blue-dark: #5643fa;
-
-$color-mat-black:#141414;
-
-$color-grey-light-1: #f9f7f6;
-$color-grey-light-2:#f7f7f7;
-$color-grey-light-3:#eee;
-$color-grey-light-4: #aaa;
-
-$color-grey-dark-1: #777;
-$color-grey-dark-2: #999;
-$color-grey-dark-3: #333;
-$color-grey-dark-4: #54483A;
-$color-grey-dark-5: #6D5D4B;
-
-
-$color-white: #fff;
-$color-black: #000;

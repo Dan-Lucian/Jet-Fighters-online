@@ -170,41 +170,81 @@ function onKeyUp(e) {
 function renderGameMenu() {
   requestAnimationFrame(() => {
     root.innerHTML = `
-    <div class="game-menu" id="game-menu">
-      <h1>Jet Fighters Online</h1>
-      <div class="game-menu__buttons">
-        <div class="game-menu__buttons__new-game">
-          <div id="room-id" class="room-id">288eud</div>
-          <button type="submit" class="btn" id="btn-new-game">
+    <header class="header">
+      <h1 class="header__greeting">Welcome to Jet Fighters Online</h1>
+      <button class="btn btn-question">?</button>
+    </header>
+
+    <article class="game-menu">
+      <section class="game-menu__start-buttons">
+        <div class="game-menu__start-buttons__create">
+          <button class="btn btn-menu" id="btn-new-game">
             Create a new game
           </button>
+          <div class="game-menu__start-buttons__create__room-id" id="room-id">
+            You haven't created a room yet
+          </div>
         </div>
-        <form class="form" id="form">
+        <form class="game-menu__start-buttons__join" id="join-form">
+          <input type="button" class="btn btn-menu" value="Join a game" />
           <input
             type="text"
-            class="game-menu__input"
-            placeholder="Enter Room Code"
-            id="input-room-code"
+            placeholder="Write room code here"
+            id="input-room-id"
+            class="game-menu__start-buttons__create__join-id"
           />
-          <button class="btn" type="submit" id="btn-join-game">
-            Join Game
-          </button>
         </form>
-      </div>
-    </div>
+      </section>
+      <section class="game-menu__customization">
+        <h3 class="game-menu__customization__title">Customize your game</h3>
+        <div class="game-menu__customization__game">
+          <form class="game-menu__customization__form" id="game-form">
+            <table>
+              <tr>
+                <td><label for="input-max-score">Max Score: </label></td>
+                <td><input type="text" value="2" id="input-max-score" /></td>
+              </tr>
+              <tr>
+                <td><label for="input-map-width">Map Width: </label></td>
+                <td>
+                  <input type="text" value="600" id="input-map-width" />
+                </td>
+              </tr>
+              <tr>
+                <td><label for="input-map-height">Map Height: </label></td>
+                <td>
+                  <input type="text" value="300" id="input-map-height" />
+                </td>
+              </tr>
+            </table>
+          </form>
+          <div class="game-menu__customization__jet">
+            <h3>Selected Jet</h3>
+            <button class="btn btn-select-jet">
+              <img src="img/black-jet.webp" alt="black jet" />
+            </button>
+          </div>
+        </div>
+      </section>
+    </article>
     `;
 
     setTimeout(() => {
       gameMenu = document.getElementById('game-menu');
-      joinForm = document.getElementById('form');
-      input = document.getElementById('input-room-code');
+      joinForm = document.getElementById('join-form');
+      input = document.getElementById('input-room-id');
       btnNewGame = document.getElementById('btn-new-game');
       roomIdElement = document.getElementById('room-id');
+
+      console.log(gameMenu);
+      console.log(joinForm);
+      console.log(input);
+      console.log(btnNewGame);
+      console.log(roomIdElement);
 
       joinForm.onsubmit = onJoinFormSubmit;
       btnNewGame.onclick = handleBtnNewGameClick;
       btnNewGame.disabled = '';
-      roomIdElement.style.display = 'none';
     });
   });
 
