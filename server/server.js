@@ -17,18 +17,12 @@ server.on('connection', (ws) => {
   }
 
   ws.on('message', (messageString) => {
-    // const jsonFromFront = JSON.parse(messageString);
-    const {
-      eventFromClient,
-      joinId,
-      keysStatus,
-      playerNumber,
-      acceptPlayAgain,
-      gameSettings,
-    } = JSON.parse(messageString);
+    const jsonFromFront = JSON.parse(messageString);
+    const { eventFromClient } = jsonFromFront;
 
     // received newRoom event
     if (eventFromClient === 'requestNewRoom') {
+      const { gameSettings } = jsonFromFront;
       console.log(`requestNewRoom`);
 
       // const { gameSettings } = jsonFromFront;
@@ -46,6 +40,7 @@ server.on('connection', (ws) => {
 
     // received joinRoom
     if (eventFromClient === 'requestJoinRoom') {
+      const { joinId } = jsonFromFront;
       console.log('requestJoinRoom');
 
       const { roomStatus } = getRoomStatus(joinId);
@@ -69,6 +64,7 @@ server.on('connection', (ws) => {
       }
 
       if (roomStatus === 'joinable') {
+        const { gameSettings } = jsonFromFront;
         console.log('joinable');
 
         ws.connectionId = joinId; // received with join request
@@ -86,6 +82,7 @@ server.on('connection', (ws) => {
     }
 
     if (eventFromClient === 'keyPressed') {
+      const { keysStatus, playerNumber } = jsonFromFront;
       const jsonKeysStatus = JSON.parse(keysStatus);
       Object.keys(jsonKeysStatus).forEach((prop) => {
         updateServerGameState(
@@ -99,6 +96,7 @@ server.on('connection', (ws) => {
     }
 
     if (eventFromClient === 'requestPlayAgain') {
+      const { gameSettings } = jsonFromFront;
       const { ws1, ws2 } = allRooms.get(ws.connectionId);
       const otherWs = ws === ws1 ? ws2 : ws1;
 
@@ -113,7 +111,9 @@ server.on('connection', (ws) => {
     }
 
     if (eventFromClient === 'responseAskPlayAgain') {
+      const { acceptPlayAgain } = jsonFromFront;
       if (acceptPlayAgain) {
+        const { gameSettings } = jsonFromFront;
         joinRoom(ws.connectionId, gameSettings, ws);
 
         const copyGameSettings = {

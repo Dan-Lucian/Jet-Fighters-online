@@ -28,19 +28,13 @@ function onWsOpen() {
 }
 
 function onWsMessage(message) {
-  const jsonMessage = JSON.parse(message.data);
-  const {
-    eventFromServer,
-    roomId,
-    textMessage,
-    gameState: stringGameState,
-    playerNumber,
-  } = jsonMessage;
-
-  let gameState;
-  if (stringGameState) gameState = JSON.parse(stringGameState);
+  const jsonFromServer = JSON.parse(message.data);
+  const { eventFromServer } = jsonFromServer;
 
   if (eventFromServer === 'gameState') {
+    const { gameState: stringGameState, playerNumber } = jsonFromServer;
+    const gameState = JSON.parse(stringGameState);
+
     if (!isGameRunning) {
       Render.unrenderGameMenu();
       Render.unrenderGameOverMenu();
@@ -56,12 +50,14 @@ function onWsMessage(message) {
   }
 
   if (eventFromServer === 'responseNewRoom') {
+    const { roomId } = jsonFromServer;
     console.log(`Server new room created: ${roomId}`);
     Render.renderRoomId(roomId);
     return;
   }
 
   if (eventFromServer === 'denialJoinRoom') {
+    const { textMessage } = jsonFromServer;
     requestAnimationFrame(() =>
       renderMessage(`Join denial because: ${textMessage}`)
     );
@@ -70,6 +66,7 @@ function onWsMessage(message) {
 
   if (eventFromServer === 'roomDestroyed') {
     console.log('Room destroyed');
+    const { textMessage } = jsonFromServer;
     requestAnimationFrame(() => renderMessage(textMessage));
 
     Render.unrenderGame();
@@ -82,6 +79,9 @@ function onWsMessage(message) {
   }
 
   if (eventFromServer === 'gameOver') {
+    const { gameState: stringGameState, playerNumber } = jsonFromServer;
+    const gameState = JSON.parse(stringGameState);
+
     Render.unrenderGame();
     Render.renderGameOverMenu(gameState, playerNumber);
 
