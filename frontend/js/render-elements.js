@@ -21,6 +21,11 @@ let joinForm;
 let input;
 let btnNewGame;
 let roomIdElement;
+let btnQuestionControls;
+let btnSelectJet;
+let secondaryBtnsSelectJet;
+let btnQuestionPopup;
+let btnSelectJetPopup;
 
 // game over menu elements
 let gameOverMenu;
@@ -172,7 +177,13 @@ function renderGameMenu() {
     root.innerHTML = `
     <header class="header">
       <h1 class="header__greeting">Welcome to Jet Fighters Online</h1>
-      <button class="btn btn-question">?</button>
+      <button class="btn btn-question" id="btn-question-controls">?</button>
+      <div class="btn-question__popup" id="btn-question-popup">
+        <h2>How to play</h2>
+        <p><b>Left arrow</b> - steer left</p>
+       <p><b>Right arrow</b> - steer right</p>
+       <p><b>Spacebar</b> - shoot</p>
+    </div>
     </header>
 
     <article class="game-menu">
@@ -186,7 +197,7 @@ function renderGameMenu() {
           </div>
         </div>
         <form class="game-menu__start-buttons__join" id="join-form">
-          <input type="button" class="btn btn-menu" value="Join a game" />
+          <input type="submit" class="btn btn-menu" value="Join a game" />
           <input
             type="text"
             placeholder="Write room code here"
@@ -220,9 +231,29 @@ function renderGameMenu() {
           </form>
           <div class="game-menu__customization__jet">
             <h3>Selected Jet</h3>
-            <button class="btn btn-select-jet">
+            <button
+              class="btn btn-select-jet"
+              id="btn-select-jet"
+              data-jet-type="black"
+            >
               <img src="img/black-jet.webp" alt="black jet" />
             </button>
+            <div class="btn-select-jet__popup" id="btn-select-jet-popup">
+              <button
+                class="btn btn-select-jet"
+                data-secondary="true"
+                data-jet-type="black"
+              >
+                <img src="img/black-jet.webp" alt="black jet" />
+              </button>
+              <button
+                class="btn btn-select-jet"
+                data-secondary="true"
+                data-jet-type="white"
+              >
+                <img src="img/white-jet.webp" alt="white jet" />
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -230,20 +261,26 @@ function renderGameMenu() {
     `;
 
     setTimeout(() => {
-      gameMenu = document.getElementById('game-menu');
+      // gameMenu = document.getElementById('game-menu');
       joinForm = document.getElementById('join-form');
       input = document.getElementById('input-room-id');
       btnNewGame = document.getElementById('btn-new-game');
       roomIdElement = document.getElementById('room-id');
-
-      console.log(gameMenu);
-      console.log(joinForm);
-      console.log(input);
-      console.log(btnNewGame);
-      console.log(roomIdElement);
+      btnQuestionControls = document.getElementById('btn-question-controls');
+      btnQuestionPopup = document.getElementById('btn-question-popup');
+      btnSelectJet = document.getElementById('btn-select-jet');
+      btnSelectJetPopup = document.getElementById('btn-select-jet-popup');
+      secondaryBtnsSelectJet = document.querySelectorAll(
+        '[data-secondary="true"]'
+      );
 
       joinForm.onsubmit = onJoinFormSubmit;
       btnNewGame.onclick = handleBtnNewGameClick;
+      btnQuestionControls.onclick = handeBtnQuestionControlsClick;
+      btnSelectJet.onclick = handleBtnSelectJetClick;
+      secondaryBtnsSelectJet.forEach(
+        (btn) => (btn.onclick = handleSecondaryBtnSelectJetClick)
+      );
       btnNewGame.disabled = '';
     });
   });
@@ -251,8 +288,8 @@ function renderGameMenu() {
   function onJoinFormSubmit(e) {
     e.preventDefault();
 
-    // if room id code already displayed then ignore submit
-    if (roomIdElement.offsetHeight !== 0) {
+    // if player number already assigned
+    if (getPlayerNumber()) {
       requestAnimationFrame(() =>
         renderMessage('You should wait for the other player')
       );
@@ -279,8 +316,9 @@ function renderGameMenu() {
     });
   }
 
-  async function handleBtnNewGameClick() {
-    if (roomIdElement.offsetHeight !== 0) {
+  function handleBtnNewGameClick() {
+    // if player number already assigned
+    if (getPlayerNumber()) {
       requestAnimationFrame(() =>
         renderMessage('You have already created a room')
       );
@@ -298,11 +336,71 @@ function renderGameMenu() {
       },
     });
   }
+
+  // transition from display none and opacity 0
+  // to display block and opacity 1 with proper animation
+  function handeBtnQuestionControlsClick(e) {
+    console.log('question button clicked');
+    const { x, y, width, height } = e.target.getBoundingClientRect();
+
+    // getComputedStyle because element is display: none
+    const widthPopup = parseInt(getComputedStyle(btnQuestionPopup).width);
+    const xPopup = x - (widthPopup - width) / 2;
+    const yPopup = y + height + window.pageYOffset - 20;
+
+    btnQuestionPopup.style.top = `${yPopup}px`;
+    btnQuestionPopup.style.left = `${xPopup}px`;
+
+    if (btnQuestionPopup.classList.contains('fade-translate-down')) {
+      btnQuestionPopup.ontransitionend = () => {
+        btnQuestionPopup.classList.remove('block');
+      };
+    } else {
+      btnQuestionPopup.ontransitionend = null;
+      btnQuestionPopup.classList.add('block');
+    }
+
+    requestAnimationFrame(() => {
+      btnQuestionPopup.classList.toggle('fade-translate-down');
+    });
+  }
+
+  function handleBtnSelectJetClick(e) {
+    console.log('jet button pressed');
+    const { x, y, width } = e.currentTarget.getBoundingClientRect();
+
+    // getComputedStyle because element is display: none
+    const widthPopup = parseInt(getComputedStyle(btnSelectJetPopup).width);
+    const heightPopup = parseInt(getComputedStyle(btnSelectJetPopup).height);
+    const xPopup = x - (widthPopup - width) / 2;
+    const yPopup = y - heightPopup + window.pageYOffset + 20;
+
+    btnSelectJetPopup.style.top = `${yPopup}px`;
+    btnSelectJetPopup.style.left = `${xPopup}px`;
+
+    if (btnSelectJetPopup.classList.contains('fade-translate-up')) {
+      btnSelectJetPopup.ontransitionend = () => {
+        btnSelectJetPopup.classList.remove('block');
+      };
+    } else {
+      btnSelectJetPopup.ontransitionend = null;
+      btnSelectJetPopup.classList.add('block');
+    }
+
+    requestAnimationFrame(() => {
+      btnSelectJetPopup.classList.toggle('fade-translate-up');
+    });
+  }
+
+  function handleSecondaryBtnSelectJetClick(e) {
+    btnSelectJet.setAttribute('data-jet-type', e.currentTarget.dataset.jetType);
+    btnSelectJet.firstElementChild.src = e.currentTarget.firstElementChild.src;
+    btnSelectJet.firstElementChild.alt = e.currentTarget.firstElementChild.alt;
+  }
 }
 
 function renderRoomId(id) {
   roomIdElement.textContent = `Room Id: ${id}`;
-  roomIdElement.style.display = 'block';
   requestAnimationFrame(() =>
     renderMessage('The game will start when the 2nd player will join this room')
   );

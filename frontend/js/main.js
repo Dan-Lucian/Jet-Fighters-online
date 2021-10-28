@@ -52,6 +52,7 @@ function onWsMessage(message) {
     const { roomId } = jsonFromServer;
     console.log(`Server new room created: ${roomId}`);
     Render.renderRoomId(roomId);
+    player = 'p1';
     return;
   }
 

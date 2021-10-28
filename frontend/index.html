@@ -25,7 +25,13 @@
     <main class="root" id="root">
       <header class="header">
         <h1 class="header__greeting">Welcome to Jet Fighters Online</h1>
-        <button class="btn btn-question">?</button>
+        <button class="btn btn-question" id="btn-question-controls">?</button>
+        <div class="btn-question__popup" id="btn-question-popup">
+          <h2>How to play</h2>
+          <p><b>Left arrow</b> - steer left</p>
+          <p><b>Right arrow</b> - steer right</p>
+          <p><b>Spacebar</b> - shoot</p>
+        </div>
       </header>
 
       <article class="game-menu">
@@ -39,7 +45,7 @@
             </div>
           </div>
           <form class="game-menu__start-buttons__join" id="join-form">
-            <input type="button" class="btn btn-menu" value="Join a game" />
+            <input type="submit" class="btn btn-menu" value="Join a game" />
             <input
               type="text"
               placeholder="Write room code here"
@@ -73,9 +79,29 @@
             </form>
             <div class="game-menu__customization__jet">
               <h3>Selected Jet</h3>
-              <button class="btn btn-select-jet">
+              <button
+                class="btn btn-select-jet"
+                id="btn-select-jet"
+                data-jet-type="black"
+              >
                 <img src="img/black-jet.webp" alt="black jet" />
               </button>
+              <div class="btn-select-jet__popup" id="btn-select-jet-popup">
+                <button
+                  class="btn btn-select-jet"
+                  data-secondary="true"
+                  data-jet-type="black"
+                >
+                  <img src="img/black-jet.webp" alt="black jet" />
+                </button>
+                <button
+                  class="btn btn-select-jet"
+                  data-secondary="true"
+                  data-jet-type="white"
+                >
+                  <img src="img/white-jet.webp" alt="white jet" />
+                </button>
+              </div>
             </div>
           </div>
         </section>
