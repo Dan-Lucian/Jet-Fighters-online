@@ -481,7 +481,7 @@ body {
   transform: scale(2, 2);
 }
 .btn-select-jet:hover {
-  outline: 4px solid #FCFCFE;
+  outline: 5px solid #FCFCFE;
   outline-offset: -4px;
 }
 
