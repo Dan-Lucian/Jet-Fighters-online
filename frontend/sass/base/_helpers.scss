@@ -5,15 +5,18 @@
 .fade-translate-up {
   opacity: 1 !important;
   transform: translate(0, -26px);
+  pointer-events: auto !important;
 }
 
 .fade-translate-down {
   opacity: 1 !important;
   transform: translate(0, 30px);
+  pointer-events: auto !important;
 }
 
 .fade {
   opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 .block {

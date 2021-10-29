@@ -20,7 +20,6 @@
 }
 
 .btn-question__popup {
-  display: none;
   opacity: 0;
   width: 350px;
   position: absolute;
@@ -74,7 +73,6 @@
 }
 
 .btn-select-jet__popup {
-  display: none;
   opacity: 0;
   position: absolute;
   height: 90px;
@@ -85,6 +83,7 @@
   background: $color-text;
   color: $color-text-reverse;
   transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
+  pointer-events: none;
 
   button:first-child {
     margin-right: 5px;

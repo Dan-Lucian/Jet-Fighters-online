@@ -422,23 +422,13 @@ function renderGameMenu() {
   // to display block and opacity 1 with proper animation
   function handeBtnQuestionControlsClick(e) {
     const { x, y, width, height } = e.target.getBoundingClientRect();
+    const { width: widthPopup } = btnQuestionPopup.getBoundingClientRect();
 
-    // getComputedStyle because element is display: none
-    const widthPopup = parseInt(getComputedStyle(btnQuestionPopup).width);
     const xPopup = x - (widthPopup - width) / 2;
     const yPopup = y + height + window.pageYOffset - 20;
 
     btnQuestionPopup.style.top = `${yPopup}px`;
     btnQuestionPopup.style.left = `${xPopup}px`;
-
-    if (btnQuestionPopup.classList.contains('fade-translate-down')) {
-      btnQuestionPopup.ontransitionend = () => {
-        btnQuestionPopup.classList.remove('block');
-      };
-    } else {
-      btnQuestionPopup.ontransitionend = null;
-      btnQuestionPopup.classList.add('block');
-    }
 
     requestAnimationFrame(() => {
       btnQuestionPopup.classList.toggle('fade-translate-down');
@@ -447,28 +437,14 @@ function renderGameMenu() {
 
   function handleBtnSelectJetClick(e) {
     const { x, y, width } = e.currentTarget.getBoundingClientRect();
+    const { height: heightPopup, width: widthPopup } =
+      btnSelectJetPopup.getBoundingClientRect();
 
-    // getComputedStyle because element is display: none
-    const widthPopup = parseInt(getComputedStyle(btnSelectJetPopup).width);
-    const heightPopup = parseInt(getComputedStyle(btnSelectJetPopup).height);
     const xPopup = x - (widthPopup - width) / 2;
     const yPopup = y - heightPopup + window.pageYOffset + 20;
 
     btnSelectJetPopup.style.top = `${yPopup}px`;
     btnSelectJetPopup.style.left = `${xPopup}px`;
-
-    console.log(`widthPopup: ${widthPopup}`);
-    console.log(`width: ${width}`);
-    console.log(`xPopup: ${xPopup}, yPopup: ${yPopup}`);
-
-    if (btnSelectJetPopup.classList.contains('fade-translate-up')) {
-      btnSelectJetPopup.ontransitionend = () => {
-        btnSelectJetPopup.classList.remove('block');
-      };
-    } else {
-      btnSelectJetPopup.ontransitionend = null;
-      btnSelectJetPopup.classList.add('block');
-    }
 
     requestAnimationFrame(() => {
       btnSelectJetPopup.classList.toggle('fade-translate-up');
