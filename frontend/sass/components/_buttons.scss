@@ -13,6 +13,7 @@
   font-size: 3rem;
   font-weight: 700;
   position: relative;
+  z-index: 2;
 
   &:hover {
     background: darken($color-bg-main, 4%);
@@ -32,6 +33,7 @@
   background: $color-bg-fade;
   color: $color-text-reverse;
   transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
+  z-index: 1;
 
   h2 {
     text-align: center;
@@ -62,6 +64,8 @@
   width: 80px;
   height: 80px;
   background: $color-bg-accent;
+  position: relative;
+  z-index: 2;
   img {
     transform: scale(2, 2);
   }
@@ -75,6 +79,7 @@
 .btn-select-jet__popup {
   opacity: 0;
   position: absolute;
+  z-index: 1;
   height: 90px;
   padding: 5px;
   border-radius: 10px;
