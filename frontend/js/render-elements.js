@@ -457,6 +457,10 @@ function renderGameMenu() {
     btnSelectJetPopup.style.top = `${yPopup}px`;
     btnSelectJetPopup.style.left = `${xPopup}px`;
 
+    console.log(`widthPopup: ${widthPopup}`);
+    console.log(`width: ${width}`);
+    console.log(`xPopup: ${xPopup}, yPopup: ${yPopup}`);
+
     if (btnSelectJetPopup.classList.contains('fade-translate-up')) {
       btnSelectJetPopup.ontransitionend = () => {
         btnSelectJetPopup.classList.remove('block');

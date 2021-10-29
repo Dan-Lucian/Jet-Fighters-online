@@ -423,7 +423,7 @@ body {
 .tooltip {
   position: relative;
 }
-.tooltip:hover::after {
+.tooltip::after {
   display: block;
   white-space: nowrap;
   content: attr(data-title);
@@ -434,6 +434,12 @@ body {
   font-size: 1.3rem;
   position: absolute;
   color: #DC143C;
+  opacity: 0;
+  transition: opacity 100ms ease-in-out;
+  pointer-events: none;
+}
+.tooltip:hover::after {
+  opacity: 1;
 }
 
 .btn {

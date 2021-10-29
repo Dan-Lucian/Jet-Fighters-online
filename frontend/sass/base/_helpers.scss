@@ -27,7 +27,7 @@
 .tooltip {
   position: relative;
 
-  &:hover::after {
+  &::after {
     display: block;
     white-space: nowrap;
     content: attr(data-title);
@@ -38,5 +38,12 @@
     font-size: 1.3rem;
     position: absolute;
     color: $color-btn-decline;
+    opacity: 0;
+    transition: opacity 100ms ease-in-out;
+    pointer-events: none;
+  }
+
+  &:hover::after {
+    opacity: 1;
   }
 }
