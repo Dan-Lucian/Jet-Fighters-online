@@ -470,8 +470,8 @@ body {
   opacity: 0;
   width: 350px;
   position: absolute;
-  top: 100%;
-  left: 80%;
+  right: 0;
+  top: 0;
   padding: 1.7rem;
   border-radius: 20px;
   text-align: left;
@@ -480,6 +480,7 @@ body {
   color: #000;
   transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
   z-index: 100;
+  pointer-events: none;
 }
 .btn-question__popup h2 {
   text-align: center;
