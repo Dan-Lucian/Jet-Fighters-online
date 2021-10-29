@@ -42,6 +42,32 @@
   }
 }
 
+.game-menu__start-buttons__join {
+  position: relative;
+  
+  &--already-created::after,
+  &--invalid-id::after {
+    display: block;
+    white-space: nowrap;
+    position: absolute;
+    right: 0;
+    top: -30px;
+    z-index: 2;
+    font-size: 1.3rem;
+    position: absolute;
+    color: $color-btn-decline;
+    pointer-events: none;
+  }
+
+  &--already-created::after {
+    content: attr(data-already-created);
+  }
+
+  &--invalid-id::after {
+    content: attr(data-invalid-id);
+  }
+}
+
 .game-menu__customization {
   font-size: 1.5rem;
   padding: 35px;

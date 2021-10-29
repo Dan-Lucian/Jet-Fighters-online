@@ -13,7 +13,7 @@
   font-size: 3rem;
   font-weight: 700;
   position: relative;
-  z-index: 2;
+  z-index: 200;
 
   &:hover {
     background: darken($color-bg-main, 4%);
@@ -33,7 +33,7 @@
   background: $color-bg-fade;
   color: $color-text-reverse;
   transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
-  z-index: 1;
+  z-index: 100;
 
   h2 {
     text-align: center;
@@ -61,32 +61,29 @@
   }
 }
 
-.btn-create__popup--already-created::after {
-  display: block;
-  white-space: nowrap;
-  position: absolute;
-  right: 0;
-  top: -30px;
-  z-index: 2;
-  font-size: 1.3rem;
-  position: absolute;
-  color: $color-btn-decline;
-  pointer-events: none;
-  content: attr(data-already-created);
-}
+.btn-create__popup {
+  &--already-created::after,
+  &--invalid-form::after {
+    display: block;
+    white-space: nowrap;
+    position: absolute;
+    right: 0;
+    top: -30px;
+    z-index: 2;
+    font-size: 1.3rem;
+    position: absolute;
+    color: $color-btn-decline;
+    pointer-events: none;
+    font-weight: 400;
+  }
 
-.btn-create__popup--invalid-form::after {
-  display: block;
-  white-space: nowrap;
-  position: absolute;
-  right: 0;
-  top: -30px;
-  z-index: 2;
-  font-size: 1.3rem;
-  position: absolute;
-  color: $color-btn-decline;
-  pointer-events: none;
-  content: attr(data-invalid-form);
+  &--already-created::after {
+    content: attr(data-already-created);
+  }
+
+  &--invalid-form::after {
+    content: attr(data-invalid-form);
+  }
 }
 
 .btn-select-jet {

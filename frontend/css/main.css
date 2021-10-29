@@ -460,7 +460,7 @@ body {
   font-size: 3rem;
   font-weight: 700;
   position: relative;
-  z-index: 2;
+  z-index: 200;
 }
 .btn-question:hover {
   background: #0e1321;
@@ -479,7 +479,7 @@ body {
   background: #D2D9E5;
   color: #000;
   transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
-  z-index: 1;
+  z-index: 100;
 }
 .btn-question__popup h2 {
   text-align: center;
@@ -503,7 +503,7 @@ body {
   background: #0055b2;
 }
 
-.btn-create__popup--already-created::after {
+.btn-create__popup--already-created::after, .btn-create__popup--invalid-form::after {
   display: block;
   white-space: nowrap;
   position: absolute;
@@ -514,20 +514,12 @@ body {
   position: absolute;
   color: #DC143C;
   pointer-events: none;
+  font-weight: 400;
+}
+.btn-create__popup--already-created::after {
   content: attr(data-already-created);
 }
-
 .btn-create__popup--invalid-form::after {
-  display: block;
-  white-space: nowrap;
-  position: absolute;
-  right: 0;
-  top: -30px;
-  z-index: 2;
-  font-size: 1.3rem;
-  position: absolute;
-  color: #DC143C;
-  pointer-events: none;
   content: attr(data-invalid-form);
 }
 
@@ -680,6 +672,28 @@ body {
 }
 .game-menu__start-buttons__create__join-id:focus {
   outline: 2px solid #0079FE;
+}
+
+.game-menu__start-buttons__join {
+  position: relative;
+}
+.game-menu__start-buttons__join--already-created::after, .game-menu__start-buttons__join--invalid-id::after {
+  display: block;
+  white-space: nowrap;
+  position: absolute;
+  right: 0;
+  top: -30px;
+  z-index: 2;
+  font-size: 1.3rem;
+  position: absolute;
+  color: #DC143C;
+  pointer-events: none;
+}
+.game-menu__start-buttons__join--already-created::after {
+  content: attr(data-already-created);
+}
+.game-menu__start-buttons__join--invalid-id::after {
+  content: attr(data-invalid-id);
 }
 
 .game-menu__customization {
