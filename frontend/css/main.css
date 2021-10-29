@@ -416,6 +416,26 @@ body {
   display: block !important;
 }
 
+.red-outline {
+  outline: 2px solid #DC143C;
+}
+
+.tooltip {
+  position: relative;
+}
+.tooltip:hover::after {
+  display: block;
+  white-space: nowrap;
+  content: attr(data-title);
+  position: absolute;
+  left: 120%;
+  top: 10px;
+  z-index: 2;
+  font-size: 1.3rem;
+  position: absolute;
+  color: #DC143C;
+}
+
 .btn {
   border: none;
   border-radius: 6px;
@@ -655,6 +675,7 @@ body {
   font-size: 1.5rem;
   width: 70px;
   color: #FCFCFE;
+  position: relative;
 }
 .game-menu__customization__game input:focus {
   outline: 2px solid #0079FE;

@@ -19,3 +19,24 @@
 .block {
   display: block !important;
 }
+
+.red-outline {
+  outline: 2px solid $color-btn-decline;
+}
+
+.tooltip {
+  position: relative;
+
+  &:hover::after {
+    display: block;
+    white-space: nowrap;
+    content: attr(data-title);
+    position: absolute;
+    left: 120%;
+    top: 10px;
+    z-index: 2;
+    font-size: 1.3rem;
+    position: absolute;
+    color: $color-btn-decline;
+  }
+}

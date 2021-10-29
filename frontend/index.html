@@ -57,22 +57,42 @@
         <section class="game-menu__customization">
           <h3 class="game-menu__customization__title">Customize your game</h3>
           <div class="game-menu__customization__game">
-            <form class="game-menu__customization__form" id="form-game-customization">
+            <form
+              class="game-menu__customization__form"
+              id="form-game-customization"
+            >
               <table>
                 <tr>
                   <td><label for="input-max-score">Max Score: </label></td>
-                  <td><input type="text" value="2" id="input-max-score" name="max-score" /></td>
+                  <td data-title="Allowed: 1-50" class="tooltip">
+                    <input
+                      type="text"
+                      value="2"
+                      id="input-max-score"
+                      name="max-score"
+                    />
+                  </td>
                 </tr>
                 <tr>
                   <td><label for="input-map-width">Map Width: </label></td>
-                  <td>
-                    <input type="text" value="600" id="input-map-width" name="map-width" />
+                  <td data-title="Allowed: 100-2000" class="tooltip">
+                    <input
+                      type="text"
+                      value="600"
+                      id="input-map-width"
+                      name="map-width"
+                    />
                   </td>
                 </tr>
                 <tr>
                   <td><label for="input-map-height">Map Height: </label></td>
-                  <td>
-                    <input type="text" value="300" id="input-map-height" name="map-height"/>
+                  <td data-title="Allowed: 100-2000" class="tooltip">
+                    <input
+                      type="text"
+                      value="300"
+                      id="input-map-height"
+                      name="map-height"
+                    />
                   </td>
                 </tr>
               </table>

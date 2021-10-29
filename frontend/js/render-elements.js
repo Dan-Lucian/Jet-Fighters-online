@@ -25,6 +25,7 @@ let btnSelectJet;
 let secondaryBtnsSelectJet;
 let btnQuestionPopup;
 let btnSelectJetPopup;
+let formGameCustomization;
 
 // game over menu elements
 let gameOverMenu;
@@ -188,88 +189,108 @@ function renderGameMenu() {
   requestAnimationFrame(() => {
     root.innerHTML = `
     <header class="header">
-    <h1 class="header__greeting">Welcome to Jet Fighters Online</h1>
-    <button class="btn btn-question" id="btn-question-controls">?</button>
-    <div class="btn-question__popup" id="btn-question-popup">
-      <h2>How to play</h2>
-      <p><b>Left arrow</b> - steer left</p>
-      <p><b>Right arrow</b> - steer right</p>
-      <p><b>Spacebar</b> - shoot</p>
-    </div>
-  </header>
+        <h1 class="header__greeting">Welcome to Jet Fighters Online</h1>
+        <button class="btn btn-question" id="btn-question-controls">?</button>
+        <div class="btn-question__popup" id="btn-question-popup">
+          <h2>How to play</h2>
+          <p><b>Left arrow</b> - steer left</p>
+          <p><b>Right arrow</b> - steer right</p>
+          <p><b>Spacebar</b> - shoot</p>
+        </div>
+      </header>
 
-  <article class="game-menu">
-    <section class="game-menu__start-buttons">
-      <div class="game-menu__start-buttons__create">
-        <button class="btn btn-menu" id="btn-new-game">
-          Create a new game
-        </button>
-        <div class="game-menu__start-buttons__create__room-id" id="room-id">
-          You haven't created a room yet
-        </div>
-      </div>
-      <form class="game-menu__start-buttons__join" id="join-form">
-        <input type="submit" class="btn btn-menu" value="Join a game" />
-        <input
-          type="text"
-          placeholder="Write room code here"
-          id="input-room-id"
-          class="game-menu__start-buttons__create__join-id"
-        />
-      </form>
-    </section>
-    <section class="game-menu__customization">
-      <h3 class="game-menu__customization__title">Customize your game</h3>
-      <div class="game-menu__customization__game">
-        <form class="game-menu__customization__form" id="form-game-customization">
-          <table>
-            <tr>
-              <td><label for="input-max-score">Max Score: </label></td>
-              <td><input type="text" value="2" id="input-max-score" name="max-score" /></td>
-            </tr>
-            <tr>
-              <td><label for="input-map-width">Map Width: </label></td>
-              <td>
-                <input type="text" value="600" id="input-map-width" name="map-width" />
-              </td>
-            </tr>
-            <tr>
-              <td><label for="input-map-height">Map Height: </label></td>
-              <td>
-                <input type="text" value="300" id="input-map-height" name="map-height"/>
-              </td>
-            </tr>
-          </table>
-        </form>
-        <div class="game-menu__customization__jet">
-          <h3>Selected Jet</h3>
-          <button
-            class="btn btn-select-jet"
-            id="btn-select-jet"
-            data-jet-type="black"
-          >
-            <img src="img/black-jet.webp" alt="black jet" />
-          </button>
-          <div class="btn-select-jet__popup" id="btn-select-jet-popup">
-            <button
-              class="btn btn-select-jet"
-              data-secondary="true"
-              data-jet-type="black"
-            >
-              <img src="img/black-jet.webp" alt="black jet" />
+      <article class="game-menu">
+        <section class="game-menu__start-buttons">
+          <div class="game-menu__start-buttons__create">
+            <button class="btn btn-menu" id="btn-new-game">
+              Create a new game
             </button>
-            <button
-              class="btn btn-select-jet"
-              data-secondary="true"
-              data-jet-type="white"
-            >
-              <img src="img/white-jet.webp" alt="white jet" />
-            </button>
+            <div class="game-menu__start-buttons__create__room-id" id="room-id">
+              You haven't created a room yet
+            </div>
           </div>
-        </div>
-      </div>
-    </section>
-  </article>
+          <form class="game-menu__start-buttons__join" id="join-form">
+            <input type="submit" class="btn btn-menu" value="Join a game" />
+            <input
+              type="text"
+              placeholder="Write room code here"
+              id="input-room-id"
+              class="game-menu__start-buttons__create__join-id"
+            />
+          </form>
+        </section>
+        <section class="game-menu__customization">
+          <h3 class="game-menu__customization__title">Customize your game</h3>
+          <div class="game-menu__customization__game">
+            <form
+              class="game-menu__customization__form"
+              id="form-game-customization"
+            >
+              <table>
+                <tr>
+                  <td><label for="input-max-score">Max Score: </label></td>
+                  <td data-title="Allowed: 1-50" class="tooltip">
+                    <input
+                      type="text"
+                      value="2"
+                      id="input-max-score"
+                      name="max-score"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td><label for="input-map-width">Map Width: </label></td>
+                  <td data-title="Allowed: 100-2000" class="tooltip">
+                    <input
+                      type="text"
+                      value="600"
+                      id="input-map-width"
+                      name="map-width"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td><label for="input-map-height">Map Height: </label></td>
+                  <td data-title="Allowed: 100-2000" class="tooltip">
+                    <input
+                      type="text"
+                      value="300"
+                      id="input-map-height"
+                      name="map-height"
+                    />
+                  </td>
+                </tr>
+              </table>
+            </form>
+            <div class="game-menu__customization__jet">
+              <h3>Selected Jet</h3>
+              <button
+                class="btn btn-select-jet"
+                id="btn-select-jet"
+                data-jet-type="black"
+              >
+                <img src="img/black-jet.webp" alt="black jet" />
+              </button>
+              <div class="btn-select-jet__popup" id="btn-select-jet-popup">
+                <button
+                  class="btn btn-select-jet"
+                  data-secondary="true"
+                  data-jet-type="black"
+                >
+                  <img src="img/black-jet.webp" alt="black jet" />
+                </button>
+                <button
+                  class="btn btn-select-jet"
+                  data-secondary="true"
+                  data-jet-type="white"
+                >
+                  <img src="img/white-jet.webp" alt="white jet" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </article>
     `;
 
     setTimeout(() => {
@@ -282,6 +303,9 @@ function renderGameMenu() {
       btnQuestionPopup = document.getElementById('btn-question-popup');
       btnSelectJet = document.getElementById('btn-select-jet');
       btnSelectJetPopup = document.getElementById('btn-select-jet-popup');
+      formGameCustomization = document.getElementById(
+        'form-game-customization'
+      );
       secondaryBtnsSelectJet = document.querySelectorAll(
         '[data-secondary="true"]'
       );
@@ -337,14 +361,47 @@ function renderGameMenu() {
       return;
     }
 
+    clearInvalidOutline();
+    const invalidInputs = getInvalidInputs();
+
+    if (invalidInputs.length) {
+      invalidInputs.forEach((inputElement) => {
+        inputElement.classList.add('red-outline');
+      });
+
+      return;
+    }
+
     sendToServer(getGameCustomization(null));
+  }
+
+  function getInvalidInputs() {
+    const maxScore = +formGameCustomization['max-score'].value;
+    const mapWidth = +formGameCustomization['map-width'].value;
+    const mapHeight = +formGameCustomization['map-height'].value;
+
+    const invalidInputs = [];
+
+    if (Number.isNaN(maxScore) || maxScore < 1 || maxScore > 50)
+      invalidInputs.push(formGameCustomization['max-score']);
+
+    if (Number.isNaN(mapWidth) || mapWidth < 100 || mapWidth > 2000)
+      invalidInputs.push(formGameCustomization['map-width']);
+
+    if (Number.isNaN(mapHeight) || mapHeight < 100 || mapHeight > 2000)
+      invalidInputs.push(formGameCustomization['map-height']);
+
+    return invalidInputs;
+  }
+
+  function clearInvalidOutline() {
+    formGameCustomization['max-score'].classList.remove('red-outline');
+    formGameCustomization['map-width'].classList.remove('red-outline');
+    formGameCustomization['map-height'].classList.remove('red-outline');
   }
 
   function getGameCustomization(joinId) {
     const { jetType } = document.getElementById('btn-select-jet').dataset;
-    const formGameCustomization = document.getElementById(
-      'form-game-customization'
-    );
 
     const mapWidth = formGameCustomization['map-width'].value;
     const mapHeight = formGameCustomization['map-height'].value;
@@ -364,7 +421,6 @@ function renderGameMenu() {
   // transition from display none and opacity 0
   // to display block and opacity 1 with proper animation
   function handeBtnQuestionControlsClick(e) {
-    console.log('question button clicked');
     const { x, y, width, height } = e.target.getBoundingClientRect();
 
     // getComputedStyle because element is display: none
@@ -390,7 +446,6 @@ function renderGameMenu() {
   }
 
   function handleBtnSelectJetClick(e) {
-    console.log('jet button pressed');
     const { x, y, width } = e.currentTarget.getBoundingClientRect();
 
     // getComputedStyle because element is display: none
