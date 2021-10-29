@@ -202,7 +202,12 @@ function renderGameMenu() {
       <article class="game-menu">
         <section class="game-menu__start-buttons">
           <div class="game-menu__start-buttons__create">
-            <button class="btn btn-menu" id="btn-new-game">
+            <button
+              class="btn btn-menu"
+              id="btn-new-game"
+              data-already-created="You have already created a room"
+              data-invalid-form="Invalid game customization"
+            >
               Create a new game
             </button>
             <div class="game-menu__start-buttons__create__room-id" id="room-id">
@@ -355,9 +360,7 @@ function renderGameMenu() {
   function handleBtnNewGameClick() {
     // if player number already assigned
     if (getPlayerNumber()) {
-      requestAnimationFrame(() =>
-        renderMessage('You have already created a room')
-      );
+      btnNewGame.className = 'btn btn-menu btn-create__popup--already-created';
       return;
     }
 
@@ -369,9 +372,15 @@ function renderGameMenu() {
         inputElement.classList.add('red-outline');
       });
 
+      if (btnNewGame.classList.contains('btn-create__popup--already-created'))
+        return;
+
+      btnNewGame.className = 'btn btn-menu btn-create__popup--invalid-form';
+
       return;
     }
 
+    btnNewGame.className = 'btn btn-menu';
     sendToServer(getGameCustomization(null));
   }
 

@@ -497,9 +497,38 @@ body {
   font-size: 2rem;
   font-weight: 700;
   width: 100%;
+  position: relative;
 }
 .btn-menu:hover {
   background: #0055b2;
+}
+
+.btn-create__popup--already-created::after {
+  display: block;
+  white-space: nowrap;
+  position: absolute;
+  right: 0;
+  top: -30px;
+  z-index: 2;
+  font-size: 1.3rem;
+  position: absolute;
+  color: #DC143C;
+  pointer-events: none;
+  content: attr(data-already-created);
+}
+
+.btn-create__popup--invalid-form::after {
+  display: block;
+  white-space: nowrap;
+  position: absolute;
+  right: 0;
+  top: -30px;
+  z-index: 2;
+  font-size: 1.3rem;
+  position: absolute;
+  color: #DC143C;
+  pointer-events: none;
+  content: attr(data-invalid-form);
 }
 
 .btn-select-jet {
