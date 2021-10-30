@@ -43,25 +43,6 @@ const keysStatus = {
   spacePressed: false,
 };
 
-// const jetTypes = {
-//   speedy: {
-//     rotation: 3,
-//     speed: 2,
-//   },
-//   balanced: {
-//     rotation: 4.5,
-//     speed: 1.5,
-//   },
-//   twitchy: {
-//     rotation: 6,
-//     speed: 1,
-//   },
-//   colors: {
-//     white: '#fff',
-//     black: '#000',
-//   },
-// };
-
 function renderGameScreen(gameState) {
   console.log(gameState);
   requestAnimationFrame(() => {
@@ -359,22 +340,14 @@ function renderGameMenu(isFirstRender) {
 
     // if player number already assigned
     if (getPlayerNumber()) {
-      joinForm.className =
-        'game-menu__start-buttons__join ' +
-        'game-menu__start-buttons__join--already-created';
-
+      renderJoinFormPopup('already-created');
       return;
     }
 
     const { value: inputValue } = input;
 
     if (!isInputValid(inputValue, '^r[A-Za-z0-9]{5}$')) {
-      if (btnNewGame.classList.contains('btn-create__popup--already-created'))
-        return;
-
-      joinForm.className =
-        'game-menu__start-buttons__join ' +
-        'game-menu__start-buttons__join--invalid-id';
+      renderJoinFormPopup('invalid-id');
       return;
     }
 
@@ -385,7 +358,7 @@ function renderGameMenu(isFirstRender) {
   function handleBtnNewGameClick() {
     // if player number already assigned
     if (getPlayerNumber()) {
-      btnNewGame.className = 'btn btn-menu btn-create__popup--already-created';
+      renderBtnNewGamePopup('already-created');
       return;
     }
 
@@ -397,19 +370,18 @@ function renderGameMenu(isFirstRender) {
         inputElement.classList.add('red-outline');
       });
 
-      if (btnNewGame.classList.contains('btn-create__popup--already-created'))
-        return;
-
-      btnNewGame.className = 'btn btn-menu btn-create__popup--invalid-form';
-
+      renderBtnNewGamePopup('invalid-form');
       return;
     }
 
-    btnNewGame.className = 'btn btn-menu';
+    renderBtnNewGamePopup();
     console.log(getGameCustomization());
     sendToServer(getGameCustomization());
   }
 
+  //
+  // Save point from the past
+  //
   function getInvalidInputs() {
     const maxScore = +formGameCustomization['max-score'].value;
     const mapWidth = +formGameCustomization['map-width'].value;
@@ -519,26 +491,28 @@ function renderGameMenu(isFirstRender) {
   }
 }
 
-function renderRoomId(id) {
-  roomIdElement.textContent = `Room Id: ${id}`;
-  btnNewGame.className = 'btn btn-menu btn-create__popup--wait';
+function renderBtnNewGamePopup(popupType) {
+  if (popupType) {
+    btnNewGame.className = `btn btn-menu btn-create__popup--${popupType}`;
+    return;
+  }
+  btnNewGame.className = `btn btn-menu`;
 }
 
-function renderJoinDenialMessage(reason) {
-  switch (reason) {
-    case 'notFound':
-      joinForm.className =
-        'game-menu__start-buttons__join ' +
-        'game-menu__start-buttons__join--denial-not-found';
-      return;
-    case 'full':
-      joinForm.className =
-        'game-menu__start-buttons__join ' +
-        'game-menu__start-buttons__join--denial-full';
-      return;
-    default:
-      console.log('uknown denial reason');
+function renderJoinFormPopup(popupType) {
+  if (popupType) {
+    joinForm.className =
+      'game-menu__start-buttons__join ' +
+      `game-menu__start-buttons__join--${popupType}`;
+    return;
   }
+
+  joinForm.className = 'game-menu__start-buttons__join';
+}
+
+function renderRoomId(id) {
+  roomIdElement.textContent = `Room Id: ${id}`;
+  renderBtnNewGamePopup('wait');
 }
 
 function unrenderGameMenu() {
@@ -707,5 +681,5 @@ export {
   renderRoomId,
   renderWsPreonnectionLoadingScreen,
   renderWsConnectionError,
-  renderJoinDenialMessage,
+  renderJoinFormPopup,
 };

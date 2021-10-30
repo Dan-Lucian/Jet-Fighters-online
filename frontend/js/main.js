@@ -59,7 +59,7 @@ function onWsMessage(message) {
 
   if (eventFromServer === 'denialJoinRoom') {
     const { textMessage } = jsonFromServer;
-    Render.renderJoinDenialMessage(textMessage);
+    Render.renderJoinFormPopup(textMessage);
     return;
   }
 

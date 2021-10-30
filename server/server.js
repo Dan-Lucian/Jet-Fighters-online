@@ -25,8 +25,14 @@ server.on('connection', (ws) => {
       const { gameSettings } = jsonFromFront;
       console.log(`requestNewRoom`);
 
-      const roomId = `r${createId(5)}`;
+      // if (!isNewGameDataValid(gameSettings)) {
+      //   sendToClient({
+      //     eventFromServer: 'invalidNewGameForm',
+      //   });
+      //   return;
+      // }
 
+      const roomId = `r${createId(5)}`;
       createRoom(roomId, gameSettings, ws);
       ws.connectionId = roomId;
 
@@ -48,7 +54,7 @@ server.on('connection', (ws) => {
         console.log('notFound');
         sendToClient({
           eventFromServer: 'denialJoinRoom',
-          textMessage: 'notFound',
+          textMessage: 'denial-not-found',
         });
         return;
       }
@@ -57,7 +63,7 @@ server.on('connection', (ws) => {
         console.log('full');
         sendToClient({
           eventFromServer: 'denialJoinRoom',
-          textMessage: 'full',
+          textMessage: 'denial-full',
         });
         return;
       }
@@ -71,6 +77,7 @@ server.on('connection', (ws) => {
         joinRoom(joinId, gameSettings, ws);
 
         const copyGameSettings = { ...allRooms.get(joinId).gameSettings };
+
         const gameState = createGameState(copyGameSettings);
 
         const { ws1 } = allRooms.get(joinId);
@@ -206,3 +213,36 @@ function sendRoomDestroyedAndRemoveIds(roomId, textMessage) {
     }
   }
 }
+
+// function isNewGameDataValid(gameState) {
+//   console.log(gameState);
+
+//   if (!gameState) return false;
+//   if (!gameState.settings || !gameState.p1JetCharacteristics) return false;
+//   if (
+//     !gameState.settings.maxScore ||
+//     !gameState.settings.mapWidth ||
+//     !gameState.settings.mapHeight ||
+//     !gameState.p1JetCharacteristics.color ||
+//     !gameState.p1JetCharacteristics.jetType
+//   )
+//     return false;
+
+//   const { maxScore, mapWidth, mapHeight } = gameState.settings;
+//   const { color, jetType } = gameState.p1JetCharacteristics;
+
+//   if (Number.isNaN(maxScore) || maxScore < 1 || maxScore > 50) return false;
+//   if (Number.isNaN(mapWidth) || mapWidth < 100 || mapWidth > 2000) return false;
+//   if (Number.isNaN(mapHeight) || mapHeight < 100 || mapHeight > 2000)
+//     return false;
+
+//   if (!['#000', '#fff'].includes(color)) return false;
+//   if (!['speedy', 'balanced', 'twitchy'].includes(jetType)) return false;
+
+//   return true;
+// }
+
+// {
+//   settings: { maxScore: 2, mapWidth: 600, mapHeight: 300 },
+//   p1JetCharacteristics: { color: '#000', jetType: 'balanced' }
+// }
