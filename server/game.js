@@ -7,7 +7,7 @@ module.exports = {
   updateServerGameState,
 };
 
-const { FPS, PI, imgW, imgH, canvasW, canvasH } = require('./constants.js');
+const { FPS, PI, imgW, imgH } = require('./constants.js');
 const { getRandomInt } = require('./helpers.js');
 
 const intervalDelay = 1000 / FPS;
@@ -151,7 +151,8 @@ function sendGameOver(ws1, ws2, winPlayer) {
 
 function startGameLoop(ws1, ws2, gameState) {
   allGameStates.set(ws1.connectionId, gameState);
-  resetJetsPosition([gameState.p1, gameState.p2]);
+  const { mapWidth, mapHeight, maxScore } = gameState.settings;
+  resetJetsPosition([gameState.p1, gameState.p2], mapWidth, mapHeight);
 
   const intervalId = setInterval(() => {
     sendGameState(ws1, ws2, gameState);
@@ -162,32 +163,34 @@ function startGameLoop(ws1, ws2, gameState) {
     goTheWayIsFacing(p1);
     goTheWayIsFacing(p2);
 
-    if (isOutOfBounds(p1)) teleportToOppositeSide(p1);
-    if (isOutOfBounds(p2)) teleportToOppositeSide(p2);
+    if (isOutOfBounds(p1, mapWidth, mapHeight))
+      teleportToOppositeSide(p1, mapWidth, mapHeight);
+    if (isOutOfBounds(p2, mapWidth, mapHeight))
+      teleportToOppositeSide(p2, mapWidth, mapHeight);
 
     createNewBulletsIfSpaceWasPressed(p1, p2);
 
     // first player is whose bullets will be updated
-    bulletLanded = updateBulletsState(p1, p2);
+    bulletLanded = updateBulletsState(p1, p2, mapWidth, mapHeight);
     if (bulletLanded) {
       bulletLanded = false;
       incrementScore([p1], 1);
-      resetJetsPosition([p2]);
+      resetJetsPosition([p2], mapWidth, mapHeight);
     }
 
-    bulletLanded = updateBulletsState(p2, p1);
+    bulletLanded = updateBulletsState(p2, p1, mapWidth, mapHeight);
     if (bulletLanded) {
       bulletLanded = false;
       incrementScore([p2], 1);
-      resetJetsPosition([p1]);
+      resetJetsPosition([p1], mapWidth, mapHeight);
     }
 
     if (didJetsCollide(p1, p2)) {
-      resetJetsPosition([p1, p2]);
+      resetJetsPosition([p1, p2], mapWidth, mapHeight);
       incrementScore([p1, p2], 1);
     }
 
-    const winner = getWinner([p1, p2], gameState.settings.maxScore);
+    const winner = getWinner([p1, p2], maxScore);
     if (winner) {
       clearInterval(intervalId);
       sendGameOver(ws1, ws2, winner);
@@ -220,7 +223,7 @@ function createNewBulletsIfSpaceWasPressed(p1, p2) {
   }
 }
 
-function updateBulletsState(player1, player2) {
+function updateBulletsState(player1, player2, mapWidth, mapHeight) {
   for (let i = 0; i < player1.bullets.length; i += 1) {
     goTheWayIsFacing(player1.bullets[i]);
 
@@ -235,8 +238,8 @@ function updateBulletsState(player1, player2) {
       return false;
     }
 
-    if (isOutOfBounds(player1.bullets[i]))
-      teleportToOppositeSide(player1.bullets[i]);
+    if (isOutOfBounds(player1.bullets[i], mapWidth, mapHeight))
+      teleportToOppositeSide(player1.bullets[i], mapWidth, mapHeight);
   }
 }
 
@@ -253,30 +256,30 @@ function didBulletLand(stateEnemyJet, stateBullet) {
     return true;
 }
 
-function resetJetsPosition(jetStates) {
+function resetJetsPosition(jetStates, mapWidth, mapHeight) {
   for (let i = 0; i < jetStates.length; i += 1) {
-    jetStates[i].x = getRandomInt(50, canvasW - 50);
-    jetStates[i].y = getRandomInt(50, canvasH - 50);
+    jetStates[i].x = getRandomInt(40, mapWidth - 40);
+    jetStates[i].y = getRandomInt(40, mapHeight - 40);
 
     jetStates[i].angle = getRandomInt(0, 360);
   }
 }
 
-function isOutOfBounds(state) {
+function isOutOfBounds(state, mapWidth, mapHeight) {
   if (!state) return;
 
   const { x, y } = state;
-  if (x < 0 || x > canvasW || y < 0 || y > canvasH) return true;
+  if (x < 0 || x > mapWidth || y < 0 || y > mapHeight) return true;
 }
 
-function teleportToOppositeSide(state) {
+function teleportToOppositeSide(state, mapWidth, mapHeight) {
   if (!state) return;
 
   const { x, y } = state;
-  if (x < 0) state.x = canvasW;
-  if (x > canvasW) state.x = 0;
-  if (y < 0) state.y = canvasH;
-  if (y > canvasH) state.y = 0;
+  if (x < 0) state.x = mapWidth;
+  if (x > mapWidth) state.x = 0;
+  if (y < 0) state.y = mapHeight;
+  if (y > mapHeight) state.y = 0;
 }
 
 function didJetsCollide(stateJet1, stateJet2) {
