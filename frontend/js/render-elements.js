@@ -410,47 +410,6 @@ function renderGameMenu(isFirstRender) {
     formGameCustomization['map-height'].classList.remove('red-outline');
   }
 
-  function getGameCustomization() {
-    const { jetColor } = document.getElementById('btn-select-jet').dataset;
-
-    const mapWidth = +formGameCustomization['map-width'].value;
-    const mapHeight = +formGameCustomization['map-height'].value;
-    const maxScore = +formGameCustomization['max-score'].value;
-
-    const select = formGameCustomization['jet-type'];
-    const jetType = select.options[select.selectedIndex].value;
-    console.log(`Jet type: ${jetType}`);
-
-    return {
-      eventFromClient: 'requestNewRoom',
-      gameSettings: {
-        settings: { maxScore, mapWidth, mapHeight },
-        p1JetCharacteristics: {
-          color: jetColor,
-          jetType,
-        },
-      },
-    };
-  }
-
-  function getJetCustomization(joinId) {
-    const { jetColor } = document.getElementById('btn-select-jet').dataset;
-
-    const select = formGameCustomization['jet-type'];
-    const jetType = select.options[select.selectedIndex].value;
-
-    return {
-      eventFromClient: 'requestJoinRoom',
-      joinId,
-      gameSettings: {
-        p2JetCharacteristics: {
-          color: jetColor,
-          jetType,
-        },
-      },
-    };
-  }
-
   // transition from display none and opacity 0
   // to display block and opacity 1 with proper animation
   function handeBtnQuestionControlsClick(e) {
@@ -563,13 +522,13 @@ function renderGameOverMenu({ winPlayer }, playerNumber) {
       btnReturnToMainMenu.onclick = handleBtnReturnToMainMenuClick;
 
       if (winPlayer === 'draw') {
-        gameOverMessage.textContent = 'It is a draw';
+        gameOverMessage.textContent = 'Game Over - Draw';
       } else if (winPlayer === playerNumber) {
-        gameOverMessage.textContent = 'You Won';
+        gameOverMessage.textContent = 'Game Over - You Won';
       } else {
-        gameOverMessage.textContent = 'You Lost';
+        gameOverMessage.textContent = 'Game Over - You Lost';
       }
-    }, 100);
+    });
   });
 
   function handleBtnReturnToMainMenuClick() {
@@ -676,6 +635,51 @@ function renderWsConnectionError() {
   root.innerHTML = `
   <div class="connection-message">Connection error, please try again.</div>
   `;
+}
+
+// ------------------------------------------
+// ----------Customization functions---------
+// ------------------------------------------
+
+function getGameCustomization() {
+  const { jetColor } = document.getElementById('btn-select-jet').dataset;
+
+  const mapWidth = +formGameCustomization['map-width'].value;
+  const mapHeight = +formGameCustomization['map-height'].value;
+  const maxScore = +formGameCustomization['max-score'].value;
+
+  const select = formGameCustomization['jet-type'];
+  const jetType = select.options[select.selectedIndex].value;
+  console.log(`Jet type: ${jetType}`);
+
+  return {
+    eventFromClient: 'requestNewRoom',
+    gameSettings: {
+      settings: { maxScore, mapWidth, mapHeight },
+      p1JetCharacteristics: {
+        color: jetColor,
+        jetType,
+      },
+    },
+  };
+}
+
+function getJetCustomization(joinId) {
+  const { jetColor } = document.getElementById('btn-select-jet').dataset;
+
+  const select = formGameCustomization['jet-type'];
+  const jetType = select.options[select.selectedIndex].value;
+
+  return {
+    eventFromClient: 'requestJoinRoom',
+    joinId,
+    gameSettings: {
+      p2JetCharacteristics: {
+        color: jetColor,
+        jetType,
+      },
+    },
+  };
 }
 
 export {
