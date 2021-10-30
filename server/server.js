@@ -72,7 +72,6 @@ server.on('connection', (ws) => {
 
         const copyGameSettings = { ...allRooms.get(joinId).gameSettings };
         const gameState = createGameState(copyGameSettings);
-        console.log(gameState);
 
         const { ws1 } = allRooms.get(joinId);
         ws1.intervalId = startGameLoop(ws1, ws, gameState);

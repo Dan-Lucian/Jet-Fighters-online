@@ -18,18 +18,31 @@ const bulletLifeTime = 150;
 
 const allGameStates = new Map();
 
-function createGameState(gameSettings) {
-  const {
-    rotation: p1Rotation,
-    speed: p1Speed,
-    color: p1Color,
-  } = gameSettings.p1JetCharacteristics;
+const jetTypes = {
+  speedy: {
+    rotation: 3,
+    speed: 2,
+  },
+  balanced: {
+    rotation: 4.5,
+    speed: 1.5,
+  },
+  twitchy: {
+    rotation: 6,
+    speed: 1,
+  },
+  colors: {
+    white: '#fff',
+    black: '#000',
+  },
+};
 
-  const {
-    rotation: p2Rotation,
-    speed: p2Speed,
-    color: p2Color,
-  } = gameSettings.p2JetCharacteristics;
+function createGameState(gameSettings) {
+  const { color: p1Color, jetType: p1JetType } =
+    gameSettings.p1JetCharacteristics;
+
+  const { color: p2Color, jetType: p2JetType } =
+    gameSettings.p2JetCharacteristics;
 
   const { maxScore, roomId, mapWidth, mapHeight } = gameSettings.settings;
 
@@ -38,8 +51,6 @@ function createGameState(gameSettings) {
       x: 20,
       y: 20,
       angle: 0,
-      rotation: p1Rotation,
-      speed: p1Speed,
       scale: 2,
       leftArrowPressed: false,
       rightArrowPressed: false,
@@ -48,13 +59,12 @@ function createGameState(gameSettings) {
       score: 0,
       playerNumber: 'p1',
       color: p1Color,
+      ...jetTypes[p1JetType],
     },
     p2: {
       x: 50,
       y: 50,
       angle: 0,
-      rotation: p2Rotation,
-      speed: p2Speed,
       scale: 2,
       leftArrowPressed: false,
       rightArrowPressed: false,
@@ -63,6 +73,7 @@ function createGameState(gameSettings) {
       score: 0,
       playerNumber: 'p2',
       color: p2Color,
+      ...jetTypes[p2JetType],
     },
     settings: {
       roomId,

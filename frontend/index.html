@@ -69,74 +69,80 @@
         </section>
         <section class="game-menu__customization">
           <h3 class="game-menu__customization__title">Customize your game</h3>
-          <div class="game-menu__customization__game">
-            <form
-              class="game-menu__customization__form"
-              id="form-game-customization"
-            >
-              <table>
-                <tr>
-                  <td><label for="input-max-score">Max Score: </label></td>
-                  <td data-title="Allowed: 1-50" class="tooltip">
-                    <input
-                      type="text"
-                      value="2"
-                      id="input-max-score"
-                      name="max-score"
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td><label for="input-map-width">Map Width: </label></td>
-                  <td data-title="Allowed: 100-2000" class="tooltip">
-                    <input
-                      type="text"
-                      value="600"
-                      id="input-map-width"
-                      name="map-width"
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td><label for="input-map-height">Map Height: </label></td>
-                  <td data-title="Allowed: 100-2000" class="tooltip">
-                    <input
-                      type="text"
-                      value="300"
-                      id="input-map-height"
-                      name="map-height"
-                    />
-                  </td>
-                </tr>
-              </table>
-            </form>
+          <form
+            class="game-menu__customization__form"
+            id="form-game-customization"
+          >
+            <table>
+              <tr>
+                <td><label for="input-max-score">Max Score: </label></td>
+                <td data-title="Allowed: 1-50" class="tooltip">
+                  <input
+                    type="text"
+                    value="2"
+                    id="input-max-score"
+                    name="max-score"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td><label for="input-map-width">Map Width: </label></td>
+                <td data-title="Allowed: 100-2000" class="tooltip">
+                  <input
+                    type="text"
+                    value="600"
+                    id="input-map-width"
+                    name="map-width"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td><label for="input-map-height">Map Height: </label></td>
+                <td data-title="Allowed: 100-2000" class="tooltip">
+                  <input
+                    type="text"
+                    value="300"
+                    id="input-map-height"
+                    name="map-height"
+                  />
+                </td>
+              </tr>
+            </table>
+
             <div class="game-menu__customization__jet">
-              <h3>Selected Jet</h3>
+              <div class="game-menu__customization__jet__type">
+                <label for="select-jet-type">Jet:</label>
+                <select name="jet-type" id="select-jet-type">
+                  <option value="balanced">Balanced</option>
+                  <option value="speedy">Speedy</option>
+                  <option value="twitchy">Twitchy</option>
+                </select>
+              </div>
               <button
                 class="btn btn-select-jet"
                 id="btn-select-jet"
-                data-jet-type="black"
+                data-jet-color="#000"
               >
-                <img src="img/black-jet.webp" alt="black jet" />
+                <img src="img/000-jet.webp" alt="black jet" />
               </button>
               <div class="btn-select-jet__popup" id="btn-select-jet-popup">
                 <button
                   class="btn btn-select-jet"
                   data-secondary="true"
-                  data-jet-type="black"
+                  data-jet-color="#000"
                 >
-                  <img src="img/black-jet.webp" alt="black jet" />
+                  <img src="img/000-jet.webp" alt="black jet" />
                 </button>
                 <button
                   class="btn btn-select-jet"
                   data-secondary="true"
-                  data-jet-type="white"
+                  data-jet-color="#fff"
                 >
-                  <img src="img/white-jet.webp" alt="white jet" />
+                  <img src="img/fff-jet.webp" alt="white jet" />
                 </button>
               </div>
             </div>
-          </div>
+          </form>
         </section>
       </article>
     </main>

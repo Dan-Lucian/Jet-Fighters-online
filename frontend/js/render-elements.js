@@ -4,8 +4,8 @@ import { sendToServer, getPlayerNumber } from './main.js';
 import { isInputValid } from './helpers.js';
 import { Jet } from './canvas-painting.js';
 
-let wJet;
-let bJet;
+let jet1;
+let jet2;
 
 // root element
 const root = document.getElementById('root');
@@ -43,22 +43,32 @@ const keysStatus = {
   spacePressed: false,
 };
 
-const jetTypes = {
-  white: {
-    rotation: 5,
-    speed: 0,
-    color: '#fff',
-  },
-  black: {
-    rotation: 5,
-    speed: 1,
-    color: '#000',
-  },
-};
+// const jetTypes = {
+//   speedy: {
+//     rotation: 3,
+//     speed: 2,
+//   },
+//   balanced: {
+//     rotation: 4.5,
+//     speed: 1.5,
+//   },
+//   twitchy: {
+//     rotation: 6,
+//     speed: 1,
+//   },
+//   colors: {
+//     white: '#fff',
+//     black: '#000',
+//   },
+// };
 
 function renderGameScreen(gameState) {
+  console.log(gameState);
   requestAnimationFrame(() => {
-    // game.style.display = 'block';
+    const { mapHeight, mapWidth } = gameState.settings;
+    const { color: p1Color } = gameState.p1;
+    const { color: p2Color } = gameState.p2;
+
     root.innerHTML = `
       <div class="game" id="game">
         <div class="game__score-p1">
@@ -68,8 +78,8 @@ function renderGameScreen(gameState) {
           Black<br /><span id="score-p2">0</span>
         </div>
         <canvas
-          width="600px"
-          height="300px"
+          width="${mapWidth}px"
+          height="${mapHeight}px"
           id="canvas"
           class="canvas"
         ></canvas>
@@ -77,10 +87,11 @@ function renderGameScreen(gameState) {
     `;
 
     setTimeout(() => {
-      wJet = new Jet('img/white-jet.webp', gameState.p1);
-      bJet = new Jet('img/black-jet.webp', gameState.p2);
-      wJet.setScore(0);
-      bJet.setScore(0);
+      jet1 = new Jet(`img/${p1Color.slice(1)}-jet.webp`, gameState.p1);
+      jet2 = new Jet(`img/${p2Color.slice(1)}-jet.webp`, gameState.p2);
+
+      jet1.setScore(0);
+      jet2.setScore(0);
 
       scoreP1 = document.getElementById('score-p1');
       scoreP2 = document.getElementById('score-p2');
@@ -92,18 +103,18 @@ function renderGameScreen(gameState) {
 }
 
 function renderGame(gameState) {
-  wJet.clearCanvas();
-  wJet.drawBullets(gameState);
+  jet1.clearCanvas();
+  jet1.drawBullets(gameState);
 
-  wJet.draw(gameState.p1);
-  bJet.draw(gameState.p2);
+  jet1.draw(gameState.p1);
+  jet2.draw(gameState.p2);
 
-  if (wJet.hasScoreChanged(gameState.p1.score)) {
-    wJet.setScore(gameState.p1.score);
+  if (jet1.hasScoreChanged(gameState.p1.score)) {
+    jet1.setScore(gameState.p1.score);
     scoreP1.textContent = `${gameState.p1.score}`;
   }
-  if (bJet.hasScoreChanged(gameState.p2.score)) {
-    bJet.setScore(gameState.p2.score);
+  if (jet2.hasScoreChanged(gameState.p2.score)) {
+    jet2.setScore(gameState.p2.score);
     scoreP2.textContent = `${gameState.p2.score}`;
   }
 }
@@ -185,11 +196,12 @@ function onKeyUp(e) {
 // --------Game Menu render/unrender---------
 // ------------------------------------------
 
-function renderGameMenu() {
+function renderGameMenu(isFirstRender) {
   requestAnimationFrame(() => {
-    root.innerHTML = `
+    if (!isFirstRender) {
+      root.innerHTML = `
     <header class="header">
-    <h1 class="header__greeting">Welcome to Jet Fighters Online</h1>
+    <h1 class="header__greeting">(JS Rendered)Welcome to Jet Fighters Online</h1>
     <button class="btn btn-question" id="btn-question-controls">?</button>
     <div class="btn-question__popup" id="btn-question-popup">
       <h2>How to play</h2>
@@ -226,7 +238,7 @@ function renderGameMenu() {
         <input type="submit" class="btn btn-menu" value="Join a game" />
         <input
           type="text"
-          placeholder="Write room code here"
+          placeholder="Write room ID here"
           id="input-room-id"
           class="game-menu__start-buttons__create__join-id"
         />
@@ -234,77 +246,84 @@ function renderGameMenu() {
     </section>
     <section class="game-menu__customization">
       <h3 class="game-menu__customization__title">Customize your game</h3>
-      <div class="game-menu__customization__game">
-        <form
-          class="game-menu__customization__form"
-          id="form-game-customization"
-        >
-          <table>
-            <tr>
-              <td><label for="input-max-score">Max Score: </label></td>
-              <td data-title="Allowed: 1-50" class="tooltip">
-                <input
-                  type="text"
-                  value="2"
-                  id="input-max-score"
-                  name="max-score"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td><label for="input-map-width">Map Width: </label></td>
-              <td data-title="Allowed: 100-2000" class="tooltip">
-                <input
-                  type="text"
-                  value="600"
-                  id="input-map-width"
-                  name="map-width"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td><label for="input-map-height">Map Height: </label></td>
-              <td data-title="Allowed: 100-2000" class="tooltip">
-                <input
-                  type="text"
-                  value="300"
-                  id="input-map-height"
-                  name="map-height"
-                />
-              </td>
-            </tr>
-          </table>
-        </form>
+      <form
+        class="game-menu__customization__form"
+        id="form-game-customization"
+      >
+        <table>
+          <tr>
+            <td><label for="input-max-score">Max Score: </label></td>
+            <td data-title="Allowed: 1-50" class="tooltip">
+              <input
+                type="text"
+                value="2"
+                id="input-max-score"
+                name="max-score"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="input-map-width">Map Width: </label></td>
+            <td data-title="Allowed: 100-2000" class="tooltip">
+              <input
+                type="text"
+                value="600"
+                id="input-map-width"
+                name="map-width"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="input-map-height">Map Height: </label></td>
+            <td data-title="Allowed: 100-2000" class="tooltip">
+              <input
+                type="text"
+                value="300"
+                id="input-map-height"
+                name="map-height"
+              />
+            </td>
+          </tr>
+        </table>
+
         <div class="game-menu__customization__jet">
-          <h3>Selected Jet</h3>
+          <div class="game-menu__customization__jet__type">
+            <label for="select-jet-type">Jet:</label>
+            <select name="jet-type" id="select-jet-type">
+              <option value="balanced">Balanced</option>
+              <option value="speedy">Speedy</option>
+              <option value="twitchy">Twitchy</option>
+            </select>
+          </div>
           <button
             class="btn btn-select-jet"
             id="btn-select-jet"
-            data-jet-type="black"
+            data-jet-color="#000"
           >
-            <img src="img/black-jet.webp" alt="black jet" />
+            <img src="img/000-jet.webp" alt="black jet" />
           </button>
           <div class="btn-select-jet__popup" id="btn-select-jet-popup">
             <button
               class="btn btn-select-jet"
               data-secondary="true"
-              data-jet-type="black"
+              data-jet-color="#000"
             >
-              <img src="img/black-jet.webp" alt="black jet" />
+              <img src="img/000-jet.webp" alt="black jet" />
             </button>
             <button
               class="btn btn-select-jet"
               data-secondary="true"
-              data-jet-type="white"
+              data-jet-color="#fff"
             >
-              <img src="img/white-jet.webp" alt="white jet" />
+              <img src="img/fff-jet.webp" alt="white jet" />
             </button>
           </div>
         </div>
-      </div>
+      </form>
     </section>
   </article>
     `;
+    }
 
     setTimeout(() => {
       // gameMenu = document.getElementById('game-menu');
@@ -330,6 +349,7 @@ function renderGameMenu() {
       secondaryBtnsSelectJet.forEach(
         (btn) => (btn.onclick = handleSecondaryBtnSelectJetClick)
       );
+      formGameCustomization.onsubmit = (e) => e.preventDefault();
       btnNewGame.disabled = '';
     });
   });
@@ -416,31 +436,41 @@ function renderGameMenu() {
   }
 
   function getGameCustomization() {
-    const { jetType } = document.getElementById('btn-select-jet').dataset;
+    const { jetColor } = document.getElementById('btn-select-jet').dataset;
 
     const mapWidth = +formGameCustomization['map-width'].value;
     const mapHeight = +formGameCustomization['map-height'].value;
     const maxScore = +formGameCustomization['max-score'].value;
+
+    const select = formGameCustomization['jet-type'];
+    const jetType = select.options[select.selectedIndex].value;
+    console.log(`Jet type: ${jetType}`);
 
     return {
       eventFromClient: 'requestNewRoom',
       gameSettings: {
         settings: { maxScore, mapWidth, mapHeight },
         p1JetCharacteristics: {
-          ...jetTypes[jetType],
+          color: jetColor,
+          jetType,
         },
       },
     };
   }
 
   function getJetCustomization(joinId) {
-    const { jetType } = document.getElementById('btn-select-jet').dataset;
+    const { jetColor } = document.getElementById('btn-select-jet').dataset;
+
+    const select = formGameCustomization['jet-type'];
+    const jetType = select.options[select.selectedIndex].value;
+
     return {
       eventFromClient: 'requestJoinRoom',
       joinId,
       gameSettings: {
         p2JetCharacteristics: {
-          ...jetTypes[jetType],
+          color: jetColor,
+          jetType,
         },
       },
     };
@@ -480,7 +510,10 @@ function renderGameMenu() {
   }
 
   function handleSecondaryBtnSelectJetClick(e) {
-    btnSelectJet.setAttribute('data-jet-type', e.currentTarget.dataset.jetType);
+    btnSelectJet.setAttribute(
+      'data-jet-color',
+      e.currentTarget.dataset.jetColor
+    );
     btnSelectJet.firstElementChild.src = e.currentTarget.firstElementChild.src;
     btnSelectJet.firstElementChild.alt = e.currentTarget.firstElementChild.alt;
   }

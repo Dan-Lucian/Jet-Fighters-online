@@ -725,15 +725,16 @@ body {
   border-radius: 10px;
 }
 
-.game-menu__customization__game {
+.game-menu__customization__form {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: row;
   justify-content: space-around;
+  text-align: left;
 }
-.game-menu__customization__game input {
+.game-menu__customization__form input {
   border: none;
   padding: 5px;
   border-radius: 5px;
@@ -743,19 +744,30 @@ body {
   color: #FCFCFE;
   position: relative;
 }
-.game-menu__customization__game input:focus {
+.game-menu__customization__form input:focus {
   outline: 2px solid #0079FE;
-}
-
-.game-menu__customization__form {
-  text-align: left;
 }
 .game-menu__customization__form table {
   height: 150px;
 }
 
-.game-menu__customization__jet h3 {
+.game-menu__customization__jet {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.game-menu__customization__jet__type {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
   margin-bottom: 20px;
+}
+.game-menu__customization__jet__type label {
+  margin-right: 20px;
+  font-size: 1.5rem;
 }
 
 .game-over-menu {

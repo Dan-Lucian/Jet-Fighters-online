@@ -94,10 +94,11 @@
   border-radius: 10px;
 }
 
-.game-menu__customization__game {
+.game-menu__customization__form {
   width: 100%;
   @include flexCenter(row);
   justify-content: space-around;
+  text-align: left;
 
   input {
     border: none;
@@ -113,17 +114,22 @@
       outline: 2px solid $color-bg-accent;
     }
   }
-}
 
-.game-menu__customization__form {
-  text-align: left;
   table {
     height: 150px;
   }
 }
 
 .game-menu__customization__jet {
-  h3 {
-    margin-bottom: 20px;
+  @include flexCenter(column);
+}
+
+.game-menu__customization__jet__type {
+  @include flexCenter(row);
+  margin-bottom: 20px;
+
+  label {
+    margin-right: 20px;
+    font-size: 1.5rem;
   }
 }
