@@ -682,4 +682,5 @@ export {
   renderWsPreonnectionLoadingScreen,
   renderWsConnectionError,
   renderJoinFormPopup,
+  renderBtnNewGamePopup,
 };

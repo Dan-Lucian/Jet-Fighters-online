@@ -66,7 +66,7 @@
   &--already-created::after,
   &--invalid-form::after,
   &--wait::after,
-  &--server-invalid-form {
+  &--server-invalid-form::after {
     display: block;
     white-space: nowrap;
     position: absolute;
@@ -92,7 +92,7 @@
     content: attr(data-wait);
   }
 
-  &--server-invalid-form {
+  &--server-invalid-form::after {
     content: attr(data-server-invalid-form);
   }
 }

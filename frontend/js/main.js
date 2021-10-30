@@ -1,5 +1,4 @@
 /* eslint-disable import/no-mutable-exports */
-
 /* eslint-disable import/no-cycle */
 /* eslint-disable no-use-before-define */
 import { info } from './config.js';
@@ -60,6 +59,11 @@ function onWsMessage(message) {
   if (eventFromServer === 'denialJoinRoom') {
     const { textMessage } = jsonFromServer;
     Render.renderJoinFormPopup(textMessage);
+    return;
+  }
+
+  if (eventFromServer === 'invalidNewGameForm') {
+    Render.renderBtnNewGamePopup('server-invalid-form');
     return;
   }
 

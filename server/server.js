@@ -2,6 +2,16 @@
 const WebSocket = require('ws');
 const { createId } = require('./helpers');
 const {
+  supportedJetCollors,
+  supportedJetTypes,
+  supportedMaxWidth,
+  supportedMinWidth,
+  supportedMaxHeight,
+  supportedMinHeight,
+  supportedMaxScore,
+  supportedMinScore,
+} = require('./constants.js');
+const {
   createGameState,
   startGameLoop,
   updateServerGameState,
@@ -25,12 +35,12 @@ server.on('connection', (ws) => {
       const { gameSettings } = jsonFromFront;
       console.log(`requestNewRoom`);
 
-      // if (!isNewGameDataValid(gameSettings)) {
-      //   sendToClient({
-      //     eventFromServer: 'invalidNewGameForm',
-      //   });
-      //   return;
-      // }
+      if (!isNewGameDataValid(gameSettings)) {
+        sendToClient({
+          eventFromServer: 'invalidNewGameForm',
+        });
+        return;
+      }
 
       const roomId = `r${createId(5)}`;
       createRoom(roomId, gameSettings, ws);
@@ -214,35 +224,44 @@ function sendRoomDestroyedAndRemoveIds(roomId, textMessage) {
   }
 }
 
-// function isNewGameDataValid(gameState) {
-//   console.log(gameState);
+function isNewGameDataValid(gameState) {
+  console.log(gameState);
 
-//   if (!gameState) return false;
-//   if (!gameState.settings || !gameState.p1JetCharacteristics) return false;
-//   if (
-//     !gameState.settings.maxScore ||
-//     !gameState.settings.mapWidth ||
-//     !gameState.settings.mapHeight ||
-//     !gameState.p1JetCharacteristics.color ||
-//     !gameState.p1JetCharacteristics.jetType
-//   )
-//     return false;
+  if (!gameState) return false;
+  if (!gameState.settings || !gameState.p1JetCharacteristics) return false;
+  if (
+    !gameState.settings.maxScore ||
+    !gameState.settings.mapWidth ||
+    !gameState.settings.mapHeight ||
+    !gameState.p1JetCharacteristics.color ||
+    !gameState.p1JetCharacteristics.jetType
+  )
+    return false;
 
-//   const { maxScore, mapWidth, mapHeight } = gameState.settings;
-//   const { color, jetType } = gameState.p1JetCharacteristics;
+  const { maxScore, mapWidth, mapHeight } = gameState.settings;
+  const { color, jetType } = gameState.p1JetCharacteristics;
 
-//   if (Number.isNaN(maxScore) || maxScore < 1 || maxScore > 50) return false;
-//   if (Number.isNaN(mapWidth) || mapWidth < 100 || mapWidth > 2000) return false;
-//   if (Number.isNaN(mapHeight) || mapHeight < 100 || mapHeight > 2000)
-//     return false;
+  if (
+    Number.isNaN(maxScore) ||
+    maxScore < supportedMinScore ||
+    maxScore > supportedMaxScore
+  )
+    return false;
+  if (
+    Number.isNaN(mapWidth) ||
+    mapWidth < supportedMinWidth ||
+    mapWidth > supportedMaxWidth
+  )
+    return false;
+  if (
+    Number.isNaN(mapHeight) ||
+    mapHeight < supportedMinHeight ||
+    mapHeight > supportedMaxHeight
+  )
+    return false;
 
-//   if (!['#000', '#fff'].includes(color)) return false;
-//   if (!['speedy', 'balanced', 'twitchy'].includes(jetType)) return false;
+  if (!supportedJetCollors.includes(color)) return false;
+  if (!supportedJetTypes.includes(jetType)) return false;
 
-//   return true;
-// }
-
-// {
-//   settings: { maxScore: 2, mapWidth: 600, mapHeight: 300 },
-//   p1JetCharacteristics: { color: '#000', jetType: 'balanced' }
-// }
+  return true;
+}
