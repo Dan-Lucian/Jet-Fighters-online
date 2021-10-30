@@ -750,6 +750,16 @@ body {
 .game-menu__customization__form input:focus {
   outline: 2px solid #0079FE;
 }
+.game-menu__customization__form select {
+  background: #1F2A48;
+  color: #FCFCFE;
+  border: none;
+  padding: 5px;
+  border-radius: 5px;
+}
+.game-menu__customization__form select:focus {
+  outline: 2px solid #0079FE;
+}
 .game-menu__customization__form table {
   height: 150px;
 }
