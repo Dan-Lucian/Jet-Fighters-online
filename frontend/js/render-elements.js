@@ -482,6 +482,10 @@ function renderGameMenu(isFirstRender) {
   }
 
   function handleSecondaryBtnSelectJetClick(e) {
+    requestAnimationFrame(() => {
+      btnSelectJetPopup.classList.toggle('fade-translate-up');
+    });
+
     btnSelectJet.setAttribute(
       'data-jet-color',
       e.currentTarget.dataset.jetColor
