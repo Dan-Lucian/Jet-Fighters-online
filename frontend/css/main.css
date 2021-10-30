@@ -796,15 +796,15 @@ body {
   font-size: 1.5rem;
 }
 
-.game-over-menu {
-  width: 600px;
-  height: 300px;
-  margin: auto;
-  text-align: center;
+.game-menu-container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
-
-.game-over-menu__play-again-response {
-  margin-top: 30px;
+.game-menu-container h2 {
+  margin-bottom: 40px;
 }
 
 .connection-message {

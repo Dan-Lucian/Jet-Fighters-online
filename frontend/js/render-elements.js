@@ -31,7 +31,7 @@ let formGameCustomization;
 let gameOverMenu;
 let btnPlayAgain;
 let btnReturnToMainMenu;
-let gameOverMenuMessage;
+let gameOverMessage;
 
 // ------------------------------------------
 // -----------Game render/unrender-----------
@@ -555,8 +555,7 @@ function renderGameOverMenu({ winPlayer }, playerNumber) {
 
     setTimeout(() => {
       gameOverMenu = document.getElementById('game-over-menu');
-      gameOverMenuMessage = document.getElementById('game-over-menu__message');
-      btnPlayAgain = document.getElementById('btn-play-again');
+      gameOverMessage = document.getElementById('game-over-message');
       btnPlayAgain = document.getElementById('btn-play-again');
       btnReturnToMainMenu = document.getElementById('btn-return-to-main-menu');
 
@@ -564,11 +563,11 @@ function renderGameOverMenu({ winPlayer }, playerNumber) {
       btnReturnToMainMenu.onclick = handleBtnReturnToMainMenuClick;
 
       if (winPlayer === 'draw') {
-        gameOverMenuMessage.textContent = 'It is a draw';
+        gameOverMessage.textContent = 'It is a draw';
       } else if (winPlayer === playerNumber) {
-        gameOverMenuMessage.textContent = 'You Won';
+        gameOverMessage.textContent = 'You Won';
       } else {
-        gameOverMenuMessage.textContent = 'You Lost';
+        gameOverMessage.textContent = 'You Lost';
       }
     }, 100);
   });
@@ -596,12 +595,12 @@ function renderGameOverMenu({ winPlayer }, playerNumber) {
 }
 
 function unrenderGameOverMenu() {
-  if (!gameOverMenuMessage) return;
+  if (!gameOverMessage) return;
   requestAnimationFrame(() => {
     // game.style.display = 'block';
     root.innerHTML = '';
     gameOverMenu = null;
-    gameOverMenuMessage = null;
+    gameOverMessage = null;
     btnPlayAgain = null;
     btnPlayAgain = null;
     btnReturnToMainMenu = null;
