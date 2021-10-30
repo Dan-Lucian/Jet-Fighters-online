@@ -49,7 +49,7 @@ server.on('connection', (ws) => {
         console.log('notFound');
         sendToClient({
           eventFromServer: 'denialJoinRoom',
-          textMessage: 'Room not found',
+          textMessage: 'notFound',
         });
         return;
       }
@@ -58,7 +58,7 @@ server.on('connection', (ws) => {
         console.log('full');
         sendToClient({
           eventFromServer: 'denialJoinRoom',
-          textMessage: 'Full room',
+          textMessage: 'full',
         });
         return;
       }

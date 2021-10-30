@@ -46,7 +46,9 @@
   position: relative;
 
   &--already-created::after,
-  &--invalid-id::after {
+  &--invalid-id::after,
+  &--denial-not-found::after,
+  &--denial-full::after {
     display: block;
     white-space: nowrap;
     position: absolute;
@@ -65,6 +67,14 @@
 
   &--invalid-id::after {
     content: attr(data-invalid-id);
+  }
+
+  &--denial-not-found::after {
+    content: attr(data-denial-not-found);
+  }
+
+  &--denial-full::after {
+    content: attr(data-denial-full);
   }
 }
 

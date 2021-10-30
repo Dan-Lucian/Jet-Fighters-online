@@ -58,9 +58,7 @@ function onWsMessage(message) {
 
   if (eventFromServer === 'denialJoinRoom') {
     const { textMessage } = jsonFromServer;
-    requestAnimationFrame(() =>
-      renderMessage(`Join denial because: ${textMessage}`)
-    );
+    Render.renderJoinDenialMessage(textMessage);
     return;
   }
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable import/no-cycle */
 import { sendToServer, getPlayerNumber } from './main.js';
-import { renderMessage, isInputValid } from './helpers.js';
+import { isInputValid } from './helpers.js';
 import { Jet } from './canvas-painting.js';
 
 let wJet;
@@ -220,6 +220,8 @@ function renderGameMenu() {
         id="join-form"
         data-already-created="You have already created a room"
         data-invalid-id="Invalid ID"
+        data-denial-not-found="Room not found"
+        data-denial-full="Room is full"
       >
         <input type="submit" class="btn btn-menu" value="Join a game" />
         <input
@@ -356,17 +358,8 @@ function renderGameMenu() {
       return;
     }
 
-    sendToServer({
-      eventFromClient: 'requestJoinRoom',
-      joinId: inputValue,
-      gameSettings: {
-        p2JetCharacteristics: {
-          rotation: 5,
-          speed: 1,
-          color: '#000',
-        },
-      },
-    });
+    console.log(getJetCustomization(inputValue));
+    sendToServer(getJetCustomization(inputValue));
   }
 
   function handleBtnNewGameClick() {
@@ -393,7 +386,8 @@ function renderGameMenu() {
     }
 
     btnNewGame.className = 'btn btn-menu';
-    sendToServer(getGameCustomization(null));
+    console.log(getGameCustomization());
+    sendToServer(getGameCustomization());
   }
 
   function getInvalidInputs() {
@@ -421,7 +415,7 @@ function renderGameMenu() {
     formGameCustomization['map-height'].classList.remove('red-outline');
   }
 
-  function getGameCustomization(joinId) {
+  function getGameCustomization() {
     const { jetType } = document.getElementById('btn-select-jet').dataset;
 
     const mapWidth = formGameCustomization['map-width'].value;
@@ -431,8 +425,21 @@ function renderGameMenu() {
     return {
       eventFromClient: 'requestNewRoom',
       gameSettings: {
-        settings: { maxScore, mapWidth, mapHeight, joinId },
+        settings: { maxScore, mapWidth, mapHeight },
         p1JetCharacteristics: {
+          ...jetTypes[jetType],
+        },
+      },
+    };
+  }
+
+  function getJetCustomization(joinId) {
+    const { jetType } = document.getElementById('btn-select-jet').dataset;
+    return {
+      eventFromClient: 'requestJoinRoom',
+      joinId,
+      gameSettings: {
+        p2JetCharacteristics: {
           ...jetTypes[jetType],
         },
       },
@@ -482,6 +489,23 @@ function renderGameMenu() {
 function renderRoomId(id) {
   roomIdElement.textContent = `Room Id: ${id}`;
   btnNewGame.className = 'btn btn-menu btn-create__popup--wait';
+}
+
+function renderJoinDenialMessage(reason) {
+  switch (reason) {
+    case 'notFound':
+      joinForm.className =
+        'game-menu__start-buttons__join ' +
+        'game-menu__start-buttons__join--denial-not-found';
+      return;
+    case 'full':
+      joinForm.className =
+        'game-menu__start-buttons__join ' +
+        'game-menu__start-buttons__join--denial-full';
+      return;
+    default:
+      console.log('uknown denial reason');
+  }
 }
 
 function unrenderGameMenu() {
@@ -650,4 +674,5 @@ export {
   renderRoomId,
   renderWsPreonnectionLoadingScreen,
   renderWsConnectionError,
+  renderJoinDenialMessage,
 };
