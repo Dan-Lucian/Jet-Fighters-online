@@ -15,7 +15,7 @@ ws.onerror = onWsError;
 ws.onclose = onWsClose;
 
 // will be assigned inside ws connection
-let player = 2;
+let player;
 let isGameRunning = false;
 
 function sendToServer(obj) {

@@ -320,7 +320,7 @@ function renderGameMenu() {
         '[data-secondary="true"]'
       );
 
-      joinForm.onsubmit = onJoinFormSubmit;
+      joinForm.onsubmit = handleJoinFormSubmit;
       btnNewGame.onclick = handleBtnNewGameClick;
       btnQuestionControls.onclick = handeBtnQuestionControlsClick;
       btnSelectJet.onclick = handleBtnSelectJetClick;
@@ -331,7 +331,7 @@ function renderGameMenu() {
     });
   });
 
-  function onJoinFormSubmit(e) {
+  function handleJoinFormSubmit(e) {
     e.preventDefault();
 
     // if player number already assigned
