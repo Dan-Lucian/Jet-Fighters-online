@@ -609,31 +609,43 @@ body {
 
 .game {
   margin: 0 auto;
-  height: 400px;
-  width: 700px;
-  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  background: #1F2A48;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .canvas {
   background: pink;
-  margin: 50px;
+  border-radius: 10px;
 }
 
-.game__score-p1 {
-  font-size: 2.4rem;
-  position: absolute;
-  top: 0;
-  left: 200px;
-  text-align: center;
+.game__scores {
+  margin: 50px 0 30px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  border-radius: 10px;
+  width: 600px;
 }
 
-.game__score-p2 {
+.game__scores__p1,
+.game__scores__p2 {
   font-size: 2.4rem;
-  position: absolute;
-  top: 0;
-  right: 200px;
   text-align: center;
+  background: #1F2A48;
+  border-radius: 10px;
+  padding: 10px;
+  width: 160px;
+}
+
+.game__scores__p1 {
+  margin-right: 120px;
 }
 
 .game-menu {

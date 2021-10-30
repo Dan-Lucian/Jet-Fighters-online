@@ -7,7 +7,7 @@ module.exports = {
   updateServerGameState,
 };
 
-const { FPS, PI, imgW, imgH } = require('./constants.js');
+const { FPS, PI, imgW, imgH, jetTypes } = require('./constants.js');
 const { getRandomInt } = require('./helpers.js');
 
 const intervalDelay = 1000 / FPS;
@@ -17,25 +17,6 @@ const bulletLifeTime = 150;
 // const bulletSpeed = 4.5;
 
 const allGameStates = new Map();
-
-const jetTypes = {
-  speedy: {
-    rotation: 3,
-    speed: 2,
-  },
-  balanced: {
-    rotation: 4.5,
-    speed: 1.5,
-  },
-  twitchy: {
-    rotation: 6,
-    speed: 1,
-  },
-  colors: {
-    white: '#fff',
-    black: '#000',
-  },
-};
 
 function createGameState(gameSettings) {
   const { color: p1Color, jetType: p1JetType } =

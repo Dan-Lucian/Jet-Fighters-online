@@ -51,20 +51,22 @@ function renderGameScreen(gameState) {
     const { color: p2Color } = gameState.p2;
 
     root.innerHTML = `
-      <div class="game" id="game">
-        <div class="game__score-p1">
-          White<br /><span id="score-p1">0</span>
-        </div>
-        <div class="game__score-p2">
-          Black<br /><span id="score-p2">0</span>
-        </div>
-        <canvas
-          width="${mapWidth}px"
-          height="${mapHeight}px"
-          id="canvas"
-          class="canvas"
-        ></canvas>
+    <section class="game__scores">
+      <div class="game__scores__p1">
+        Creator<br /><span id="scores-p1">0</span>
       </div>
+      <div class="game__scores__p2">
+        Joiner<br /><span id="score-p2">0</span>
+      </div>
+    </section>
+    <section class="game" id="game">
+      <canvas
+        width="${mapWidth}px"
+        height="${mapHeight}px"
+        id="canvas"
+        class="canvas"
+      ></canvas>
+    </section>
     `;
 
     setTimeout(() => {
@@ -181,129 +183,130 @@ function renderGameMenu(isFirstRender) {
   requestAnimationFrame(() => {
     if (!isFirstRender) {
       root.innerHTML = `
-    <header class="header">
-    <h1 class="header__greeting">(JS Rendered)Welcome to Jet Fighters Online</h1>
-    <button class="btn btn-question" id="btn-question-controls">?</button>
-    <div class="btn-question__popup" id="btn-question-popup">
-      <h2>How to play</h2>
-      <p><b>Left arrow</b> - steer left</p>
-      <p><b>Right arrow</b> - steer right</p>
-      <p><b>Spacebar</b> - shoot</p>
-    </div>
-  </header>
-
-  <article class="game-menu">
-    <section class="game-menu__start-buttons">
-      <div class="game-menu__start-buttons__create">
-        <button
-          class="btn btn-menu"
-          id="btn-new-game"
-          data-already-created="You have already created a room"
-          data-invalid-form="Invalid game customization"
-          data-wait="Waiting for the other player..."
-        >
-          Create a new game
-        </button>
-        <div class="game-menu__start-buttons__create__room-id" id="room-id">
-          You haven't created a room yet
-        </div>
+      <header class="header">
+      <h1 class="header__greeting">Welcome to Jet Fighters Online</h1>
+      <button class="btn btn-question" id="btn-question-controls">?</button>
+      <div class="btn-question__popup" id="btn-question-popup">
+        <h2>How to play</h2>
+        <p><b>Left arrow</b> - steer left</p>
+        <p><b>Right arrow</b> - steer right</p>
+        <p><b>Spacebar</b> - shoot</p>
       </div>
-      <form
-        class="game-menu__start-buttons__join"
-        id="join-form"
-        data-already-created="You have already created a room"
-        data-invalid-id="Invalid ID"
-        data-denial-not-found="Room not found"
-        data-denial-full="Room is full"
-      >
-        <input type="submit" class="btn btn-menu" value="Join a game" />
-        <input
-          type="text"
-          placeholder="Write room ID here"
-          id="input-room-id"
-          class="game-menu__start-buttons__create__join-id"
-        />
-      </form>
-    </section>
-    <section class="game-menu__customization">
-      <h3 class="game-menu__customization__title">Customize your game</h3>
-      <form
-        class="game-menu__customization__form"
-        id="form-game-customization"
-      >
-        <table>
-          <tr>
-            <td><label for="input-max-score">Max Score: </label></td>
-            <td data-title="Allowed: 1-50" class="tooltip">
-              <input
-                type="text"
-                value="2"
-                id="input-max-score"
-                name="max-score"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td><label for="input-map-width">Map Width: </label></td>
-            <td data-title="Allowed: 100-2000" class="tooltip">
-              <input
-                type="text"
-                value="600"
-                id="input-map-width"
-                name="map-width"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td><label for="input-map-height">Map Height: </label></td>
-            <td data-title="Allowed: 100-2000" class="tooltip">
-              <input
-                type="text"
-                value="300"
-                id="input-map-height"
-                name="map-height"
-              />
-            </td>
-          </tr>
-        </table>
+    </header>
 
-        <div class="game-menu__customization__jet">
-          <div class="game-menu__customization__jet__type">
-            <label for="select-jet-type">Jet:</label>
-            <select name="jet-type" id="select-jet-type">
-              <option value="balanced">Balanced</option>
-              <option value="speedy">Speedy</option>
-              <option value="twitchy">Twitchy</option>
-            </select>
-          </div>
+    <article class="game-menu">
+      <section class="game-menu__start-buttons">
+        <div class="game-menu__start-buttons__create">
           <button
-            class="btn btn-select-jet"
-            id="btn-select-jet"
-            data-jet-color="#000"
+            class="btn btn-menu"
+            id="btn-new-game"
+            data-already-created="You have already created a room"
+            data-invalid-form="Invalid game customization"
+            data-wait="Waiting for the other player..."
+            data-server-invalid-form="Server declined your customization"
           >
-            <img src="img/000-jet.webp" alt="black jet" />
+            Create a new game
           </button>
-          <div class="btn-select-jet__popup" id="btn-select-jet-popup">
+          <div class="game-menu__start-buttons__create__room-id" id="room-id">
+            You haven't created a room yet
+          </div>
+        </div>
+        <form
+          class="game-menu__start-buttons__join"
+          id="join-form"
+          data-already-created="You have already created a room"
+          data-invalid-id="Invalid ID"
+          data-denial-not-found="Room not found"
+          data-denial-full="Room is full"
+        >
+          <input type="submit" class="btn btn-menu" value="Join a game" />
+          <input
+            type="text"
+            placeholder="Write room ID here"
+            id="input-room-id"
+            class="game-menu__start-buttons__create__join-id"
+          />
+        </form>
+      </section>
+      <section class="game-menu__customization">
+        <h3 class="game-menu__customization__title">Customize your game</h3>
+        <form
+          class="game-menu__customization__form"
+          id="form-game-customization"
+        >
+          <table>
+            <tr>
+              <td><label for="input-max-score">Max Score: </label></td>
+              <td data-title="Allowed: 1-50" class="tooltip">
+                <input
+                  type="text"
+                  value="2"
+                  id="input-max-score"
+                  name="max-score"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><label for="input-map-width">Map Width: </label></td>
+              <td data-title="Allowed: 100-2000" class="tooltip">
+                <input
+                  type="text"
+                  value="600"
+                  id="input-map-width"
+                  name="map-width"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><label for="input-map-height">Map Height: </label></td>
+              <td data-title="Allowed: 100-2000" class="tooltip">
+                <input
+                  type="text"
+                  value="300"
+                  id="input-map-height"
+                  name="map-height"
+                />
+              </td>
+            </tr>
+          </table>
+
+          <div class="game-menu__customization__jet">
+            <div class="game-menu__customization__jet__type">
+              <label for="select-jet-type">Jet:</label>
+              <select name="jet-type" id="select-jet-type">
+                <option value="balanced">Balanced</option>
+                <option value="speedy">Speedy</option>
+                <option value="twitchy">Twitchy</option>
+              </select>
+            </div>
             <button
               class="btn btn-select-jet"
-              data-secondary="true"
+              id="btn-select-jet"
               data-jet-color="#000"
             >
               <img src="img/000-jet.webp" alt="black jet" />
             </button>
-            <button
-              class="btn btn-select-jet"
-              data-secondary="true"
-              data-jet-color="#fff"
-            >
-              <img src="img/fff-jet.webp" alt="white jet" />
-            </button>
+            <div class="btn-select-jet__popup" id="btn-select-jet-popup">
+              <button
+                class="btn btn-select-jet"
+                data-secondary="true"
+                data-jet-color="#000"
+              >
+                <img src="img/000-jet.webp" alt="black jet" />
+              </button>
+              <button
+                class="btn btn-select-jet"
+                data-secondary="true"
+                data-jet-color="#fff"
+              >
+                <img src="img/fff-jet.webp" alt="white jet" />
+              </button>
+            </div>
           </div>
-        </div>
-      </form>
-    </section>
-  </article>
-    `;
+        </form>
+      </section>
+    </article>
+      `;
     }
 
     setTimeout(() => {
@@ -495,6 +498,9 @@ function renderGameMenu(isFirstRender) {
   }
 }
 
+// for the popup to work you need a data-popupType html atribute with the text
+// then in the css you stile the ::after based using a class name
+// using js you add that class name
 function renderBtnNewGamePopup(popupType) {
   if (popupType) {
     btnNewGame.className = `btn btn-menu btn-create__popup--${popupType}`;

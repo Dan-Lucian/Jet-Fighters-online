@@ -5,6 +5,25 @@ const imgH = 16;
 const canvasW = 600;
 const canvasH = 300;
 
+const jetTypes = {
+  speedy: {
+    rotation: 3,
+    speed: 2,
+  },
+  balanced: {
+    rotation: 4.5,
+    speed: 1.5,
+  },
+  twitchy: {
+    rotation: 6,
+    speed: 1,
+  },
+  colors: {
+    white: '#fff',
+    black: '#000',
+  },
+};
+
 // needed for server-side validation
 const supportedJetCollors = ['#000', '#fff'];
 const supportedJetTypes = ['speedy', 'balanced', 'twitchy'];
@@ -22,6 +41,7 @@ module.exports = {
   imgH,
   canvasW,
   canvasH,
+  jetTypes,
   supportedJetCollors,
   supportedJetTypes,
   supportedMaxWidth,

@@ -5,9 +5,49 @@ import { info } from './config.js';
 import { renderMessage } from './helpers.js';
 import * as Render from './render-elements.js';
 
+const demoGameState = {
+  p1: {
+    x: 20,
+    y: 20,
+    angle: 0,
+    scale: 2,
+    leftArrowPressed: false,
+    rightArrowPressed: false,
+    spacePressed: false,
+    bullets: [],
+    score: 0,
+    playerNumber: 'p1',
+    color: '#fff',
+    rotation: 6,
+    speed: 1,
+  },
+  p2: {
+    x: 50,
+    y: 50,
+    angle: 0,
+    scale: 2,
+    leftArrowPressed: false,
+    rightArrowPressed: false,
+    spacePressed: false,
+    bullets: [],
+    score: 0,
+    playerNumber: 'p2',
+    color: '#000',
+    rotation: 6,
+    speed: 1,
+  },
+  settings: {
+    roomId: 'r12332',
+    winPlayer: null,
+    maxScore: 10,
+    mapWidth: 500,
+    mapHeight: 200,
+  },
+};
+
 // Render.renderWsPreonnectionLoadingScreen();
-// first arg = isFirstRender
 Render.renderGameMenu(true);
+// Render.renderGameScreen(demoGameState);
 const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
 ws.onopen = onWsOpen;
 ws.onmessage = onWsMessage;
