@@ -44,7 +44,7 @@
 
 .game-menu__start-buttons__join {
   position: relative;
-  
+
   &--already-created::after,
   &--invalid-id::after {
     display: block;

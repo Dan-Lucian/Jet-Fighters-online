@@ -207,6 +207,7 @@ function renderGameMenu() {
           id="btn-new-game"
           data-already-created="You have already created a room"
           data-invalid-form="Invalid game customization"
+          data-wait="Waiting for the other player..."
         >
           Create a new game
         </button>
@@ -480,9 +481,7 @@ function renderGameMenu() {
 
 function renderRoomId(id) {
   roomIdElement.textContent = `Room Id: ${id}`;
-  requestAnimationFrame(() =>
-    renderMessage('The game will start when the 2nd player will join this room')
-  );
+  btnNewGame.className = 'btn btn-menu btn-create__popup--wait';
 }
 
 function unrenderGameMenu() {

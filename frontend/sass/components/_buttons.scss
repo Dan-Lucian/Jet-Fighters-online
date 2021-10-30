@@ -64,7 +64,8 @@
 
 .btn-create__popup {
   &--already-created::after,
-  &--invalid-form::after {
+  &--invalid-form::after,
+  &--wait::after {
     display: block;
     white-space: nowrap;
     position: absolute;
@@ -84,6 +85,10 @@
 
   &--invalid-form::after {
     content: attr(data-invalid-form);
+  }
+
+  &--wait::after {
+    content: attr(data-wait);
   }
 }
 

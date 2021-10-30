@@ -504,7 +504,7 @@ body {
   background: #0055b2;
 }
 
-.btn-create__popup--already-created::after, .btn-create__popup--invalid-form::after {
+.btn-create__popup--already-created::after, .btn-create__popup--invalid-form::after, .btn-create__popup--wait::after {
   display: block;
   white-space: nowrap;
   position: absolute;
@@ -522,6 +522,9 @@ body {
 }
 .btn-create__popup--invalid-form::after {
   content: attr(data-invalid-form);
+}
+.btn-create__popup--wait::after {
+  content: attr(data-wait);
 }
 
 .btn-select-jet {
