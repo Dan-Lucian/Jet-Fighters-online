@@ -25,7 +25,6 @@ server.on('connection', (ws) => {
       const { gameSettings } = jsonFromFront;
       console.log(`requestNewRoom`);
 
-      // const { gameSettings } = jsonFromFront;
       const roomId = `r${createId(5)}`;
 
       createRoom(roomId, gameSettings, ws);
@@ -73,6 +72,7 @@ server.on('connection', (ws) => {
 
         const copyGameSettings = { ...allRooms.get(joinId).gameSettings };
         const gameState = createGameState(copyGameSettings);
+        console.log(gameState);
 
         const { ws1 } = allRooms.get(joinId);
         ws1.intervalId = startGameLoop(ws1, ws, gameState);

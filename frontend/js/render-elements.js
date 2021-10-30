@@ -418,9 +418,9 @@ function renderGameMenu() {
   function getGameCustomization() {
     const { jetType } = document.getElementById('btn-select-jet').dataset;
 
-    const mapWidth = formGameCustomization['map-width'].value;
-    const mapHeight = formGameCustomization['map-height'].value;
-    const maxScore = formGameCustomization['max-score'].value;
+    const mapWidth = +formGameCustomization['map-width'].value;
+    const mapHeight = +formGameCustomization['map-height'].value;
+    const maxScore = +formGameCustomization['max-score'].value;
 
     return {
       eventFromClient: 'requestNewRoom',

@@ -18,7 +18,6 @@ const bulletLifeTime = 150;
 
 const allGameStates = new Map();
 
-// can use this functio to create a user defined game config
 function createGameState(gameSettings) {
   const {
     rotation: p1Rotation,
@@ -32,16 +31,16 @@ function createGameState(gameSettings) {
     color: p2Color,
   } = gameSettings.p2JetCharacteristics;
 
-  const { maxScore, roomId } = gameSettings.settings;
+  const { maxScore, roomId, mapWidth, mapHeight } = gameSettings.settings;
 
   return {
     p1: {
       x: 20,
-      y: 21,
-      angle: 90,
+      y: 20,
+      angle: 0,
       rotation: p1Rotation,
       speed: p1Speed,
-      scale: 1.5,
+      scale: 2,
       leftArrowPressed: false,
       rightArrowPressed: false,
       spacePressed: false,
@@ -51,12 +50,12 @@ function createGameState(gameSettings) {
       color: p1Color,
     },
     p2: {
-      x: 200,
-      y: 20,
+      x: 50,
+      y: 50,
       angle: 0,
       rotation: p2Rotation,
       speed: p2Speed,
-      scale: 1.5,
+      scale: 2,
       leftArrowPressed: false,
       rightArrowPressed: false,
       spacePressed: false,
@@ -69,6 +68,8 @@ function createGameState(gameSettings) {
       roomId,
       winPlayer: null,
       maxScore,
+      mapWidth,
+      mapHeight,
     },
   };
 }
