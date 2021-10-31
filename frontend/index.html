@@ -38,12 +38,15 @@
         <section class="game-menu__start-buttons">
           <div class="game-menu__start-buttons__create">
             <button
-              class="btn btn-menu"
+              class="btn btn-menu ${popupClass}"
               id="btn-new-game"
               data-already-created="You have already created a room"
               data-invalid-form="Invalid game customization"
               data-wait="Waiting for the other player..."
               data-server-invalid-form="Server declined your customization"
+              data-rematch-declined="Rematch request was declined"
+              data-disconnect="Other player diconnected"
+              data-other-exit="Other player left the room"
             >
               Create a new game
             </button>
@@ -58,6 +61,7 @@
             data-invalid-id="Invalid ID"
             data-denial-not-found="Room not found"
             data-denial-full="Room is full"
+            data-server-invalid-form="Server declined your jet customization"
           >
             <input type="submit" class="btn btn-menu" value="Join a game" />
             <input

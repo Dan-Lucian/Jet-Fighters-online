@@ -220,6 +220,7 @@ function renderGameMenu(isFirstRender, popupClass) {
           data-invalid-id="Invalid ID"
           data-denial-not-found="Room not found"
           data-denial-full="Room is full"
+          data-server-invalid-form="Server declined your jet customization"
         >
           <input type="submit" class="btn btn-menu" value="Join a game" />
           <input
@@ -452,7 +453,7 @@ function unrenderGameMenu() {
 // -----Game Over Menu render/unrender-------
 // ------------------------------------------
 
-function renderGameOverMenu({ winPlayer }, playerNumber) {
+function renderGameOverMenu(winPlayer, playerNumber) {
   let gameOverMessage;
 
   if (winPlayer === 'draw') {
@@ -639,9 +640,7 @@ function renderBtnPlayAgainPopup(popupType) {
 
 function unrenderGameOverMenu() {
   requestAnimationFrame(() => {
-    // game.style.display = 'block';
     root.innerHTML = '';
-    // gameOverMenu = null;
     btnPlayAgain = null;
     btnReturnToMainMenu = null;
     btnSelectJet = null;
@@ -755,8 +754,8 @@ function getJetCustomization(joinId) {
   const jetType = select.options[select.selectedIndex].value;
 
   return {
-    eventFromClient: 'requestJoinRoom',
     joinId,
+    eventFromClient: 'requestJoinRoom',
     gameSettings: {
       p2JetCharacteristics: {
         color: jetColor,

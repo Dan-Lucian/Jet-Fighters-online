@@ -18,22 +18,21 @@ const {
 } = require('./game.js');
 
 const server = new WebSocket.Server({ port: '3000' });
-
 const allRooms = new Map();
 
 server.on('connection', (ws) => {
-  function sendToClient(obj) {
-    ws.send(JSON.stringify(obj));
+  function sendToClient(objectData) {
+    ws.send(JSON.stringify(objectData));
   }
 
   ws.on('message', (messageString) => {
     const jsonFromFront = JSON.parse(messageString);
     const { eventFromClient } = jsonFromFront;
 
-    // received newRoom event
+    // request to create a new game
     if (eventFromClient === 'requestNewRoom') {
-      const { gameSettings } = jsonFromFront;
       console.log(`requestNewRoom`);
+      const { gameSettings } = jsonFromFront;
 
       if (!isNewGameDataValid(gameSettings)) {
         sendToClient({
@@ -53,41 +52,57 @@ server.on('connection', (ws) => {
       return;
     }
 
-    // received joinRoom
+    // request to join a room with a given ID
     if (eventFromClient === 'requestJoinRoom') {
-      const { joinId } = jsonFromFront;
       console.log('requestJoinRoom');
-
+      const { joinId } = jsonFromFront;
       const { roomStatus } = getRoomStatus(joinId);
 
       if (roomStatus === 'notFound') {
-        console.log('notFound');
+        console.log('Room notFound');
+
+        // reason sent from server has to match the css class from front
         sendToClient({
           eventFromServer: 'denialJoinRoom',
-          textMessage: 'denial-not-found',
+          reason: 'denial-not-found',
         });
         return;
       }
 
       if (roomStatus === 'full') {
         console.log('full');
+
+        // reason sent from server has to match the css class from front
         sendToClient({
           eventFromServer: 'denialJoinRoom',
-          textMessage: 'denial-full',
+          reason: 'denial-full',
         });
         return;
       }
 
       if (roomStatus === 'joinable') {
-        const { gameSettings } = jsonFromFront;
         console.log('joinable');
+        const { gameSettings } = jsonFromFront;
 
-        ws.connectionId = joinId; // received with join request
+        if (!isJoinGameDataValid(gameSettings)) {
+          sendToClient({
+            eventFromServer: 'invalidJoinGameForm',
+          });
+
+          console.log('join declined');
+          console.log(gameSettings);
+          return;
+        }
+
+        // joinId destructured above, needed there for roomStatus check
+        ws.connectionId = joinId;
 
         joinRoom(joinId, gameSettings, ws);
 
-        const copyGameSettings = { ...allRooms.get(joinId).gameSettings };
-
+        // copy cause no need to keep reference
+        const copyGameSettings = JSON.parse(
+          JSON.stringify(allRooms.get(joinId).gameSettings)
+        );
         const gameState = createGameState(copyGameSettings);
 
         const { ws1 } = allRooms.get(joinId);
@@ -128,6 +143,7 @@ server.on('connection', (ws) => {
 
     if (eventFromClient === 'responseAskPlayAgain') {
       const { acceptPlayAgain } = jsonFromFront;
+
       if (acceptPlayAgain) {
         const { gameSettings } = jsonFromFront;
         joinRoom(ws.connectionId, gameSettings, ws);
@@ -196,7 +212,7 @@ function joinRoom(roomId, additionalGameSettings, ws2) {
 
 function getRoomStatus(id) {
   if (!id) {
-    console.log('no id passed');
+    console.log('No ID provided for checking the room status');
     return;
   }
 
@@ -231,8 +247,6 @@ function sendRoomDestroyedAndRemoveIds(roomId, reason, wsNotToSend = null) {
 }
 
 function isNewGameDataValid(gameState) {
-  console.log(gameState);
-
   if (!gameState) return false;
   if (!gameState.settings || !gameState.p1JetCharacteristics) return false;
   if (
@@ -265,6 +279,23 @@ function isNewGameDataValid(gameState) {
     mapHeight > supportedMaxHeight
   )
     return false;
+
+  if (!supportedJetCollors.includes(color)) return false;
+  if (!supportedJetTypes.includes(jetType)) return false;
+
+  return true;
+}
+
+function isJoinGameDataValid(gameState) {
+  if (!gameState) return false;
+  if (!gameState.p2JetCharacteristics) return false;
+  if (
+    !gameState.p2JetCharacteristics.color ||
+    !gameState.p2JetCharacteristics.jetType
+  )
+    return false;
+
+  const { color, jetType } = gameState.p2JetCharacteristics;
 
   if (!supportedJetCollors.includes(color)) return false;
   if (!supportedJetTypes.includes(jetType)) return false;

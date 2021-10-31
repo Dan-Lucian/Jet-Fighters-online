@@ -727,7 +727,7 @@ body {
 .game-menu__start-buttons__join {
   position: relative;
 }
-.game-menu__start-buttons__join--already-created::after, .game-menu__start-buttons__join--invalid-id::after, .game-menu__start-buttons__join--denial-not-found::after, .game-menu__start-buttons__join--denial-full::after {
+.game-menu__start-buttons__join--already-created::after, .game-menu__start-buttons__join--invalid-id::after, .game-menu__start-buttons__join--denial-not-found::after, .game-menu__start-buttons__join--denial-full::after, .game-menu__start-buttons__join--server-invalid-form::after {
   display: block;
   white-space: nowrap;
   position: absolute;
@@ -750,6 +750,9 @@ body {
 }
 .game-menu__start-buttons__join--denial-full::after {
   content: attr(data-denial-full);
+}
+.game-menu__start-buttons__join--server-invalid-form::after {
+  content: attr(data-server-invalid-form);
 }
 
 .game-menu__customization {

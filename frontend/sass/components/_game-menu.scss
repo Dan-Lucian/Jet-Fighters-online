@@ -48,7 +48,8 @@
   &--already-created::after,
   &--invalid-id::after,
   &--denial-not-found::after,
-  &--denial-full::after {
+  &--denial-full::after,
+  &--server-invalid-form::after {
     display: block;
     white-space: nowrap;
     position: absolute;
@@ -75,6 +76,10 @@
 
   &--denial-full::after {
     content: attr(data-denial-full);
+  }
+
+  &--server-invalid-form::after {
+    content: attr(data-server-invalid-form);
   }
 }
 

@@ -5,46 +5,6 @@ import { info } from './config.js';
 import { renderMessage } from './helpers.js';
 import * as Render from './render-elements.js';
 
-const demoGameState = {
-  p1: {
-    x: 20,
-    y: 20,
-    angle: 0,
-    scale: 2,
-    leftArrowPressed: false,
-    rightArrowPressed: false,
-    spacePressed: false,
-    bullets: [],
-    score: 0,
-    playerNumber: 'p1',
-    color: '#fff',
-    rotation: 6,
-    speed: 1,
-  },
-  p2: {
-    x: 50,
-    y: 50,
-    angle: 0,
-    scale: 2,
-    leftArrowPressed: false,
-    rightArrowPressed: false,
-    spacePressed: false,
-    bullets: [],
-    score: 0,
-    playerNumber: 'p2',
-    color: '#000',
-    rotation: 6,
-    speed: 1,
-  },
-  settings: {
-    roomId: 'r12332',
-    winPlayer: null,
-    maxScore: 10,
-    mapWidth: 500,
-    mapHeight: 200,
-  },
-};
-
 // Render.renderWsPreonnectionLoadingScreen();
 Render.renderGameMenu(true);
 
@@ -70,6 +30,7 @@ function onWsMessage(message) {
   const jsonFromServer = JSON.parse(message.data);
   const { eventFromServer } = jsonFromServer;
 
+  // first check is gameState because performance
   if (eventFromServer === 'gameState') {
     const { gameState: stringGameState, playerNumber } = jsonFromServer;
     const gameState = JSON.parse(stringGameState);
@@ -97,8 +58,9 @@ function onWsMessage(message) {
   }
 
   if (eventFromServer === 'denialJoinRoom') {
-    const { textMessage } = jsonFromServer;
-    Render.renderJoinFormPopup(textMessage);
+    // reason sent from server has to match the css class from front
+    const { reason } = jsonFromServer;
+    Render.renderJoinFormPopup(reason);
     return;
   }
 
@@ -107,10 +69,14 @@ function onWsMessage(message) {
     return;
   }
 
+  if (eventFromServer === 'invalidJoinGameForm') {
+    Render.renderJoinFormPopup('server-invalid-form');
+    return;
+  }
+
   if (eventFromServer === 'roomDestroyed') {
     // reason sent from server has to match with css class
     const { reason } = jsonFromServer;
-    console.log('Room destroyed');
     console.log(`Room destroyed reason: ${reason}`);
 
     Render.unrenderGame();
@@ -128,8 +94,9 @@ function onWsMessage(message) {
     const { gameState: stringGameState, playerNumber } = jsonFromServer;
     const gameState = JSON.parse(stringGameState);
 
+    Render.unrenderGameMenu();
     Render.unrenderGame();
-    Render.renderGameOverMenu(gameState, playerNumber);
+    Render.renderGameOverMenu(gameState.winPlayer, playerNumber);
 
     isGameRunning = false;
     return;
@@ -138,12 +105,6 @@ function onWsMessage(message) {
   if (eventFromServer === 'askPlayAgain') {
     console.log('Other player asked to play again');
     Render.renderAskPlayAgain();
-    return;
-  }
-
-  // can be removed
-  if (eventFromServer === 'playAgainDenied') {
-    console.log('Other player denied to play again');
   }
 }
 
