@@ -47,7 +47,7 @@ const demoGameState = {
 
 // Render.renderWsPreonnectionLoadingScreen();
 Render.renderGameMenu(true);
-// Render.renderGameScreen(demoGameState);
+
 const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
 ws.onopen = onWsOpen;
 ws.onmessage = onWsMessage;

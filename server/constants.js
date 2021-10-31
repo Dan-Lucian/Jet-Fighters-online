@@ -2,25 +2,22 @@ const FPS = 60;
 const { PI } = Math;
 const imgW = 22;
 const imgH = 16;
-const canvasW = 600;
-const canvasH = 300;
+
+const bulletSpeed = 6;
+const bulletLifeTime = 200;
 
 const jetTypes = {
   speedy: {
     rotation: 3,
-    speed: 2,
+    speed: 4,
   },
   balanced: {
     rotation: 4.5,
-    speed: 1.5,
+    speed: 3,
   },
   twitchy: {
     rotation: 6,
-    speed: 1,
-  },
-  colors: {
-    white: '#fff',
-    black: '#000',
+    speed: 2,
   },
 };
 
@@ -39,8 +36,8 @@ module.exports = {
   PI,
   imgW,
   imgH,
-  canvasW,
-  canvasH,
+  bulletSpeed,
+  bulletLifeTime,
   jetTypes,
   supportedJetCollors,
   supportedJetTypes,

@@ -7,15 +7,19 @@ module.exports = {
   updateServerGameState,
 };
 
-const { FPS, PI, imgW, imgH, jetTypes } = require('./constants.js');
+const {
+  FPS,
+  PI,
+  imgW,
+  imgH,
+  jetTypes,
+  bulletLifeTime,
+  bulletSpeed,
+} = require('./constants.js');
 const { getRandomInt } = require('./helpers.js');
 
-const intervalDelay = 1000 / FPS;
-
 // counts in FPS per second
-const bulletLifeTime = 150;
-// const bulletSpeed = 4.5;
-
+const intervalDelay = 1000 / FPS;
 const allGameStates = new Map();
 
 function createGameState(gameSettings) {
@@ -78,7 +82,7 @@ function createBulletFor(player) {
     y: player.y - 1,
     angle: player.angle,
     // speed: player.speed * 2,
-    speed: 3,
+    speed: bulletSpeed,
     color: player.color,
     timeAlive: 0,
   };
