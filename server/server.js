@@ -250,7 +250,7 @@ function getRoomStatus(id) {
 
 // sends roomDestroyed event with a reason
 // 3rd arg specifies which ws not to send the msg to, but still remove id from
-function sendRoomDestroyedAndRemoveIds(roomId, reason, wsNotToSend = null) {
+function sendRoomDestroyedAndRemoveIds(roomId, reason) {
   if (!allRooms.get(roomId)) {
     console.log('attempted to destroy a non existent room');
     return;

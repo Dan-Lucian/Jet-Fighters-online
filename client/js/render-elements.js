@@ -185,8 +185,30 @@ function onKeyUp(e) {
 // ------------------------------------------
 
 function renderGameMenu(isFirstRender, popupClass) {
+  let color = '#000';
+  let jetType = 'balanced';
+  let maxScore = '10';
+  let mapWidth = '800';
+  let mapHeight = '600';
+  const storedGameSettings = JSON.parse(
+    localStorage.getItem('gameCustomization')
+  );
+
+  if (storedGameSettings) {
+    if (storedGameSettings.settings) {
+      maxScore = storedGameSettings.settings.maxScore || '10';
+      mapWidth = storedGameSettings.settings.mapWidth || '800';
+      mapHeight = storedGameSettings.settings.mapHeight || '600';
+    }
+
+    if (storedGameSettings.jetCharacteristics) {
+      color = storedGameSettings.jetCharacteristics.color || '#000';
+      jetType = storedGameSettings.jetCharacteristics.jetType || 'balanced';
+    }
+  }
+
   requestAnimationFrame(() => {
-    if (!isFirstRender) {
+    if (isFirstRender) {
       root.innerHTML = `
       <header class="header">
       <h1 class="header__greeting">Welcome to Jet Fighters Online</h1>
@@ -249,7 +271,7 @@ function renderGameMenu(isFirstRender, popupClass) {
               <td data-title="Allowed: 1-50" class="tooltip">
                 <input
                   type="text"
-                  value="2"
+                  value="${maxScore}"
                   id="input-max-score"
                   name="max-score"
                 />
@@ -260,7 +282,7 @@ function renderGameMenu(isFirstRender, popupClass) {
               <td data-title="Allowed: 100-2000" class="tooltip">
                 <input
                   type="text"
-                  value="600"
+                  value="${mapWidth}"
                   id="input-map-width"
                   name="map-width"
                 />
@@ -271,7 +293,7 @@ function renderGameMenu(isFirstRender, popupClass) {
               <td data-title="Allowed: 100-2000" class="tooltip">
                 <input
                   type="text"
-                  value="300"
+                  value="${mapHeight}"
                   id="input-map-height"
                   name="map-height"
                 />
@@ -283,17 +305,25 @@ function renderGameMenu(isFirstRender, popupClass) {
             <div class="game-menu__customization__jet__type">
               <label for="select-jet-type">Jet:</label>
               <select name="jet-type" id="select-jet-type">
-                <option value="balanced">Balanced</option>
-                <option value="speedy">Speedy</option>
-                <option value="twitchy">Twitchy</option>
+                <option ${
+                  jetType === 'balanced' ? 'selected' : ''
+                } value="balanced">Balanced</option>
+                <option ${
+                  jetType === 'speedy' ? 'selected' : ''
+                } value="speedy">Speedy</option>
+                <option ${
+                  jetType === 'twitchy' ? 'selected' : ''
+                } value="twitchy">Twitchy</option>
               </select>
             </div>
             <button
               class="btn btn-select-jet"
               id="btn-select-jet"
-              data-jet-color="#000"
+              data-jet-color="${color}"
             >
-              <img src="img/000-jet.webp" alt="black jet" />
+              <img src="img/${
+                color === '#000' ? '000' : 'fff'
+              }-jet.webp" alt="black jet" />
             </button>
             <div class="btn-select-jet__popup" id="btn-select-jet-popup">
               <button
@@ -365,6 +395,7 @@ function renderGameMenu(isFirstRender, popupClass) {
     }
 
     const gameCustomization = getJetCustomization(inputValue);
+    console.log('Jet Customization:');
     console.log(gameCustomization);
     sendToServer(gameCustomization);
 
@@ -395,6 +426,7 @@ function renderGameMenu(isFirstRender, popupClass) {
 
     renderBtnNewGamePopup();
     const gameCustomization = getGameCustomization();
+    console.log('Game Customization:');
     console.log(gameCustomization);
     sendToServer(gameCustomization);
 
@@ -452,7 +484,6 @@ function renderRoomId(id) {
 function unrenderGameMenu() {
   if (!gameMenu) return;
   requestAnimationFrame(() => {
-    // game.style.display = 'block';
     root.innerHTML = '';
     joinForm = null;
     input = null;
@@ -472,7 +503,28 @@ function unrenderGameMenu() {
 // ------------------------------------------
 
 function renderGameOverMenu(winPlayer, playerNumber) {
+  let color = '#000';
+  let jetType = 'balanced';
+  let maxScore = '10';
+  let mapWidth = '800';
+  let mapHeight = '600';
   let gameOverMessage;
+  const storedGameSettings = JSON.parse(
+    localStorage.getItem('gameCustomization')
+  );
+
+  if (storedGameSettings) {
+    if (storedGameSettings.settings) {
+      maxScore = storedGameSettings.settings.maxScore || '10';
+      mapWidth = storedGameSettings.settings.mapWidth || '800';
+      mapHeight = storedGameSettings.settings.mapHeight || '600';
+    }
+
+    if (storedGameSettings.jetCharacteristics) {
+      color = storedGameSettings.jetCharacteristics.color || '#000';
+      jetType = storedGameSettings.jetCharacteristics.jetType || 'balanced';
+    }
+  }
 
   if (winPlayer === 'draw') {
     gameOverMessage = 'Game Over - Draw';
@@ -519,7 +571,7 @@ function renderGameOverMenu(winPlayer, playerNumber) {
               <td data-title="Allowed: 1-50" class="tooltip">
                 <input
                   type="text"
-                  value="2"
+                  value="${maxScore}"
                   id="input-max-score"
                   name="max-score"
                 />
@@ -530,7 +582,7 @@ function renderGameOverMenu(winPlayer, playerNumber) {
               <td data-title="Allowed: 100-2000" class="tooltip">
                 <input
                   type="text"
-                  value="600"
+                  value="${mapWidth}"
                   id="input-map-width"
                   name="map-width"
                 />
@@ -541,7 +593,7 @@ function renderGameOverMenu(winPlayer, playerNumber) {
               <td data-title="Allowed: 100-2000" class="tooltip">
                 <input
                   type="text"
-                  value="300"
+                  value="${mapHeight}"
                   id="input-map-height"
                   name="map-height"
                 />
@@ -553,17 +605,25 @@ function renderGameOverMenu(winPlayer, playerNumber) {
             <div class="game-menu__customization__jet__type">
               <label for="select-jet-type">Jet:</label>
               <select name="jet-type" id="select-jet-type">
-                <option value="balanced">Balanced</option>
-                <option value="speedy">Speedy</option>
-                <option value="twitchy">Twitchy</option>
+              <option ${
+                jetType === 'balanced' ? 'selected' : ''
+              } value="balanced">Balanced</option>
+              <option ${
+                jetType === 'speedy' ? 'selected' : ''
+              } value="speedy">Speedy</option>
+              <option ${
+                jetType === 'twitchy' ? 'selected' : ''
+              } value="twitchy">Twitchy</option>
               </select>
             </div>
             <button
               class="btn btn-select-jet"
               id="btn-select-jet"
-              data-jet-color="#000"
+              data-jet-color="${color}"
             >
-              <img src="img/000-jet.webp" alt="black jet" />
+              <img src="img/${
+                color === '#000' ? '000' : 'fff'
+              }-jet.webp" alt="black jet" />
             </button>
             <div class="btn-select-jet__popup" id="btn-select-jet-popup">
               <button
@@ -757,7 +817,6 @@ function getGameCustomization() {
 
   const select = formGameCustomization['jet-type'];
   const jetType = select.options[select.selectedIndex].value;
-  console.log(`Jet type: ${jetType}`);
 
   return {
     eventFromClient: 'requestNewRoom',
