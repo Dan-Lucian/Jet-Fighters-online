@@ -28,10 +28,10 @@ let btnSelectJetPopup;
 let formGameCustomization;
 
 // game over menu elements
-let gameOverMenu;
+// let gameOverMenu;
 let btnPlayAgain;
 let btnReturnToMainMenu;
-let gameOverMessage;
+// let gameOverMessage;
 
 // ------------------------------------------
 // -----------Game render/unrender-----------
@@ -53,7 +53,7 @@ function renderGameScreen(gameState) {
     root.innerHTML = `
     <section class="game__scores">
       <div class="game__scores__p1">
-        Creator<br /><span id="scores-p1">0</span>
+        Creator<br /><span id="score-p1">0</span>
       </div>
       <div class="game__scores__p2">
         Joiner<br /><span id="score-p2">0</span>
@@ -103,9 +103,8 @@ function renderGame(gameState) {
 }
 
 function unrenderGame() {
-  if (!scoreP1 && !scoreP2) return;
+  if (!scoreP1 || !scoreP2) return;
   requestAnimationFrame(() => {
-    // game.style.display = 'block';
     root.innerHTML = '';
     scoreP1 = null;
     scoreP2 = null;
@@ -327,13 +326,14 @@ function renderGameMenu(isFirstRender) {
       );
 
       joinForm.onsubmit = handleJoinFormSubmit;
+      formGameCustomization.onsubmit = (e) => e.preventDefault();
+
       btnNewGame.onclick = handleBtnNewGameClick;
       btnQuestionControls.onclick = handeBtnQuestionControlsClick;
       btnSelectJet.onclick = handleBtnSelectJetClick;
       secondaryBtnsSelectJet.forEach(
         (btn) => (btn.onclick = handleSecondaryBtnSelectJetClick)
       );
-      formGameCustomization.onsubmit = (e) => e.preventDefault();
       btnNewGame.disabled = '';
     });
   });
@@ -382,34 +382,6 @@ function renderGameMenu(isFirstRender) {
     sendToServer(getGameCustomization());
   }
 
-  //
-  // Save point from the past
-  //
-  function getInvalidInputs() {
-    const maxScore = +formGameCustomization['max-score'].value;
-    const mapWidth = +formGameCustomization['map-width'].value;
-    const mapHeight = +formGameCustomization['map-height'].value;
-
-    const invalidInputs = [];
-
-    if (Number.isNaN(maxScore) || maxScore < 1 || maxScore > 50)
-      invalidInputs.push(formGameCustomization['max-score']);
-
-    if (Number.isNaN(mapWidth) || mapWidth < 100 || mapWidth > 2000)
-      invalidInputs.push(formGameCustomization['map-width']);
-
-    if (Number.isNaN(mapHeight) || mapHeight < 100 || mapHeight > 2000)
-      invalidInputs.push(formGameCustomization['map-height']);
-
-    return invalidInputs;
-  }
-
-  function clearInvalidInputsOutline() {
-    formGameCustomization['max-score'].classList.remove('red-outline');
-    formGameCustomization['map-width'].classList.remove('red-outline');
-    formGameCustomization['map-height'].classList.remove('red-outline');
-  }
-
   // transition from display none and opacity 0
   // to display block and opacity 1 with proper animation
   function handeBtnQuestionControlsClick(e) {
@@ -425,35 +397,6 @@ function renderGameMenu(isFirstRender) {
     requestAnimationFrame(() => {
       btnQuestionPopup.classList.toggle('fade-translate-down');
     });
-  }
-
-  function handleBtnSelectJetClick(e) {
-    const { x, y, width } = e.currentTarget.getBoundingClientRect();
-    const { height: heightPopup, width: widthPopup } =
-      btnSelectJetPopup.getBoundingClientRect();
-
-    const xPopup = x - (widthPopup - width) / 2;
-    const yPopup = y - heightPopup + window.pageYOffset + 20;
-
-    btnSelectJetPopup.style.top = `${yPopup}px`;
-    btnSelectJetPopup.style.left = `${xPopup}px`;
-
-    requestAnimationFrame(() => {
-      btnSelectJetPopup.classList.toggle('fade-translate-up');
-    });
-  }
-
-  function handleSecondaryBtnSelectJetClick(e) {
-    requestAnimationFrame(() => {
-      btnSelectJetPopup.classList.toggle('fade-translate-up');
-    });
-
-    btnSelectJet.setAttribute(
-      'data-jet-color',
-      e.currentTarget.dataset.jetColor
-    );
-    btnSelectJet.firstElementChild.src = e.currentTarget.firstElementChild.src;
-    btnSelectJet.firstElementChild.alt = e.currentTarget.firstElementChild.alt;
   }
 }
 
@@ -489,11 +432,16 @@ function unrenderGameMenu() {
   requestAnimationFrame(() => {
     // game.style.display = 'block';
     root.innerHTML = '';
-    gameMenu = null;
     joinForm = null;
     input = null;
     btnNewGame = null;
     roomIdElement = null;
+    btnQuestionControls = null;
+    btnQuestionPopup = null;
+    btnSelectJet = null;
+    btnSelectJetPopup = null;
+    formGameCustomization = null;
+    secondaryBtnsSelectJet = null;
   });
 }
 
@@ -502,32 +450,144 @@ function unrenderGameMenu() {
 // ------------------------------------------
 
 function renderGameOverMenu({ winPlayer }, playerNumber) {
+  let gameOverMessage;
+
+  if (winPlayer === 'draw') {
+    gameOverMessage = 'Game Over - Draw';
+  } else if (winPlayer === playerNumber) {
+    gameOverMessage = 'Game Over - You Won';
+  } else {
+    gameOverMessage = 'Game Over - You Lost';
+  }
+
   requestAnimationFrame(() => {
     root.innerHTML = `
-      <div class="game-over-menu" id="game-over-menu">
-        <h1>Game Over</h1>
-        <p id="game-over-menu__message"></p>
-        <button class="btn" id="btn-return-to-main-menu">Return to main menu</button>
-        <button class="btn" id="btn-play-again">Play again</button>
-      </div>
+    <div class="game-menu-container">
+    <article class="game-menu game-menu--over">
+      <h2 id="game-over-message">${gameOverMessage}</h2>
+      <section class="game-menu__start-buttons">
+        <div class="game-menu__start-buttons__create">
+          <button
+            class="btn btn-menu"
+            id="btn-return-to-main-menu"
+            data-already-created="You have already created a room"
+          >
+            Return to main menu
+          </button>
+        </div>
+        <div class="game-menu__start-buttons__join">
+          <button
+            class="btn btn-menu"
+            id="btn-play-again"
+            data-invalid-form="Invalid game customization"
+          >
+            Request a rematch
+          </button>
+        </div>
+      </section>
+      <section class="game-menu__customization">
+        <h3 class="game-menu__customization__title">Customize your game</h3>
+        <form
+          class="game-menu__customization__form"
+          id="form-game-customization"
+        >
+          <table>
+            <tr>
+              <td><label for="input-max-score">Max Score: </label></td>
+              <td data-title="Allowed: 1-50" class="tooltip">
+                <input
+                  type="text"
+                  value="2"
+                  id="input-max-score"
+                  name="max-score"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><label for="input-map-width">Map Width: </label></td>
+              <td data-title="Allowed: 100-2000" class="tooltip">
+                <input
+                  type="text"
+                  value="600"
+                  id="input-map-width"
+                  name="map-width"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><label for="input-map-height">Map Height: </label></td>
+              <td data-title="Allowed: 100-2000" class="tooltip">
+                <input
+                  type="text"
+                  value="300"
+                  id="input-map-height"
+                  name="map-height"
+                />
+              </td>
+            </tr>
+          </table>
+
+          <div class="game-menu__customization__jet">
+            <div class="game-menu__customization__jet__type">
+              <label for="select-jet-type">Jet:</label>
+              <select name="jet-type" id="select-jet-type">
+                <option value="balanced">Balanced</option>
+                <option value="speedy">Speedy</option>
+                <option value="twitchy">Twitchy</option>
+              </select>
+            </div>
+            <button
+              class="btn btn-select-jet"
+              id="btn-select-jet"
+              data-jet-color="#000"
+            >
+              <img src="img/000-jet.webp" alt="black jet" />
+            </button>
+            <div class="btn-select-jet__popup" id="btn-select-jet-popup">
+              <button
+                class="btn btn-select-jet"
+                data-secondary="true"
+                data-jet-color="#000"
+              >
+                <img src="img/000-jet.webp" alt="black jet" />
+              </button>
+              <button
+                class="btn btn-select-jet"
+                data-secondary="true"
+                data-jet-color="#fff"
+              >
+                <img src="img/fff-jet.webp" alt="white jet" />
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+    </article>
+  </div>
     `;
 
     setTimeout(() => {
-      gameOverMenu = document.getElementById('game-over-menu');
-      gameOverMessage = document.getElementById('game-over-message');
+      // gameOverMenu = document.getElementById('game-over-menu');
+      // gameOverMessage = document.getElementById('game-over-message');
       btnPlayAgain = document.getElementById('btn-play-again');
       btnReturnToMainMenu = document.getElementById('btn-return-to-main-menu');
+      btnSelectJet = document.getElementById('btn-select-jet');
+      btnSelectJetPopup = document.getElementById('btn-select-jet-popup');
+      formGameCustomization = document.getElementById(
+        'form-game-customization'
+      );
+      secondaryBtnsSelectJet = document.querySelectorAll(
+        '[data-secondary="true"]'
+      );
+
+      btnSelectJet.onclick = handleBtnSelectJetClick;
+      secondaryBtnsSelectJet.forEach(
+        (btn) => (btn.onclick = handleSecondaryBtnSelectJetClick)
+      );
+      formGameCustomization.onsubmit = (e) => e.preventDefault();
 
       btnPlayAgain.onclick = handleBtnPlayAgainClick;
       btnReturnToMainMenu.onclick = handleBtnReturnToMainMenuClick;
-
-      if (winPlayer === 'draw') {
-        gameOverMessage.textContent = 'Game Over - Draw';
-      } else if (winPlayer === playerNumber) {
-        gameOverMessage.textContent = 'Game Over - You Won';
-      } else {
-        gameOverMessage.textContent = 'Game Over - You Lost';
-      }
     });
   });
 
@@ -539,42 +599,74 @@ function renderGameOverMenu({ winPlayer }, playerNumber) {
   }
 
   function handleBtnPlayAgainClick() {
-    sendToServer({
-      eventFromClient: 'requestPlayAgain',
-      gameSettings: {
-        settings: { maxScore: 2 },
-        p1JetCharacteristics: {
-          rotation: 3,
-          speed: 0,
-          color: '#fff',
-        },
-      },
-    });
+    // if player number already assigned
+
+    clearInvalidInputsOutline();
+    const invalidInputs = getInvalidInputs();
+
+    if (invalidInputs.length) {
+      invalidInputs.forEach((inputElement) => {
+        inputElement.classList.add('red-outline');
+      });
+
+      renderBtnPlayAgainPopup('invalid-form');
+      return;
+    }
+
+    renderBtnPlayAgainPopup();
+
+    const gameCustomization = getGameCustomization();
+    gameCustomization.eventFromClient = 'requestPlayAgain';
+
+    console.log(gameCustomization);
+    sendToServer(gameCustomization);
+
+    // sendToServer({
+    //   eventFromClient: 'requestPlayAgain',
+    //   gameSettings: {
+    //     settings: { maxScore: 2 },
+    //     p1JetCharacteristics: {
+    //       rotation: 3,
+    //       speed: 0,
+    //       color: '#fff',
+    //     },
+    //   },
+    // });
   }
 }
 
+function renderBtnPlayAgainPopup(popupType) {
+  if (popupType) {
+    btnPlayAgain.className = `btn btn-menu btn-create__popup--${popupType}`;
+    return;
+  }
+  btnPlayAgain.className = `btn btn-menu`;
+}
+
 function unrenderGameOverMenu() {
-  if (!gameOverMessage) return;
   requestAnimationFrame(() => {
     // game.style.display = 'block';
     root.innerHTML = '';
-    gameOverMenu = null;
-    gameOverMessage = null;
-    btnPlayAgain = null;
+    // gameOverMenu = null;
     btnPlayAgain = null;
     btnReturnToMainMenu = null;
+    btnSelectJet = null;
+    btnSelectJetPopup = null;
+    formGameCustomization = null;
+    secondaryBtnsSelectJet = null;
   });
 }
 
 function renderAskPlayAgain() {
-  gameOverMenu.insertAdjacentHTML(
+  root.insertAdjacentHTML(
     'beforeend',
     `
-    <div class="game-over-menu__play-again-response">
-      <p>Other player asks to play again, do you agree?</p>
-      <button class="btn" id="btn-play-again-yes">Yes</button>
-      <button class="btn" id="btn-play-again-no">No</button>
-    </div>`
+    <div class="pop-up-message--rematch">
+      <p>The other player asks for a rematch</p>
+     <button class="btn btn-accept" id="btn-play-again-yes">Accept</button>
+     <button class="btn btn-decline" id="btn-play-again-no">Decline</button>
+    </div>
+    `
   );
 
   setTimeout(() => {
@@ -582,19 +674,13 @@ function renderAskPlayAgain() {
     const btnNo = document.getElementById('btn-play-again-no');
 
     btnYes.onclick = () => {
-      sendToServer({
-        eventFromClient: 'responseAskPlayAgain',
-        acceptPlayAgain: true,
-        gameSettings: {
-          p2JetCharacteristics: {
-            rotation: 5,
-            speed: 1,
-            color: '#000',
-          },
-        },
-      });
+      const jetCustomization = getJetCustomization();
 
-      btnNo.disable = true;
+      jetCustomization.eventFromClient = 'responseAskPlayAgain';
+      jetCustomization.acceptPlayAgain = true;
+
+      sendToServer(jetCustomization);
+      btnNo.disabled = true;
     };
 
     btnNo.onclick = () => {
@@ -602,7 +688,7 @@ function renderAskPlayAgain() {
         eventFromClient: 'responseAskPlayAgain',
         acceptPlayAgain: false,
       });
-      btnYes.disable = true;
+      btnYes.disabled = true;
     };
   });
 }
@@ -680,6 +766,57 @@ function getJetCustomization(joinId) {
       },
     },
   };
+}
+
+function getInvalidInputs() {
+  const maxScore = +formGameCustomization['max-score'].value;
+  const mapWidth = +formGameCustomization['map-width'].value;
+  const mapHeight = +formGameCustomization['map-height'].value;
+
+  const invalidInputs = [];
+
+  if (Number.isNaN(maxScore) || maxScore < 1 || maxScore > 50)
+    invalidInputs.push(formGameCustomization['max-score']);
+
+  if (Number.isNaN(mapWidth) || mapWidth < 100 || mapWidth > 2000)
+    invalidInputs.push(formGameCustomization['map-width']);
+
+  if (Number.isNaN(mapHeight) || mapHeight < 100 || mapHeight > 2000)
+    invalidInputs.push(formGameCustomization['map-height']);
+
+  return invalidInputs;
+}
+
+function clearInvalidInputsOutline() {
+  formGameCustomization['max-score'].classList.remove('red-outline');
+  formGameCustomization['map-width'].classList.remove('red-outline');
+  formGameCustomization['map-height'].classList.remove('red-outline');
+}
+
+function handleBtnSelectJetClick(e) {
+  const { x, y, width } = e.currentTarget.getBoundingClientRect();
+  const { height: heightPopup, width: widthPopup } =
+    btnSelectJetPopup.getBoundingClientRect();
+
+  const xPopup = x - (widthPopup - width) / 2;
+  const yPopup = y - heightPopup + window.pageYOffset + 20;
+
+  btnSelectJetPopup.style.top = `${yPopup}px`;
+  btnSelectJetPopup.style.left = `${xPopup}px`;
+
+  requestAnimationFrame(() => {
+    btnSelectJetPopup.classList.toggle('fade-translate-up');
+  });
+}
+
+function handleSecondaryBtnSelectJetClick(e) {
+  requestAnimationFrame(() => {
+    btnSelectJetPopup.classList.toggle('fade-translate-up');
+  });
+
+  btnSelectJet.setAttribute('data-jet-color', e.currentTarget.dataset.jetColor);
+  btnSelectJet.firstElementChild.src = e.currentTarget.firstElementChild.src;
+  btnSelectJet.firstElementChild.alt = e.currentTarget.firstElementChild.alt;
 }
 
 export {
