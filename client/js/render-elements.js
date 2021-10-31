@@ -364,8 +364,14 @@ function renderGameMenu(isFirstRender, popupClass) {
       return;
     }
 
-    console.log(getJetCustomization(inputValue));
-    sendToServer(getJetCustomization(inputValue));
+    const gameCustomization = getJetCustomization(inputValue);
+    console.log(gameCustomization);
+    sendToServer(gameCustomization);
+
+    updateStoredGameCustomization(
+      'gameCustomization',
+      gameCustomization.gameSettings
+    );
   }
 
   function handleBtnNewGameClick() {
@@ -388,8 +394,14 @@ function renderGameMenu(isFirstRender, popupClass) {
     }
 
     renderBtnNewGamePopup();
-    console.log(getGameCustomization());
-    sendToServer(getGameCustomization());
+    const gameCustomization = getGameCustomization();
+    console.log(gameCustomization);
+    sendToServer(gameCustomization);
+
+    updateStoredGameCustomization(
+      'gameCustomization',
+      gameCustomization.gameSettings
+    );
   }
 
   // transition from display none and opacity 0
@@ -628,6 +640,11 @@ function renderGameOverMenu(winPlayer, playerNumber) {
     gameCustomization.eventFromClient = 'requestPlayAgain';
     sendToServer(gameCustomization);
 
+    updateStoredGameCustomization(
+      'gameCustomization',
+      gameCustomization.gameSettings
+    );
+
     renderBtnPlayAgainPopup('wait');
   }
 }
@@ -672,12 +689,17 @@ function renderAskPlayAgain() {
       const btnNo = document.getElementById('btn-play-again-no');
 
       btnYes.onclick = () => {
-        const jetCustomization = getJetCustomization();
+        const gameCustomization = getJetCustomization();
 
-        jetCustomization.eventFromClient = 'responseAskPlayAgain';
-        jetCustomization.acceptPlayAgain = true;
+        gameCustomization.eventFromClient = 'responseAskPlayAgain';
+        gameCustomization.acceptPlayAgain = true;
 
-        sendToServer(jetCustomization);
+        sendToServer(gameCustomization);
+        updateStoredGameCustomization(
+          'gameCustomization',
+          gameCustomization.gameSettings
+        );
+
         btnNo.disabled = true;
       };
 
@@ -741,7 +763,7 @@ function getGameCustomization() {
     eventFromClient: 'requestNewRoom',
     gameSettings: {
       settings: { maxScore, mapWidth, mapHeight },
-      p1JetCharacteristics: {
+      jetCharacteristics: {
         color: jetColor,
         jetType,
       },
@@ -759,7 +781,7 @@ function getJetCustomization(joinId) {
     joinId,
     eventFromClient: 'requestJoinRoom',
     gameSettings: {
-      p2JetCharacteristics: {
+      jetCharacteristics: {
         color: jetColor,
         jetType,
       },
@@ -816,6 +838,19 @@ function handleSecondaryBtnSelectJetClick(e) {
   btnSelectJet.setAttribute('data-jet-color', e.currentTarget.dataset.jetColor);
   btnSelectJet.firstElementChild.src = e.currentTarget.firstElementChild.src;
   btnSelectJet.firstElementChild.alt = e.currentTarget.firstElementChild.alt;
+}
+
+function updateStoredGameCustomization(key, obj) {
+  const storedSettings = localStorage.getItem(key);
+
+  if (!storedSettings) {
+    localStorage.setItem(key, JSON.stringify(obj));
+    return;
+  }
+
+  const newObj = { ...JSON.parse(localStorage.getItem(key)), ...obj };
+
+  localStorage.setItem(key, JSON.stringify(newObj));
 }
 
 export {

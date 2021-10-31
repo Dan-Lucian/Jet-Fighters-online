@@ -57,6 +57,9 @@ server.on('connection', (ws) => {
       }
 
       const roomId = `r${createId(5)}`;
+
+      gameSettings.p1JetCharacteristics = gameSettings.jetCharacteristics;
+      delete gameSettings.jetCharacteristics;
       createRoom(roomId, gameSettings, ws);
       ws.connectionId = roomId;
 
@@ -109,6 +112,8 @@ server.on('connection', (ws) => {
         // joinId destructured above, needed there for roomStatus check
         ws.connectionId = joinId;
 
+        gameSettings.p2JetCharacteristics = gameSettings.jetCharacteristics;
+        delete gameSettings.jetCharacteristics;
         joinRoom(joinId, gameSettings, ws);
 
         // copy cause no need to keep reference
@@ -135,6 +140,8 @@ server.on('connection', (ws) => {
         })
       );
 
+      gameSettings.p1JetCharacteristics = gameSettings.jetCharacteristics;
+      delete gameSettings.jetCharacteristics;
       createRoom(ws.connectionId, gameSettings, ws, otherWs);
       return;
     }
@@ -144,6 +151,9 @@ server.on('connection', (ws) => {
 
       if (acceptPlayAgain) {
         const { gameSettings } = jsonFromFront;
+
+        gameSettings.p2JetCharacteristics = gameSettings.jetCharacteristics;
+        delete gameSettings.jetCharacteristics;
         joinRoom(ws.connectionId, gameSettings, ws);
 
         const copyGameSettings = {
@@ -269,18 +279,18 @@ function removeIds(roomId) {
 
 function isNewGameDataValid(gameState) {
   if (!gameState) return false;
-  if (!gameState.settings || !gameState.p1JetCharacteristics) return false;
+  if (!gameState.settings || !gameState.jetCharacteristics) return false;
   if (
     !gameState.settings.maxScore ||
     !gameState.settings.mapWidth ||
     !gameState.settings.mapHeight ||
-    !gameState.p1JetCharacteristics.color ||
-    !gameState.p1JetCharacteristics.jetType
+    !gameState.jetCharacteristics.color ||
+    !gameState.jetCharacteristics.jetType
   )
     return false;
 
   const { maxScore, mapWidth, mapHeight } = gameState.settings;
-  const { color, jetType } = gameState.p1JetCharacteristics;
+  const { color, jetType } = gameState.jetCharacteristics;
 
   if (
     Number.isNaN(maxScore) ||
@@ -309,14 +319,14 @@ function isNewGameDataValid(gameState) {
 
 function isJoinGameDataValid(gameState) {
   if (!gameState) return false;
-  if (!gameState.p2JetCharacteristics) return false;
+  if (!gameState.jetCharacteristics) return false;
   if (
-    !gameState.p2JetCharacteristics.color ||
-    !gameState.p2JetCharacteristics.jetType
+    !gameState.jetCharacteristics.color ||
+    !gameState.jetCharacteristics.jetType
   )
     return false;
 
-  const { color, jetType } = gameState.p2JetCharacteristics;
+  const { color, jetType } = gameState.jetCharacteristics;
 
   if (!supportedJetCollors.includes(color)) return false;
   if (!supportedJetTypes.includes(jetType)) return false;
