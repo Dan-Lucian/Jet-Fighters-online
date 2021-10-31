@@ -88,9 +88,6 @@ server.on('connection', (ws) => {
           sendToClient({
             eventFromServer: 'invalidJoinGameForm',
           });
-
-          console.log('join declined');
-          console.log(gameSettings);
           return;
         }
 

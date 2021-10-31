@@ -185,6 +185,8 @@ function startGameLoop(ws1, ws2, gameState) {
   return intervalId;
 }
 
+// accepts any object with coords, speed, angle
+// used for bullets and jets
 function goTheWayIsFacing(state) {
   const { rightArrowPressed, leftArrowPressed, rotation } = state;
 
