@@ -470,7 +470,6 @@ function renderGameOverMenu({ winPlayer }, playerNumber) {
           <button
             class="btn btn-menu"
             id="btn-return-to-main-menu"
-            data-already-created="You have already created a room"
           >
             Return to main menu
           </button>
@@ -480,6 +479,7 @@ function renderGameOverMenu({ winPlayer }, playerNumber) {
             class="btn btn-menu"
             id="btn-play-again"
             data-invalid-form="Invalid game customization"
+            data-wait="Waiting for the other player..."
           >
             Request a rematch
           </button>
@@ -599,7 +599,9 @@ function renderGameOverMenu({ winPlayer }, playerNumber) {
   }
 
   function handleBtnPlayAgainClick() {
-    // if player number already assigned
+    if (btnPlayAgain.classList.contains('btn-create__popup--wait')) {
+      return;
+    }
 
     clearInvalidInputsOutline();
     const invalidInputs = getInvalidInputs();
@@ -613,25 +615,11 @@ function renderGameOverMenu({ winPlayer }, playerNumber) {
       return;
     }
 
-    renderBtnPlayAgainPopup();
-
     const gameCustomization = getGameCustomization();
     gameCustomization.eventFromClient = 'requestPlayAgain';
-
-    console.log(gameCustomization);
     sendToServer(gameCustomization);
 
-    // sendToServer({
-    //   eventFromClient: 'requestPlayAgain',
-    //   gameSettings: {
-    //     settings: { maxScore: 2 },
-    //     p1JetCharacteristics: {
-    //       rotation: 3,
-    //       speed: 0,
-    //       color: '#fff',
-    //     },
-    //   },
-    // });
+    renderBtnPlayAgainPopup('wait');
   }
 }
 
@@ -724,7 +712,7 @@ function renderWsConnectionError() {
 }
 
 // ------------------------------------------
-// ----------Customization functions---------
+// --------------Shared functions------------
 // ------------------------------------------
 
 function getGameCustomization() {
