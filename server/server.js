@@ -29,6 +29,21 @@ server.on('connection', (ws) => {
     const jsonFromFront = JSON.parse(messageString);
     const { eventFromClient } = jsonFromFront;
 
+    // first check because performance
+    if (eventFromClient === 'keyPressed') {
+      const { keysStatus, playerNumber } = jsonFromFront;
+      const jsonKeysStatus = JSON.parse(keysStatus);
+      Object.keys(jsonKeysStatus).forEach((prop) => {
+        updateServerGameState(
+          ws.connectionId,
+          playerNumber,
+          prop,
+          jsonKeysStatus[prop]
+        );
+      });
+      return;
+    }
+
     // request to create a new game
     if (eventFromClient === 'requestNewRoom') {
       console.log(`requestNewRoom`);
@@ -109,20 +124,6 @@ server.on('connection', (ws) => {
       }
     }
 
-    if (eventFromClient === 'keyPressed') {
-      const { keysStatus, playerNumber } = jsonFromFront;
-      const jsonKeysStatus = JSON.parse(keysStatus);
-      Object.keys(jsonKeysStatus).forEach((prop) => {
-        updateServerGameState(
-          ws.connectionId,
-          playerNumber,
-          prop,
-          jsonKeysStatus[prop]
-        );
-      });
-      return;
-    }
-
     if (eventFromClient === 'requestPlayAgain') {
       const { gameSettings } = jsonFromFront;
       const { ws1, ws2 } = allRooms.get(ws.connectionId);
@@ -166,8 +167,25 @@ server.on('connection', (ws) => {
     }
 
     if (eventFromClient === 'exitRoom') {
+      sendToClient({
+        eventFromServer: 'roomDestroyed',
+      });
+
+      // send to other player that current left
+      const { ws1, ws2 } = allRooms.get(ws.connectionId);
+      const otherWs = ws === ws1 ? ws2 : ws1;
+      otherWs.send(
+        JSON.stringify({
+          eventFromServer: 'roomDestroyed',
+          reason: 'other-exit',
+        })
+      );
+
+      // clearup
       const { connectionId } = ws;
-      sendRoomDestroyedAndRemoveIds(connectionId, 'other-exit', ws);
+      removeIds(connectionId);
+      allRooms.delete(connectionId);
+      console.log(`room ${connectionId} destroyed`);
     }
 
     console.log(`unknown client request received: ${eventFromClient}`);
@@ -227,19 +245,25 @@ function sendRoomDestroyedAndRemoveIds(roomId, reason, wsNotToSend = null) {
     console.log('attempted to destroy a non existent room');
     return;
   }
+
   for (const wsFromRoom of Object.values(allRooms.get(roomId))) {
     // 2nd bc not to include game settings
     if (wsFromRoom && !wsFromRoom.p1JetCharacteristics) {
-      if (wsFromRoom !== wsNotToSend) {
-        wsFromRoom.send(
-          JSON.stringify({
-            eventFromServer: 'roomDestroyed',
-            reason,
-          })
-        );
-      }
+      wsFromRoom.send(
+        JSON.stringify({
+          eventFromServer: 'roomDestroyed',
+          reason,
+        })
+      );
       wsFromRoom.connectionId = null;
     }
+  }
+}
+
+function removeIds(roomId) {
+  for (const wsFromRoom of Object.values(allRooms.get(roomId))) {
+    console.log(`connection id: ${wsFromRoom.connectionId}`);
+    wsFromRoom.connectionId = null;
   }
 }
 

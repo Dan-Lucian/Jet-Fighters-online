@@ -83,7 +83,11 @@ function onWsMessage(message) {
     Render.unrenderGameOverMenu();
 
     // not proud of this
-    Render.renderGameMenu(false, `btn-create__popup--${reason}`);
+    if (reason) {
+      Render.renderGameMenu(false, `btn-create__popup--${reason}`);
+    } else {
+      Render.renderGameMenu();
+    }
 
     isGameRunning = false;
     player = null;

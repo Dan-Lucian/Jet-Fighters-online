@@ -43,8 +43,13 @@ const keysStatus = {
   spacePressed: false,
 };
 
+// function resetKeysStatus() {
+//   keysStatus.leftArrowPressed = false;
+//   keysStatus.rightArrowPressed = false;
+//   keysStatus.spacePressed = false;
+// }
+
 function renderGameScreen(gameState) {
-  console.log(gameState);
   requestAnimationFrame(() => {
     const { mapHeight, mapWidth } = gameState.settings;
     const { color: p1Color } = gameState.p1;
@@ -109,6 +114,7 @@ function unrenderGame() {
     scoreP1 = null;
     scoreP2 = null;
 
+    // resetKeysStatus();
     document.removeEventListener('keydown', onkeydown);
     document.removeEventListener('keyup', onKeyUp);
   });
@@ -599,10 +605,6 @@ function renderGameOverMenu(winPlayer, playerNumber) {
     sendToServer({
       eventFromClient: 'exitRoom',
     });
-
-    unrenderGame();
-    unrenderGameOverMenu();
-    renderGameMenu();
   }
 
   function handleBtnPlayAgainClick() {
