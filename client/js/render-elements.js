@@ -43,11 +43,11 @@ const keysStatus = {
   spacePressed: false,
 };
 
-// function resetKeysStatus() {
-//   keysStatus.leftArrowPressed = false;
-//   keysStatus.rightArrowPressed = false;
-//   keysStatus.spacePressed = false;
-// }
+function resetKeysStatus() {
+  keysStatus.leftArrowPressed = false;
+  keysStatus.rightArrowPressed = false;
+  keysStatus.spacePressed = false;
+}
 
 function renderGameScreen(gameState) {
   requestAnimationFrame(() => {
@@ -114,7 +114,7 @@ function unrenderGame() {
     scoreP1 = null;
     scoreP2 = null;
 
-    // resetKeysStatus();
+    resetKeysStatus();
     document.removeEventListener('keydown', onkeydown);
     document.removeEventListener('keyup', onKeyUp);
   });
