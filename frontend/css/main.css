@@ -504,7 +504,7 @@ body {
   background: #0055b2;
 }
 
-.btn-create__popup--already-created::after, .btn-create__popup--invalid-form::after, .btn-create__popup--wait::after, .btn-create__popup--server-invalid-form::after {
+.btn-create__popup--already-created::after, .btn-create__popup--invalid-form::after, .btn-create__popup--wait::after, .btn-create__popup--server-invalid-form::after, .btn-create__popup--rematch-declined::after, .btn-create__popup--disconnect::after, .btn-create__popup--other-exit::after {
   display: block;
   white-space: nowrap;
   position: absolute;
@@ -528,6 +528,15 @@ body {
 }
 .btn-create__popup--server-invalid-form::after {
   content: attr(data-server-invalid-form);
+}
+.btn-create__popup--rematch-declined::after {
+  content: attr(data-rematch-declined);
+}
+.btn-create__popup--disconnect::after {
+  content: attr(data-disconnect);
+}
+.btn-create__popup--other-exit::after {
+  content: attr(data-other-exit);
 }
 
 .btn-select-jet {

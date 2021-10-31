@@ -178,7 +178,7 @@ function onKeyUp(e) {
 // --------Game Menu render/unrender---------
 // ------------------------------------------
 
-function renderGameMenu(isFirstRender) {
+function renderGameMenu(isFirstRender, popupClass) {
   requestAnimationFrame(() => {
     if (!isFirstRender) {
       root.innerHTML = `
@@ -197,12 +197,15 @@ function renderGameMenu(isFirstRender) {
       <section class="game-menu__start-buttons">
         <div class="game-menu__start-buttons__create">
           <button
-            class="btn btn-menu"
+            class="btn btn-menu ${popupClass}"
             id="btn-new-game"
             data-already-created="You have already created a room"
             data-invalid-form="Invalid game customization"
             data-wait="Waiting for the other player..."
             data-server-invalid-form="Server declined your customization"
+            data-rematch-declined="Rematch request was declined"
+            data-disconnect="Other player diconnected"
+            data-other-exit="Other player left the room"
           >
             Create a new game
           </button>
@@ -423,7 +426,7 @@ function renderJoinFormPopup(popupType) {
 }
 
 function renderRoomId(id) {
-  roomIdElement.textContent = `Room Id: ${id}`;
+  roomIdElement.textContent = `Room ID: ${id}`;
   renderBtnNewGamePopup('wait');
 }
 
@@ -593,9 +596,12 @@ function renderGameOverMenu({ winPlayer }, playerNumber) {
 
   function handleBtnReturnToMainMenuClick() {
     sendToServer({
-      eventFromClient: 'responseAskPlayAgain',
-      acceptPlayAgain: false,
+      eventFromClient: 'exitRoom',
     });
+
+    unrenderGame();
+    unrenderGameOverMenu();
+    renderGameMenu();
   }
 
   function handleBtnPlayAgainClick() {

@@ -145,14 +145,16 @@ server.on('connection', (ws) => {
 
       // saved here because sendRoom... will destroy it
       const { connectionId } = ws;
-      sendRoomDestroyedAndRemoveIds(
-        connectionId,
-        'Room destroyed because a player denied to play again'
-      );
+      sendRoomDestroyedAndRemoveIds(connectionId, 'rematch-declined');
       allRooms.delete(connectionId);
       console.log(`room ${connectionId} destroyed`);
 
       return;
+    }
+
+    if (eventFromClient === 'exitRoom') {
+      const { connectionId } = ws;
+      sendRoomDestroyedAndRemoveIds(connectionId, 'other-exit', ws);
     }
 
     console.log(`unknown client request received: ${eventFromClient}`);
@@ -164,7 +166,7 @@ server.on('connection', (ws) => {
 
     // saved here because sendRoom... will remove it
     const { connectionId } = ws;
-    sendRoomDestroyedAndRemoveIds(connectionId, 'Other player disconnected');
+    sendRoomDestroyedAndRemoveIds(connectionId, 'disconnect');
     clearInterval(ws.intervalId);
     allRooms.delete(connectionId);
     console.log(`room ${connectionId} destroyed`);
@@ -205,7 +207,9 @@ function getRoomStatus(id) {
   return { roomStatus: 'joinable' };
 }
 
-function sendRoomDestroyedAndRemoveIds(roomId, textMessage) {
+// sends roomDestroyed event with a reason
+// 3rd arg specifies which ws not to send the msg to, but still remove id from
+function sendRoomDestroyedAndRemoveIds(roomId, reason, wsNotToSend = null) {
   if (!allRooms.get(roomId)) {
     console.log('attempted to destroy a non existent room');
     return;
@@ -213,12 +217,14 @@ function sendRoomDestroyedAndRemoveIds(roomId, textMessage) {
   for (const wsFromRoom of Object.values(allRooms.get(roomId))) {
     // 2nd bc not to include game settings
     if (wsFromRoom && !wsFromRoom.p1JetCharacteristics) {
-      wsFromRoom.send(
-        JSON.stringify({
-          eventFromServer: 'roomDestroyed',
-          textMessage,
-        })
-      );
+      if (wsFromRoom !== wsNotToSend) {
+        wsFromRoom.send(
+          JSON.stringify({
+            eventFromServer: 'roomDestroyed',
+            reason,
+          })
+        );
+      }
       wsFromRoom.connectionId = null;
     }
   }

@@ -108,13 +108,16 @@ function onWsMessage(message) {
   }
 
   if (eventFromServer === 'roomDestroyed') {
+    // reason sent from server has to match with css class
+    const { reason } = jsonFromServer;
     console.log('Room destroyed');
-    const { textMessage } = jsonFromServer;
-    requestAnimationFrame(() => renderMessage(textMessage));
+    console.log(`Room destroyed reason: ${reason}`);
 
     Render.unrenderGame();
     Render.unrenderGameOverMenu();
-    Render.renderGameMenu();
+
+    // not proud of this
+    Render.renderGameMenu(false, `btn-create__popup--${reason}`);
 
     isGameRunning = false;
     player = null;
@@ -138,6 +141,7 @@ function onWsMessage(message) {
     return;
   }
 
+  // can be removed
   if (eventFromServer === 'playAgainDenied') {
     console.log('Other player denied to play again');
   }
