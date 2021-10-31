@@ -649,7 +649,7 @@ function renderAskPlayAgain() {
   root.insertAdjacentHTML(
     'beforeend',
     `
-    <div class="pop-up-message--rematch">
+    <div class="pop-up-message--rematch" id="message--rematch">
       <p>The other player asks for a rematch</p>
      <button class="btn btn-accept" id="btn-play-again-yes">Accept</button>
      <button class="btn btn-decline" id="btn-play-again-no">Decline</button>
@@ -657,27 +657,31 @@ function renderAskPlayAgain() {
     `
   );
 
-  setTimeout(() => {
-    const btnYes = document.getElementById('btn-play-again-yes');
-    const btnNo = document.getElementById('btn-play-again-no');
+  requestAnimationFrame(() => {
+    document.getElementById('message--rematch').classList.add('fade');
 
-    btnYes.onclick = () => {
-      const jetCustomization = getJetCustomization();
+    setTimeout(() => {
+      const btnYes = document.getElementById('btn-play-again-yes');
+      const btnNo = document.getElementById('btn-play-again-no');
 
-      jetCustomization.eventFromClient = 'responseAskPlayAgain';
-      jetCustomization.acceptPlayAgain = true;
+      btnYes.onclick = () => {
+        const jetCustomization = getJetCustomization();
 
-      sendToServer(jetCustomization);
-      btnNo.disabled = true;
-    };
+        jetCustomization.eventFromClient = 'responseAskPlayAgain';
+        jetCustomization.acceptPlayAgain = true;
 
-    btnNo.onclick = () => {
-      sendToServer({
-        eventFromClient: 'responseAskPlayAgain',
-        acceptPlayAgain: false,
-      });
-      btnYes.disabled = true;
-    };
+        sendToServer(jetCustomization);
+        btnNo.disabled = true;
+      };
+
+      btnNo.onclick = () => {
+        sendToServer({
+          eventFromClient: 'responseAskPlayAgain',
+          acceptPlayAgain: false,
+        });
+        btnYes.disabled = true;
+      };
+    });
   });
 }
 

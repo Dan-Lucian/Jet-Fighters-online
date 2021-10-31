@@ -610,6 +610,8 @@ body {
   padding: 30px 50px;
   border-radius: 10px;
   z-index: 1000;
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
 }
 .pop-up-message--rematch p {
   margin-top: 0;
