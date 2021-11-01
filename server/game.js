@@ -292,7 +292,6 @@ function didJetsCollide(stateJet1, stateJet2) {
       bottom1 < bottom2) ||
     (left1 > left2 && left1 < right2 && bottom1 > top2 && bottom1 < bottom2)
   ) {
-    console.log('passed');
     return true;
   }
 }
@@ -300,17 +299,13 @@ function didJetsCollide(stateJet1, stateJet2) {
 function incrementScore(players, amount) {
   for (let i = 0; i < players.length; i += 1) {
     players[i].score += amount;
-    console.log(
-      `score incremented for ${players[i].playerNumber} by 1 ` +
-        `, now it is ${players[i].score}`
-    );
   }
 }
 
 function getWinner(players, maxScore) {
   const winners = [];
   for (let i = 0; i < players.length; i += 1) {
-    if (players[i].score === maxScore) winners.push(players[i].playerNumber);
+    if (players[i].score >= maxScore) winners.push(players[i].playerNumber);
   }
 
   if (winners.length === 1) return winners[0];

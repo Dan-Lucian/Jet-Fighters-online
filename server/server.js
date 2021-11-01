@@ -69,6 +69,8 @@ server.on('connection', (ws) => {
         'speed',
         p2ActualSpeed
       );
+
+      return;
     }
 
     // request to create a new game
@@ -223,6 +225,7 @@ server.on('connection', (ws) => {
       removeIds(connectionId);
       allRooms.delete(connectionId);
       console.log(`room ${connectionId} destroyed`);
+      return;
     }
 
     console.log(`unknown client request received: ${eventFromClient}`);
