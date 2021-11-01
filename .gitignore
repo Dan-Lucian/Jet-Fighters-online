@@ -7,4 +7,5 @@ node_modules
 .eslintignore
 design.md
 server/node_modules
+client/node_modules
 .vscode
