@@ -4,7 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "babel src/js -d public/js"
+    "watchCss": "sass --watch src/sass/main.scss:public/css/main.css --style compressed",
+    "minify1": "uglifyjs src/js/transpilled/canvas-painting.js -o public/js/canvas-painting.js",
+    "minify2": "uglifyjs src/js/transpilled/config.js -o public/js/config.js",
+    "minify3": "uglifyjs src/js/transpilled/helpers.js -o public/js/helpers.js",
+    "minify4": "uglifyjs src/js/transpilled/main.js -o public/js/main.js",
+    "minify5": "uglifyjs src/js/transpilled/render-elements.js -o public/js/render-elements.js",
+    "transpile": "babel src/js/dev -d src/js/transpilled/",
+    "build": "npm run transpile && npm run minify1 & npm run minify2 & npm run minify3 & npm run minify4 & npm run minify5"
   },
   "keywords": [],
   "author": "",
