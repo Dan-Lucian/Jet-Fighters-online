@@ -18,7 +18,7 @@ const {
   getPlayerValueFromGameState,
 } = require('./game.js');
 
-const server = new WebSocket.Server({ port: '3000' });
+const server = new WebSocket.Server({ port: process.env.PORT || '3000' });
 const allRooms = new Map();
 
 server.on('connection', (ws) => {
