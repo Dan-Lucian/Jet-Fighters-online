@@ -29,6 +29,15 @@
   width: 160px;
 }
 
-.game__scores__p1{
+.game__scores__p1 {
   margin-right: 120px;
+}
+
+.game__countdown {
+  @include flexCenter(row);
+  position: absolute;
+  background: $color-bg-countdown;
+  color: $color-text-reverse;
+  font-size: 5rem;
+  font-weight: 700;
 }

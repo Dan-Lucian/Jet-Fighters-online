@@ -476,7 +476,7 @@ body {
   border-radius: 20px;
   text-align: left;
   font-size: 1.5rem;
-  background: #D2D9E5;
+  background: #d2d9e5fd;
   color: #000;
   transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
   z-index: 100;
@@ -676,6 +676,18 @@ body {
 
 .game__scores__p1 {
   margin-right: 120px;
+}
+
+.game__countdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.5);
+  color: #000;
+  font-size: 5rem;
+  font-weight: 700;
 }
 
 .game-menu {

@@ -13,6 +13,7 @@ const root = document.getElementById('root');
 // game elements
 let scoreP1;
 let scoreP2;
+let countdown;
 
 // game menu elements
 let gameMenu;
@@ -71,6 +72,11 @@ function renderGameScreen(gameState) {
         id="canvas"
         class="canvas"
       ></canvas>
+      <div 
+        style="width: ${mapWidth}px; height: ${mapHeight}px" 
+        class="game__countdown" 
+        id="countdown"
+      >3</div>
     </section>
     `;
 
@@ -81,13 +87,35 @@ function renderGameScreen(gameState) {
       jet1.setScore(0);
       jet2.setScore(0);
 
+      countdown = document.getElementById('countdown');
       scoreP1 = document.getElementById('score-p1');
       scoreP2 = document.getElementById('score-p2');
 
-      document.addEventListener('keydown', onkeydown);
-      document.addEventListener('keyup', onKeyUp);
+      startCountdown();
     });
   });
+
+  function startCountdown() {
+    setTimeout(() => {
+      countdown.textContent = '2';
+      setTimeout(() => {
+        countdown.textContent = '1';
+        setTimeout(() => {
+          countdown.textContent = '0';
+          setTimeout(() => {
+            countdown.remove();
+
+            document.addEventListener('keydown', onkeydown);
+            document.addEventListener('keyup', onKeyUp);
+
+            sendToServer({
+              eventFromClient: 'countdownFinished',
+            });
+          }, 1000);
+        }, 1000);
+      }, 1000);
+    }, 1000);
+  }
 }
 
 function renderGame(gameState) {
@@ -113,6 +141,7 @@ function unrenderGame() {
     root.innerHTML = '';
     scoreP1 = null;
     scoreP2 = null;
+    countdown = null;
 
     resetKeysStatus();
     document.removeEventListener('keydown', onkeydown);
@@ -208,8 +237,7 @@ function renderGameMenu(isFirstRender, popupClass) {
   }
 
   requestAnimationFrame(() => {
-    if (isFirstRender) {
-      root.innerHTML = `
+    root.innerHTML = `
       <header class="header">
       <h1 class="header__greeting">Welcome to Jet Fighters Online</h1>
       <button class="btn btn-question" id="btn-question-controls">?</button>
@@ -346,7 +374,6 @@ function renderGameMenu(isFirstRender, popupClass) {
       </section>
     </article>
       `;
-    }
 
     setTimeout(() => {
       // gameMenu = document.getElementById('game-menu');

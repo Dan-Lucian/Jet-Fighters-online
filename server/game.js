@@ -4,7 +4,8 @@
 module.exports = {
   startGameLoop,
   createGameState,
-  updateServerGameState,
+  updatePlayerServerGameState,
+  getPlayerValueFromGameState,
 };
 
 const {
@@ -43,6 +44,7 @@ function createGameState(gameSettings) {
       bullets: [],
       score: 0,
       playerNumber: 'p1',
+      speed: 0,
       color: p1Color,
       ...jetTypes[p1JetType],
     },
@@ -57,6 +59,7 @@ function createGameState(gameSettings) {
       bullets: [],
       score: 0,
       playerNumber: 'p2',
+      speed: 0,
       color: p2Color,
       ...jetTypes[p2JetType],
     },
@@ -86,11 +89,6 @@ function createBulletFor(player) {
     color: player.color,
     timeAlive: 0,
   };
-}
-
-// backdoor to the gamestate
-function updateServerGameState(roomId, playerNumber, property, value) {
-  allGameStates.get(roomId)[playerNumber][property] = value;
 }
 
 // change ws1, ws2 to allWs array
@@ -318,4 +316,13 @@ function getWinner(players, maxScore) {
   if (winners.length === 1) return winners[0];
   if (winners.length > 1) return 'draw';
   return null;
+}
+
+// server gameState live insertion
+function updatePlayerServerGameState(roomId, playerNumber, property, value) {
+  allGameStates.get(roomId)[playerNumber][property] = value;
+}
+
+function getPlayerValueFromGameState(roomId, playerNumber, property) {
+  return allGameStates.get(roomId)[playerNumber][property];
 }

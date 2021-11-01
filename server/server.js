@@ -14,7 +14,8 @@ const {
 const {
   createGameState,
   startGameLoop,
-  updateServerGameState,
+  updatePlayerServerGameState,
+  getPlayerValueFromGameState,
 } = require('./game.js');
 
 const server = new WebSocket.Server({ port: '3000' });
@@ -34,7 +35,7 @@ server.on('connection', (ws) => {
       const { keysStatus, playerNumber } = jsonFromFront;
       const jsonKeysStatus = JSON.parse(keysStatus);
       Object.keys(jsonKeysStatus).forEach((prop) => {
-        updateServerGameState(
+        updatePlayerServerGameState(
           ws.connectionId,
           playerNumber,
           prop,
@@ -42,6 +43,32 @@ server.on('connection', (ws) => {
         );
       });
       return;
+    }
+
+    if (eventFromClient === 'countdownFinished') {
+      const p1ActualSpeed = getPlayerValueFromGameState(
+        ws.connectionId,
+        'p1',
+        'actualSpeed'
+      );
+      updatePlayerServerGameState(
+        ws.connectionId,
+        'p1',
+        'speed',
+        p1ActualSpeed
+      );
+
+      const p2ActualSpeed = getPlayerValueFromGameState(
+        ws.connectionId,
+        'p2',
+        'actualSpeed'
+      );
+      updatePlayerServerGameState(
+        ws.connectionId,
+        'p2',
+        'speed',
+        p2ActualSpeed
+      );
     }
 
     // request to create a new game

@@ -9,15 +9,15 @@ const bulletLifeTime = 200;
 const jetTypes = {
   speedy: {
     rotation: 3,
-    speed: 4,
+    actualSpeed: 4,
   },
   balanced: {
     rotation: 4.5,
-    speed: 3,
+    actualSpeed: 3,
   },
   twitchy: {
     rotation: 6,
-    speed: 2,
+    actualSpeed: 2,
   },
 };
 
