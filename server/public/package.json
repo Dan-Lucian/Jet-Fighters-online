@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "ws": "^8.2.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  },
+  "scripts": {
+    "startServer": "npx nodemon server.jsnodemon ./src/server.js localhost 8080",
+    "minify1": "uglifyjs src/constants.js -o public/constants.js",
+    "minify2": "uglifyjs src/game.js -o public/game.js",
+    "minify3": "uglifyjs src/helpers.js -o public/helpers.js",
+    "minify4": "uglifyjs src/server.js -o public/server.js",
+    "build": "npm run minify1 & npm run minify2 & npm run minify3 & npm run minify4"
+  },
+  "author": "",
+  "license": "ISC",
+  "optionalDependencies": {
+    "bufferutil": "^4.0.5",
+    "utf-8-validate": "^5.0.7"
+  }
+}
