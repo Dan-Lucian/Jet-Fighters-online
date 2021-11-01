@@ -8,7 +8,7 @@ import * as Render from './render-elements.js';
 // Render.renderWsPreonnectionLoadingScreen();
 Render.renderGameMenu();
 
-const ws = new WebSocket(`ws://${info.hostname}${info.port}/`);
+const ws = new WebSocket(`ws://${info.hostname}${info.port}`);
 ws.onopen = onWsOpen;
 ws.onmessage = onWsMessage;
 ws.onerror = onWsError;
