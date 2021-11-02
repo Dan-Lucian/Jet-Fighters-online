@@ -75,7 +75,7 @@ server.on('connection', (ws) => {
 
     // request to create a new game
     if (eventFromClient === 'requestNewRoom') {
-      console.log(`requestNewRoom`);
+      // console.log(`requestNewRoom`);
       const { gameSettings } = jsonFromFront;
 
       if (!isNewGameDataValid(gameSettings)) {
@@ -101,12 +101,12 @@ server.on('connection', (ws) => {
 
     // request to join a room with a given ID
     if (eventFromClient === 'requestJoinRoom') {
-      console.log('requestJoinRoom');
+      // console.log('requestJoinRoom');
       const { joinId } = jsonFromFront;
       const { roomStatus } = getRoomStatus(joinId);
 
       if (roomStatus === 'notFound') {
-        console.log('Room notFound');
+        // console.log('Room notFound');
 
         // reason sent from server has to match the css class from front
         sendToClient({
@@ -117,7 +117,7 @@ server.on('connection', (ws) => {
       }
 
       if (roomStatus === 'full') {
-        console.log('full');
+        // console.log('full');
 
         // reason sent from server has to match the css class from front
         sendToClient({
@@ -128,7 +128,7 @@ server.on('connection', (ws) => {
       }
 
       if (roomStatus === 'joinable') {
-        console.log('joinable');
+        // console.log('joinable');
         const { gameSettings } = jsonFromFront;
 
         if (!isJoinGameDataValid(gameSettings)) {
@@ -200,7 +200,7 @@ server.on('connection', (ws) => {
       const { connectionId } = ws;
       sendRoomDestroyedAndRemoveIds(connectionId, 'rematch-declined');
       allRooms.delete(connectionId);
-      console.log(`room ${connectionId} destroyed`);
+      // console.log(`room ${connectionId} destroyed`);
 
       return;
     }
@@ -232,7 +232,7 @@ server.on('connection', (ws) => {
   });
 
   ws.on('close', () => {
-    console.log('connection closed');
+    // console.log('connection closed');
     if (!ws.connectionId) return;
 
     // saved here because sendRoom... will remove it
@@ -240,7 +240,7 @@ server.on('connection', (ws) => {
     sendRoomDestroyedAndRemoveIds(connectionId, 'disconnect');
     clearInterval(ws.intervalId);
     allRooms.delete(connectionId);
-    console.log(`room ${connectionId} destroyed`);
+    // console.log(`room ${connectionId} destroyed`);
   });
 });
 
@@ -252,7 +252,7 @@ function createRoom(roomId, gameSettings, ws1, ws2 = null) {
     ws2,
     gameSettings: { ...gameSettings },
   });
-  console.log('room created');
+  // console.log('room created');
 }
 
 function joinRoom(roomId, additionalGameSettings, ws2) {
@@ -267,7 +267,7 @@ function joinRoom(roomId, additionalGameSettings, ws2) {
 
 function getRoomStatus(id) {
   if (!id) {
-    console.log('No ID provided for checking the room status');
+    // console.log('No ID provided for checking the room status');
     return;
   }
 
@@ -282,7 +282,7 @@ function getRoomStatus(id) {
 // 3rd arg specifies which ws not to send the msg to, but still remove id from
 function sendRoomDestroyedAndRemoveIds(roomId, reason) {
   if (!allRooms.get(roomId)) {
-    console.log('attempted to destroy a non existent room');
+    // console.log('attempted to destroy a non existent room');
     return;
   }
 
@@ -302,7 +302,7 @@ function sendRoomDestroyedAndRemoveIds(roomId, reason) {
 
 function removeIds(roomId) {
   for (const wsFromRoom of Object.values(allRooms.get(roomId))) {
-    console.log(`connection id: ${wsFromRoom.connectionId}`);
+    // console.log(`connection id: ${wsFromRoom.connectionId}`);
     wsFromRoom.connectionId = null;
   }
 }
