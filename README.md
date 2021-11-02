@@ -3,7 +3,11 @@
 ### What is this?
 * An online real-time multiplayer game featuring 2d aircraft combat.
 * To play the game use left and right arrow keys for jet steering and "space" for shooting.
+
+### Live game
 ![alt text](https://raw.githubusercontent.com/Dan-Lucian/Jet-Fighters-online/main/design/Game-going.png "Game")
+
+### Game Over menu
 ![alt text](https://raw.githubusercontent.com/Dan-Lucian/Jet-Fighters-online/main/design/Game-over-menu.png "Game-over")
 
 ### Features
