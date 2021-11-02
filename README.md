@@ -11,25 +11,26 @@
 ![alt text](https://raw.githubusercontent.com/Dan-Lucian/Jet-Fighters-online/main/design/Game-over-menu.png "Game-over")
 
 ### Features
-* You can create a game room with a unique code and share the code with a friend.
-* Supports multiple rooms, it is not limited just to one game instance.
-* Game customization. You can choose maximum score, map size, jet color and jet type (balanced, speedy, twitchy).
-* No need to send the code every game, you can ask for rematches and/or change game customization at the end.
+* You can create a room with a unique ID, then share it with a friend to play the game.
+* Supports multiple rooms, it is not limited to just one game.
+* Game customization. You can choose the maximum score, map size, jet color and jet type (balanced, speedy, twitchy).
+* No need to send the room ID every game, you can ask for rematches and/or change game customization at the end.
 
 ### What I've learned from doing this project
 * How to setup a basic node server.
-* How to use WebSocket for real-time data exchange, here I used built-in js WebSocket features for the frontend, and [ws](https://www.npmjs.com/package/ws) npm package for the backend.
-* How to work with room systems and how to make the game sclable.
+* How to use WebSocket for real-time data exchange, here I used the built-in js WebSocket feature for the frontend, and [ws](https://www.npmjs.com/package/ws) npm package for the backend.
+* How to work with room systems and how to make the game scalable.
 * How to work with canvas html element to create animations.
-* How to create a basic game logic and game loop.
+* How to create a game logic and a game loop.
 * How to double validate form data, once on the front and once on the server.
 * How to host a front on [netlify](https://www.netlify.com/).
-* How to host a bckend on [heroku](https://www.heroku.com/)
+* How to host a backend on [heroku](https://www.heroku.com/)
 
 ### What next?
-* Add the possiblity to join a random game, thus miitgating the "create a room, share the code" process for solo players.
+* Add the possiblity to join a random game, thus mitigating the "create a room, share the code" process for solo players.
 * Add more customization: bullet speed, jet size.
 * Add more jet types.
 * Add more jet colors.
 * Add user accounts and authetication.
+* Add game statistics.
 * Migrate everything to just a node project using [express](https://www.npmjs.com/package/express), removing the need to host the front on netlify.
