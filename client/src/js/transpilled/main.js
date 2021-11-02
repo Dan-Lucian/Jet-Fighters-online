@@ -4,10 +4,7 @@
 
 /* eslint-disable no-use-before-define */
 import { info } from './config.js';
-import { renderMessage } from './helpers.js';
-import * as Render from './render-elements.js'; // Render.renderWsPreonnectionLoadingScreen();
-
-Render.renderGameMenu();
+import * as Render from './render-elements.js';
 var ws = new WebSocket("ws://".concat(info.hostname).concat(info.port));
 ws.onopen = onWsOpen;
 ws.onmessage = onWsMessage;
@@ -23,6 +20,7 @@ function sendToServer(obj) {
 
 function onWsOpen() {
   console.log('Connection established');
+  Render.renderGameMenu();
 }
 
 function onWsMessage(message) {
@@ -55,7 +53,6 @@ function onWsMessage(message) {
     var {
       roomId
     } = jsonFromServer;
-    console.log("Server new room created: ".concat(roomId));
     Render.renderRoomId(roomId);
     player = 'p1';
     return;
@@ -85,7 +82,6 @@ function onWsMessage(message) {
     var {
       reason: _reason
     } = jsonFromServer;
-    console.log("Room destroyed reason: ".concat(_reason));
     Render.unrenderGame();
     Render.unrenderGameOverMenu(); // not proud of this
 
@@ -116,19 +112,18 @@ function onWsMessage(message) {
   }
 
   if (eventFromServer === 'askPlayAgain') {
-    console.log('Other player asked to play again');
     Render.renderAskPlayAgain();
   }
 }
 
 function onWsError() {
   console.log('Connection error');
-  requestAnimationFrame(() => renderMessage("Connection Error"));
+  Render.renderWsConnectionError();
 }
 
 function onWsClose() {
   console.log('Connection close');
-  requestAnimationFrame(() => renderMessage("Connection Error"));
+  Render.renderWsConnectionError();
 }
 
 function getPlayerNumber() {
