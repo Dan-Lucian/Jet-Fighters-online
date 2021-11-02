@@ -31,4 +31,5 @@
 * Add more customization: bullet speed, jet size.
 * Add more jet types.
 * Add more jet colors.
+* Add user accounts and authetication.
 * Migrate everything to just a node project using [express](https://www.npmjs.com/package/express), removing the need to host the front on netlify.
