@@ -1,4 +1,5 @@
 # [Jet Fighters Online](https://objective-easley-303f76.netlify.app/) (click to play)
+- [Game link](https://objective-easley-303f76.netlify.app/)
 
 ## Table of contents
 
@@ -7,7 +8,7 @@
   - [Live game](#live-game)
   - [Game Over menu](#game-over-menu)
 - [Features](#features)
-- [What I've learned](#what-)
+- [What I've learned](#what-i've-learned-from-doing-this-project)
 - [What next?](#what-next)
 
 ## What is this?
