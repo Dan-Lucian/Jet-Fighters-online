@@ -8,7 +8,7 @@
   - [Live game](#live-game)
   - [Game Over menu](#game-over-menu)
 - [Features](#features)
-- [What I've learned](#what-i've-learned-from-doing-this-project)
+- [What I've learned](#what-I've-learned-from-doing-this-project)
 - [What next?](#what-next)
 
 ## What is this?
