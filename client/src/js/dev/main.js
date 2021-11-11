@@ -4,7 +4,7 @@
 import { info } from './config.js';
 import * as Render from './render-elements.js';
 
-const ws = new WebSocket(`ws://${info.hostname}${info.port}`);
+const ws = new WebSocket(`wss://${info.hostname}${info.port}`);
 ws.onopen = onWsOpen;
 ws.onmessage = onWsMessage;
 ws.onerror = onWsError;

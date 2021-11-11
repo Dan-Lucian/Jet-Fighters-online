@@ -5,7 +5,7 @@
 /* eslint-disable no-use-before-define */
 import { info } from './config.js';
 import * as Render from './render-elements.js';
-var ws = new WebSocket("ws://".concat(info.hostname).concat(info.port));
+var ws = new WebSocket("wss://".concat(info.hostname).concat(info.port));
 ws.onopen = onWsOpen;
 ws.onmessage = onWsMessage;
 ws.onerror = onWsError;
