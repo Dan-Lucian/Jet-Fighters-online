@@ -24,7 +24,6 @@ const allRooms = new Map();
 // used for ping-pong connection check
 function heartbeat() {
   this.isAlive = true;
-  console.log('heartbeat');
 }
 
 server.on('connection', (ws) => {
