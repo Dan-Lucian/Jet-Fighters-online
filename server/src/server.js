@@ -21,10 +21,19 @@ const {
 const server = new WebSocket.Server({ port: process.env.PORT || '3000' });
 const allRooms = new Map();
 
+// used for ping-pong connection check
+function heartbeat() {
+  this.isAlive = true;
+  console.log('heartbeat');
+}
+
 server.on('connection', (ws) => {
   function sendToClient(objectData) {
     ws.send(JSON.stringify(objectData));
   }
+
+  ws.isAlive = true;
+  ws.on('pong', heartbeat);
 
   ws.on('message', (messageString) => {
     const jsonFromFront = JSON.parse(messageString);
@@ -243,6 +252,19 @@ server.on('connection', (ws) => {
     // console.log(`room ${connectionId} destroyed`);
   });
 });
+
+setInterval(() => {
+  server.clients.forEach((ws) => {
+    if (ws.isAlive === false) {
+      console.log('connection closed: idle');
+      ws.terminate();
+      return;
+    }
+
+    ws.isAlive = false;
+    ws.ping();
+  });
+}, 25000);
 
 function createRoom(roomId, gameSettings, ws1, ws2 = null) {
   gameSettings.settings.roomId = roomId;
