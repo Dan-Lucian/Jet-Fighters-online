@@ -7,4 +7,19 @@
   }
 }
 
+.game-winner, .game-loser, .game-draw{
+  padding: 10px 15px;
+  border-radius: 6px;
+}
+
+.game-winner{
+  background: $color-btn-accept;
+}
+.game-loser{
+  background: $color-btn-decline;
+}
+.game-draw{
+  background: $color-bg-main;
+}
+
 

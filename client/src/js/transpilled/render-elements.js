@@ -383,11 +383,11 @@ function renderGameOverMenu(winPlayer, playerNumber) {
   }
 
   if (winPlayer === 'draw') {
-    gameOverMessage = 'Game Over - Draw';
+    gameOverMessage = 'Game Over - <span class="game-draw">Draw</span>';
   } else if (winPlayer === playerNumber) {
-    gameOverMessage = 'Game Over - You Won';
+    gameOverMessage = 'Game Over - <span class="game-winner">You Won</span>';
   } else {
-    gameOverMessage = 'Game Over - You Lost';
+    gameOverMessage = 'Game Over - <span class="game-loser">You Lost</span>';
   }
 
   requestAnimationFrame(() => {
