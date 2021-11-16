@@ -69,7 +69,10 @@
   &--server-invalid-form::after,
   &--rematch-declined::after,
   &--disconnect::after,
-  &--other-exit::after {
+  &--other-exit::after,
+  &--connecting::after,
+  &--connected::after,
+  &--disconnected::after {
     display: block;
     white-space: nowrap;
     position: absolute;
@@ -92,6 +95,7 @@
   }
 
   &--wait::after {
+    color: $color-btn-accept;
     content: attr(data-wait);
   }
 
@@ -108,6 +112,19 @@
 
   &--other-exit::after {
     content: attr(data-other-exit);
+  }
+
+  &--connecting::after {
+    content: attr(data-connecting);
+  }
+
+  &--connected::after {
+    color: $color-btn-accept;
+    content: attr(data-connected);
+  }
+
+  &--disconnected::after {
+    content: attr(data-disconnected);
   }
 }
 

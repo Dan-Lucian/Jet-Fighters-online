@@ -4,6 +4,8 @@
 import { info } from './config.js';
 import * as Render from './render-elements.js';
 
+Render.renderGameMenu(true, 'btn-create__popup--connecting');
+// return to wss
 const ws = new WebSocket(`wss://${info.hostname}${info.port}`);
 ws.onopen = onWsOpen;
 ws.onmessage = onWsMessage;
@@ -20,7 +22,7 @@ function sendToServer(obj) {
 
 function onWsOpen() {
   console.log('Connection established');
-  Render.renderGameMenu();
+  Render.renderGameMenu(true, 'btn-create__popup--connected');
 }
 
 function onWsMessage(message) {
@@ -108,12 +110,14 @@ function onWsMessage(message) {
 
 function onWsError() {
   console.log('Connection error');
-  Render.renderWsConnectionError();
+  Render.renderGameMenu(false, 'btn-create__popup--disconnected');
+  Render.disableGameMenuButtons();
 }
 
 function onWsClose() {
   console.log('Connection close');
-  Render.renderWsConnectionError();
+  Render.renderGameMenu(false, 'btn-create__popup--disconnected');
+  Render.disableGameMenuButtons();
 }
 
 function getPlayerNumber() {

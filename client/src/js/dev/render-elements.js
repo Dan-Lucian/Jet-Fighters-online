@@ -262,6 +262,9 @@ function renderGameMenu(isFirstRender, popupClass) {
             data-rematch-declined="Rematch request was declined"
             data-disconnect="Other player diconnected"
             data-other-exit="Other player left the room"
+            data-connecting="Connecting..."
+            data-connected="Connected"
+            data-disconnected="Connection error, please refresh"
           >
             Create a new game
           </button>
@@ -490,6 +493,14 @@ function renderBtnNewGamePopup(popupType) {
     return;
   }
   btnNewGame.className = `btn btn-menu`;
+}
+
+function disableGameMenuButtons() {
+  setTimeout(() => {
+    setTimeout(() => {
+      btnNewGame.disabled = true;
+    });
+  });
 }
 
 function renderJoinFormPopup(popupType) {
@@ -825,12 +836,6 @@ function renderWsPreonnectionLoadingScreen() {
   `;
 }
 
-function renderWsConnectionError() {
-  root.innerHTML = `
-  <div class="connection-message">Connection error, please try again.</div>
-  `;
-}
-
 // ------------------------------------------
 // --------------Shared functions------------
 // ------------------------------------------
@@ -950,7 +955,7 @@ export {
   unrenderGameMenu,
   renderRoomId,
   renderWsPreonnectionLoadingScreen,
-  renderWsConnectionError,
   renderJoinFormPopup,
   renderBtnNewGamePopup,
+  disableGameMenuButtons,
 };
