@@ -24,10 +24,10 @@
 4. Your friend can customize his jet color and jet type but the max score and map sizes will be ignored.
 5. Your friend should put this ID inside "Write room ID here" reactangle bellow "Join game" blue button and press the button.
 6. Now you should be connected and a timer will mark the game start.
-7. Upon game over you can ask to play again or exit game room.
+7. Upon game over you can ask to play again or exit the game room.
 8. The player who asks to play again sets the game customization.
 9. The player who accepts the rematch can choose only the jet characteristics.
-10. You can play in the same room as long as players are connected and nobody left the room.
+10. You can play in the same room as long as both players are connected and nobody left the room.
 11. You are now ready! Have Fun!
 
 ## Screenshots
