@@ -10,6 +10,7 @@
   - [Game Over menu](#game-over-menu)
 - [Features](#features)
 - [What I've learned](#what-ive-learned-from-doing-this-project)
+- [Technologies used](#technologies-used)
 - [What next?](#what-next)
 
 ## What is this?
@@ -55,6 +56,12 @@
 * How to double validate form data, once on the front and once on the server.
 * How to host a front on [netlify](https://www.netlify.com/).
 * How to host a backend on [heroku](https://www.heroku.com/)
+
+## Technologies used
+* html
+* sass
+* vanilla javascript
+* node.js
 
 ## What next?
 * Add the possiblity to join a random game, thus mitigating the "create a room, share the code" process for solo players.
