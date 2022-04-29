@@ -22,8 +22,48 @@
     <!-- <script type="module" src="../src/js/dev/main.js"></script> -->
   </head>
 
+  <style>
+    .banner {
+      font-size: 0.7em;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 0.4em;
+      z-index: 1000;
+    }
+
+    .link {
+      text-decoration: underline;
+    }
+
+    .link:hover {
+      color: #fff;
+    }
+
+    .link:focus {
+      color: #e50050;
+    }
+
+    .accent {
+      color: #e50050 !important;
+    }
+  </style>
+
   <body>
-    <main class="root" id="root">
-    </main>
+    <main class="root" id="root"></main>
+    <div class="banner">
+      This is an <span class="accent">outdated</span> website, please visit
+      <a
+        class="link"
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://jetfightersonline.org/"
+        >https://jetfightersonline.org/</a
+      >
+    </div>
   </body>
 </html>
