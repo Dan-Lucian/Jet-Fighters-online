@@ -1,6 +1,6 @@
 # [Jet Fighters Online](https://objective-easley-303f76.netlify.app/) (click to play)
-- This is an outdated website, please visit [jet-fighters-online-2.0](https://github.com/Dan-Lucian/jet-fighters-online-2.0) repository.
-- [Game link](https://objective-easley-303f76.netlify.app/)
+- This is an outdated website, please visit [jet-fighters-online-2.0](https://github.com/Dan-Lucian/jet-fighters-online-2.0) repository for the new website version.
+- [Link](https://objective-easley-303f76.netlify.app/) to the app.
 
 ## Table of contents
 
